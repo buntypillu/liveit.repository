@@ -10,7 +10,8 @@
 		<summary lang="en">Live!t TV</summary>
 		<description lang="en">Repositório para todos os membros do grupo Live!t TV.</description>
 		<language>pt</language>
-		<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados. Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
+		<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados.
+		Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
 		<platform>all</platform>
 	</extension>
 </addon>
@@ -33,8 +34,6 @@
 
 	Sempre Atualizado 24 horas por dia.
 	</description>
-	<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados.
-	Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
 	<language>pt</language>
     <platform>all</platform>
     <license></license>
