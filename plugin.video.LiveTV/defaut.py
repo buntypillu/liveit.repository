@@ -33,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/LIVE/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/LIVE/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-1.2.2/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.2/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################

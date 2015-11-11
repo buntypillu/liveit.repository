@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="1.1.1">
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="2.1.2">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="script.module.t0mm0.common" version="1.0.0"/>
@@ -17,7 +17,8 @@
 	
 	Sempre Atualizado 24 horas por dia.
 	</description>
-	<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados. Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
+	<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados.
+	Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
 	<language>pt</language>
     <platform>all</platform>
     <license></license>
