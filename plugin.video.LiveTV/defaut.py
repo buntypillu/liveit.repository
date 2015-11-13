@@ -33,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.3/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.4/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -43,11 +43,11 @@ def menu():
 	check_login = login()
 	if check_login['sucesso']['resultado'] == 'yes':
 		Menu_inicial(check_login)
-		addDir('Definições', 'url', None, 1000, os.path.join(__ART_FOLDER__, __SKIN__, 'definicoes.png'), 0)
+		addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
 		vista_menu()
 	else:
-		addDir('Alterar Definições', 'url', None, 1000, os.path.join(__ART_FOLDER__, __SKIN__, 'definicoes.png'), 0)
-		addDir('Entrar novamente', 'url', None, None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+		addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+		addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
         vista_menu()
 ###################################################################################
 #                              Login Addon		                                  #
@@ -77,7 +77,6 @@ def login():
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
 			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'lembrar_senha': 'lembrar'}
-			
 			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
 	
 			elems = ET.fromstring(codigo_fonte)
@@ -90,6 +89,8 @@ def login():
 							informacoes['user']['nome'] = d.text
 						elif(d.tag == 'Email'):
 							informacoes['user']['email'] = d.text
+						elif(d.tag == 'SenhaAdultos'):
+							informacoes['user']['senhaadulto'] = d.text		
 				elif(child.tag == 'info'):
 					for e in child:
 						if(e.tag == 'Epg'):
@@ -114,7 +115,7 @@ def login():
 						elif(g.tag == 'tipo'):
 							menu['tipo'] = g.text
 						elif(g.tag == 'senha'):
-							menu['senha'] = g.text
+							menu['senha'] = informacoes['user']['senhaadulto']
 					informacoes['menus'].append(menu)
 				else: 
 					print("Não sei o que estou a ler")
@@ -189,7 +190,7 @@ def listar_canais_url(nome,url):
 ###################################################################################		
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir('Entrar novamente', 'url', None, None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+	addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
 	vista_menu()
 	# xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

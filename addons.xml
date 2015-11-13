@@ -8,10 +8,10 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Live!t TV</summary>
-		<description lang="en">Repositório para todos os membros do grupo Live!t TV.</description>
+		<description lang="en">Repositorio para todos os membros do grupo Live!t TV.</description>
 		<language>pt</language>
 		<disclaimer lang="en">Como desenvolvedores do addon, nada temos a haver com os links disponibilizados.
-		Limitimo-nos a ler o seu conteúdo disponibilizado e converter em addon.</disclaimer>
+		Limitimo-nos a ler o seu conteudo disponibilizado e converter em addon.</disclaimer>
 		<platform>all</platform>
 	</extension>
 </addon>
@@ -28,13 +28,13 @@
     <platform>all</platform>
     <summary lang="en">Veja as capas dos jornais no Kodi</summary>
     <description>
-      Veja as capas dos principais jornais diariamente no Kodi. As capas são retiradas do site banca sapo. Para suporte visite o forum oficial forum.kodi.tv ou forum.aminhacasadigital.com
+      Veja as capas dos principais jornais diariamente no Kodi. As capas sao retiradas do site banca sapo. Para suporte visite o forum oficial forum.kodi.tv ou forum.aminhacasadigital.com
     </description>
     <license>GPL 2.0</license>
   </extension>
 </addon>
 
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="2.1.3">
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="2.1.4">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="script.module.t0mm0.common" version="1.0.0"/>
@@ -48,7 +48,7 @@
 
 	Espero que gostem e disfrutem.
 
-	Realizado por: Administrador (J.R), participação de Hélder Azevedo.
+	Realizado por: Administrador (J.R), participacao de Helder Azevedo.
 
 	Sempre Atualizado 24 horas por dia.
 	</description>
