@@ -33,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.4/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.12/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -52,6 +52,16 @@ def menu():
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
+
+def mac_for_ip():
+	print "Macs 1"
+	macadresses = ""
+	if xbmc.getInfoLabel('Network.MacAddress') != None:
+		macadresses = xbmc.getInfoLabel('Network.MacAddress')
+		print macadresses
+	print "Macs 4"
+	return macadresses
+	
 def login():
 	informacoes = {
 		'user' : {
@@ -74,6 +84,8 @@ def login():
 		return informacoes
 	else:
 		try:
+			macs = mac_for_ip()
+			print "reideus"
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
 			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'lembrar_senha': 'lembrar'}
