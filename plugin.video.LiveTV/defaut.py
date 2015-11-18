@@ -33,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.4/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.27/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -41,17 +41,27 @@ __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:4
 ###################################################################################
 def menu():
 	check_login = login()
-	if check_login['sucesso']['resultado'] == 'yes':
-		Menu_inicial(check_login)
-		addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-		vista_menu()
+	if check_login['mac']['tem'] == 'no':
+		xbmc.executebuiltin("Container.SetViewMode(51)")
 	else:
-		addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-		addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-        vista_menu()
+		if check_login['sucesso']['resultado'] == 'yes':
+			Menu_inicial(check_login)
+			addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+			xbmc.executebuiltin("Container.SetViewMode(51)")
+		else:
+			addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+			addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
+			xbmc.executebuiltin("Container.SetViewMode(51)")
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
+
+def mac_for_ip():
+	macadresses = ""
+	if xbmc.getInfoLabel('Network.MacAddress') != None:
+		macadresses = xbmc.getInfoLabel('Network.MacAddress')
+	return macadresses
+	
 def login():
 	informacoes = {
 		'user' : {
@@ -61,6 +71,12 @@ def login():
 		},
 		'sucesso' :{
 			'resultado': ''
+		},
+		'mac' :{
+			'tem': ''
+		},
+		'macestado' :{
+			'mac': ''
 		},
 		'info' : {
 			'epg': '',
@@ -74,15 +90,23 @@ def login():
 		return informacoes
 	else:
 		try:
+			#macs = mac_for_ip()
+			#informacoes['macestado']['mac'] == macs
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
-			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'lembrar_senha': 'lembrar'}
+			#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macs}
+			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
 	
+			informacoes['mac']['tem'] == 'yes'
+			
 			elems = ET.fromstring(codigo_fonte)
 			for child in elems:
 				if(child.tag == 'sucesso'):
 					informacoes['sucesso']['resultado'] = child.text
+				elif(child.tag == 'mac_adress'):
+					informacoes['mac']['tem'] = child.text
+					print child.text
 				elif(child.tag == 'user'):
 					for d in child:
 						if(d.tag == 'Nome'):
@@ -126,14 +150,19 @@ def login():
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
-				return informacoes
 			else:
-				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-				return informacoes
+				if informacoes['mac']['tem'] == 'no':
+					__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
+				else:
+					xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
 		else:
-			net.save_cookies(__COOKIE_FILE__)
-			xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-			return informacoes	
+			if informacoes['mac']['tem'] == 'no':
+				__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
+				
+			else:
+				net.save_cookies(__COOKIE_FILE__)
+				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+		return informacoes
 
 ###############################################################################################################
 #                                                   Menus                                                     #
@@ -170,6 +199,7 @@ def listar_grupos(url):
 			addDir(nomee,urlll,None,2,imag)
 		except:
 			pass
+	xbmc.executebuiltin("Container.SetViewMode(500)")
 		
 def listar_canais_url(nome,url):
 	page_with_xml = urllib2.urlopen(url).readlines()
@@ -185,24 +215,22 @@ def listar_canais_url(nome,url):
 				addLink(nomee,rtmp,img)
 		except:
 			  pass
+	xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
 #                              DEFININCOES		                                  #
 ###################################################################################		
 def abrirDefinincoes():
 	__ADDON__.openSettings()
 	addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-	vista_menu()
-	# xbmcplugin.endOfDirectory(int(sys.argv[1]))
-
-def vista_menu():
-	opcao = __ADDON__.getSetting('menuView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51")
+	xbmc.executebuiltin("Container.SetViewMode(500)")
 	
 def addDir(name,url,senha,mode,iconimage,pasta=True,total=1):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	contextMenuItems = []
+	contextMenuItems.append(('Movie Information', 'XBMC.Action(Info)'))
+	liz.addContextMenuItems(contextMenuItems, replaceItems=True)
 	liz.setProperty('fanart_image', iconimage)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
 	return ok
