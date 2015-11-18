@@ -33,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.19/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.4/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -41,27 +41,17 @@ __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:4
 ###################################################################################
 def menu():
 	check_login = login()
-	if check_login['mac']['tem'] == 'no':
+	if check_login['sucesso']['resultado'] == 'yes':
+		Menu_inicial(check_login)
+		addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
 		vista_menu()
 	else:
-		if check_login['sucesso']['resultado'] == 'yes':
-			Menu_inicial(check_login)
-			addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-			vista_menu()
-		else:
-			addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-			addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-			vista_menu()
+		addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+		addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
+        vista_menu()
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
-
-def mac_for_ip():
-	macadresses = ""
-	if xbmc.getInfoLabel('Network.MacAddress') != None:
-		macadresses = xbmc.getInfoLabel('Network.MacAddress')
-	return macadresses
-	
 def login():
 	informacoes = {
 		'user' : {
@@ -71,12 +61,6 @@ def login():
 		},
 		'sucesso' :{
 			'resultado': ''
-		},
-		'mac' :{
-			'tem': ''
-		},
-		'macestado' :{
-			'mac': ''
 		},
 		'info' : {
 			'epg': '',
@@ -90,20 +74,15 @@ def login():
 		return informacoes
 	else:
 		try:
-			macs = mac_for_ip()
-			print macs
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
-			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macs}
+			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'lembrar_senha': 'lembrar'}
 			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
 	
 			elems = ET.fromstring(codigo_fonte)
 			for child in elems:
 				if(child.tag == 'sucesso'):
 					informacoes['sucesso']['resultado'] = child.text
-				elif(child.tag == 'mac_adress'):
-					informacoes['mac']['tem'] = child.text
-					print child.text
 				elif(child.tag == 'user'):
 					for d in child:
 						if(d.tag == 'Nome'):
@@ -147,19 +126,14 @@ def login():
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
+				return informacoes
 			else:
-				if informacoes['mac']['tem'] == 'no':
-					__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				else:
-					xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-		else:
-			if informacoes['mac']['tem'] == 'no':
-				__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				
-			else:
-				net.save_cookies(__COOKIE_FILE__)
 				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-		return informacoes
+				return informacoes
+		else:
+			net.save_cookies(__COOKIE_FILE__)
+			xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+			return informacoes	
 
 ###############################################################################################################
 #                                                   Menus                                                     #
