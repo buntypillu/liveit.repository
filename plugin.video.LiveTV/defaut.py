@@ -16,9 +16,10 @@
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,socket,sys,platform
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
+
 ####################################################### CONSTANTES #####################################################
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
@@ -32,7 +33,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.15/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.16/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -40,79 +41,17 @@ __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:4
 ###################################################################################
 def menu():
 	check_login = login()
-	if check_login['mac']['tem'] == 'no':
-		xbmc.executebuiltin("Container.SetViewMode(51)")
+	if check_login['sucesso']['resultado'] == 'yes':
+		Menu_inicial(check_login)
+		addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+		vista_menu()
 	else:
-		if check_login['sucesso']['resultado'] == 'yes':
-			Menu_inicial(check_login)
-			addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-			xbmc.executebuiltin("Container.SetViewMode(51)")
-		else:
-			addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-			addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-			xbmc.executebuiltin("Container.SetViewMode(51)")
+		addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+		addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
+        vista_menu()
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
-
-# def mac_for_ip():
-	# macadresses = ""
-	# if xbmc.getInfoLabel('Network.MacAddress') != None:
-		# macadresses = xbmc.getInfoLabel('Network.MacAddress')
-	# return macadresses
-
-def get_macaddress(host='localhost'):
-    """ Returns the MAC address of a network host, requires >= WIN2K. """
-    # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/347812
-    import ctypes
-    import socket
-    import struct
- 
-    # Check for api availability
-    try:
-        SendARP = ctypes.windll.Iphlpapi.SendARP
-    except:
-        raise NotImplementedError('Usage only on Windows 2000 and above')
- 
-    # Doesn't work with loopbacks, but let's try and help.
-    if host == '127.0.0.1' or host.lower() == 'localhost':
-        host = socket.gethostname()
- 
-    # gethostbyname blocks, so use it wisely.
-    try:
-        inetaddr = ctypes.windll.wsock32.inet_addr(host)
-        if inetaddr in (0, -1):
-            raise Exception
-    except:
-        hostip = socket.gethostbyname(host)
-        inetaddr = ctypes.windll.wsock32.inet_addr(hostip)
- 
-    buffer = ctypes.c_buffer(6)
-    addlen = ctypes.c_ulong(ctypes.sizeof(buffer))
-    if SendARP(inetaddr, 0, ctypes.byref(buffer), ctypes.byref(addlen)) != 0:
-        raise WindowsError('Retreival of mac address(%s) - failed' % host)
- 
-    # Convert binary data into a string.
-    macaddr = ''
-    for intval in struct.unpack('BBBBBB', buffer):
-        if intval > 15:
-            replacestr = '0x'
-        else:
-            replacestr = 'x'
-        if macaddr != '':
-			siss = platform.system()
-			__ALERTA__('Live!t TV - Sistema', siss)
-			if(siss == 'Windows'):
-				macaddr = '-'.join([macaddr, hex(intval).replace(replacestr, '')])
-				macaddr = macaddr.upper()
-			else:
-				macaddr = ':'.join([macaddr, hex(intval).replace(replacestr, '')])
-        else:
-            macaddr = ''.join([macaddr, hex(intval).replace(replacestr, '')])
- 
-    return macaddr
-
-
 def login():
 	informacoes = {
 		'user' : {
@@ -122,12 +61,6 @@ def login():
 		},
 		'sucesso' :{
 			'resultado': ''
-		},
-		'mac' :{
-			'tem': ''
-		},
-		'macestado' :{
-			'mac': ''
 		},
 		'info' : {
 			'epg': '',
@@ -141,22 +74,15 @@ def login():
 		return informacoes
 	else:
 		try:
-			ipmac = socket.gethostbyname(socket.gethostname())
-			mac = get_macaddress(ipmac)
-			__ALERTA__('Live!t TV - Mac', mac)
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
-			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': mac}
-			#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
+			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'lembrar_senha': 'lembrar'}
 			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
-			informacoes['macestado']['mac'] == mac
-			
+	
 			elems = ET.fromstring(codigo_fonte)
 			for child in elems:
 				if(child.tag == 'sucesso'):
 					informacoes['sucesso']['resultado'] = child.text
-				elif(child.tag == 'mac_adress'):
-					informacoes['mac']['tem'] = child.text
 				elif(child.tag == 'user'):
 					for d in child:
 						if(d.tag == 'Nome'):
@@ -200,19 +126,14 @@ def login():
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
+				return informacoes
 			else:
-				if informacoes['mac']['tem'] == 'no':
-					__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				else:
-					xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-		else:
-			if informacoes['mac']['tem'] == 'no':
-				__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				
-			else:
-				net.save_cookies(__COOKIE_FILE__)
 				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-		return informacoes
+				return informacoes
+		else:
+			net.save_cookies(__COOKIE_FILE__)
+			xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+			return informacoes	
 
 ###############################################################################################################
 #                                                   Menus                                                     #
@@ -249,7 +170,6 @@ def listar_grupos(url):
 			addDir(nomee,urlll,None,2,imag)
 		except:
 			pass
-	xbmc.executebuiltin("Container.SetViewMode(500)")
 		
 def listar_canais_url(nome,url):
 	page_with_xml = urllib2.urlopen(url).readlines()
@@ -265,22 +185,24 @@ def listar_canais_url(nome,url):
 				addLink(nomee,rtmp,img)
 		except:
 			  pass
-	xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
 #                              DEFININCOES		                                  #
 ###################################################################################		
 def abrirDefinincoes():
 	__ADDON__.openSettings()
 	addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-	xbmc.executebuiltin("Container.SetViewMode(500)")
+	vista_menu()
+	# xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def vista_menu():
+	opcao = __ADDON__.getSetting('menuView')
+	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51")
 	
 def addDir(name,url,senha,mode,iconimage,pasta=True,total=1):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	contextMenuItems = []
-	contextMenuItems.append(('Movie Information', 'XBMC.Action(Info)'))
-	liz.addContextMenuItems(contextMenuItems, replaceItems=True)
 	liz.setProperty('fanart_image', iconimage)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
 	return ok
