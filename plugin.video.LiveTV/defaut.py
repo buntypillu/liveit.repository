@@ -34,7 +34,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.5/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.12/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -105,12 +105,13 @@ def get_macaddress(host='localhost'):
 			siss = platform.system()
 			if(siss == 'Windows'):
 				macaddr = '-'.join([macaddr, hex(intval).replace(replacestr, '')])
+				macaddr = macaddr.upper()
 			else:
 				macaddr = ':'.join([macaddr, hex(intval).replace(replacestr, '')])
         else:
             macaddr = ''.join([macaddr, hex(intval).replace(replacestr, '')])
  
-    return macaddr.upper()
+    return macaddr
 
 
 def login():
@@ -143,6 +144,7 @@ def login():
 		try:
 			ipmac = socket.gethostbyname(socket.gethostname())
 			mac = get_macaddress(ipmac)
+			print mac
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
 			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': mac}
