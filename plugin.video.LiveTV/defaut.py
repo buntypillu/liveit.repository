@@ -16,10 +16,11 @@
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,socket,commands,sys,subprocess,platform
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
-
+from uuid import getnode as get_mac
+IP = "1.2.3.4"
 ####################################################### CONSTANTES #####################################################
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
@@ -33,7 +34,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-2.1.27/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.5/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -56,12 +57,62 @@ def menu():
 #                              Login Addon		                                  #
 ###################################################################################
 
-def mac_for_ip():
-	macadresses = ""
-	if xbmc.getInfoLabel('Network.MacAddress') != None:
-		macadresses = xbmc.getInfoLabel('Network.MacAddress')
-	return macadresses
-	
+# def mac_for_ip():
+	# macadresses = ""
+	# if xbmc.getInfoLabel('Network.MacAddress') != None:
+		# macadresses = xbmc.getInfoLabel('Network.MacAddress')
+	# return macadresses
+
+def get_macaddress(host='localhost'):
+    """ Returns the MAC address of a network host, requires >= WIN2K. """
+    # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/347812
+    import ctypes
+    import socket
+    import struct
+ 
+    # Check for api availability
+    try:
+        SendARP = ctypes.windll.Iphlpapi.SendARP
+    except:
+        raise NotImplementedError('Usage only on Windows 2000 and above')
+ 
+    # Doesn't work with loopbacks, but let's try and help.
+    if host == '127.0.0.1' or host.lower() == 'localhost':
+        host = socket.gethostname()
+ 
+    # gethostbyname blocks, so use it wisely.
+    try:
+        inetaddr = ctypes.windll.wsock32.inet_addr(host)
+        if inetaddr in (0, -1):
+            raise Exception
+    except:
+        hostip = socket.gethostbyname(host)
+        inetaddr = ctypes.windll.wsock32.inet_addr(hostip)
+ 
+    buffer = ctypes.c_buffer(6)
+    addlen = ctypes.c_ulong(ctypes.sizeof(buffer))
+    if SendARP(inetaddr, 0, ctypes.byref(buffer), ctypes.byref(addlen)) != 0:
+        raise WindowsError('Retreival of mac address(%s) - failed' % host)
+ 
+    # Convert binary data into a string.
+    macaddr = ''
+    for intval in struct.unpack('BBBBBB', buffer):
+        if intval > 15:
+            replacestr = '0x'
+        else:
+            replacestr = 'x'
+        if macaddr != '':
+			siss = platform.system()
+			if(siss == 'Windows'):
+				macaddr = '-'.join([macaddr, hex(intval).replace(replacestr, '')])
+			else:
+				macaddr = ':'.join([macaddr, hex(intval).replace(replacestr, '')])
+        else:
+            macaddr = ''.join([macaddr, hex(intval).replace(replacestr, '')])
+ 
+    return macaddr.upper()
+
+
 def login():
 	informacoes = {
 		'user' : {
@@ -90,15 +141,14 @@ def login():
 		return informacoes
 	else:
 		try:
-			#macs = mac_for_ip()
-			#informacoes['macestado']['mac'] == macs
+			ipmac = socket.gethostbyname(socket.gethostname())
+			mac = get_macaddress(ipmac)
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
-			#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macs}
-			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
+			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': mac}
+			#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
-	
-			informacoes['mac']['tem'] == 'yes'
+			informacoes['macestado']['mac'] == mac
 			
 			elems = ET.fromstring(codigo_fonte)
 			for child in elems:
@@ -106,7 +156,6 @@ def login():
 					informacoes['sucesso']['resultado'] = child.text
 				elif(child.tag == 'mac_adress'):
 					informacoes['mac']['tem'] = child.text
-					print child.text
 				elif(child.tag == 'user'):
 					for d in child:
 						if(d.tag == 'Nome'):
