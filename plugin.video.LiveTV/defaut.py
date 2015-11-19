@@ -16,7 +16,7 @@
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,socket,commands,sys,subprocess,platform
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,socket,commands,sys,platform
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
 from uuid import getnode as get_mac
@@ -34,7 +34,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.12/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.14/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
 ###################################################################################
@@ -103,6 +103,7 @@ def get_macaddress(host='localhost'):
             replacestr = 'x'
         if macaddr != '':
 			siss = platform.system()
+			__ALERTA__('Live!t TV - Sistema', siss)
 			if(siss == 'Windows'):
 				macaddr = '-'.join([macaddr, hex(intval).replace(replacestr, '')])
 				macaddr = macaddr.upper()
@@ -144,7 +145,7 @@ def login():
 		try:
 			ipmac = socket.gethostbyname(socket.gethostname())
 			mac = get_macaddress(ipmac)
-			print mac
+			__ALERTA__('Live!t TV - Mac', mac)
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
 			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': mac}
