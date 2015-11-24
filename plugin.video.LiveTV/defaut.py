@@ -19,7 +19,11 @@
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
+import time
 ####################################################### CONSTANTES #####################################################
+
+global g_macAddress
+global g_timer
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
@@ -32,12 +36,32 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.1.50/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.2.1/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
-
+user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 ###################################################################################
 #                              Iniciar Addon		                                  #
 ###################################################################################
+
+def mac_for_ip():
+	macadresses = xbmc.getInfoLabel("Network.MacAddress")
+	if xbmc.getInfoLabel('Network.MacAddress') != None:
+		if not ":" in macadresses:
+			time.sleep(3)
+			macadresses = xbmc.getInfoLabel('Network.MacAddress')
+	g_timer = time.time()
+	return macadresses
+	
+	
+# def returMac():
+	# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
+	# if not ":" in g_macAddress:
+		# time.sleep(2)
+		# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
+	
+	
+	# return g_macAddress
+  
 def menu():
 	check_login = login()
 	if check_login['mac']['tem'] == 'no':
@@ -86,7 +110,8 @@ def login():
 	else:
 		try:
 			# ipmac = socket.gethostbyname(socket.gethostname())
-			macaddr = xbmc.getInfoLabel('Network.MacAddress')
+
+			macaddr = mac_for_ip();
 			if macaddr == 'Ocupada':
 				informacoes['mac']['tem'] = 'yes'
 				informacoes['sucesso']['resultado'] = 'ocupado'
@@ -246,22 +271,91 @@ def addFolder(name,url,mode,iconimage,folder):
 	liz.setProperty('fanart_image', iconimage)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
-
-def abrir_url(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	return link
 	
 def addLink(name,url,iconimage):
+	cm=[]
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage))))
+	#cm.append(('Ver programação', "XBMC.RunPlugin(%s?mode=%s&name=%s&url=%s)"%(sys.argv[0],31,name,url)))
+	liz.addContextMenuItems(cm, replaceItems=False)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
+
+###############################################################################################################
+#                                                   EPG                                                     #
+###############################################################################################################
+
+def abrir_url(url,erro=True):
+    try:
+        print "A fazer request normal de: " + url
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', user_agent)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        return link
+    except urllib2.HTTPError, e:
+        host='http://' + url.split('/')[2]
+        xbmcgui.Dialog().ok('TV Portuguesa',str(urllib2.HTTPError(e.url, e.code, "Erro na página.", e.hdrs, e.fp)),'Verifique manualmente se a página está operacional.',host)
+        sys.exit(0)
+    except urllib2.URLError, e:
+        xbmcgui.Dialog().ok('TV Portuguesa',"Erro na página. Verifique manualmente",'se a página está operacional. ' + url)
+        sys.exit(0)
+ 
+
+def programacao_canal(nome):
+    dia=horaportuguesa(True)
+    diaseguinte=horaportuguesa('diaseguinte')
+    url='http://services.sapo.pt/EPG/GetChannelListByDateIntervalJson?channelSiglas='+nome+'&startDate=' + dia +':01&endDate='+ diaseguinte + ':02'
+    ref=int(0)
+    link=abrir_url(url)
+    titles=['[B][COLOR white]Programação:[/COLOR][/B]']
+ 
+    programas=re.compile('{"Actor":.+?"Description":"(.+?)".+?"StartTime":".+?-.+?-(.+?) (.+?):(.+?):.+?".+?"Title":"(.+?)"').findall(link)
+    for descprog,dia, horas,minutos, nomeprog in programas:
+        ref=ref+1
+        if dia==datetime.now().strftime('%d'): dia='Hoje'
+        else: dia='Amanhã'
+        titles.append('\n[B][COLOR blue]%s %s:%s[/COLOR][/B] - [B][COLOR gold]%s[/COLOR][/B] - %s' % (dia,horas,minutos,nomeprog,descprog))
+    programacao='\n'.join(titles)
+   
+    try:
+        xbmc.executebuiltin("ActivateWindow(10147)")
+        window = xbmcgui.Window(10147)
+        xbmc.sleep(100)
+        window.getControl(1).setLabel('TV Portuguesa - %s' % (nome.encode('utf-8')))
+        window.getControl(5).setText(programacao)
+    except: pass
+ 
+ 
+def horaportuguesa(sapo):
+	if sapo==True or sapo=='diaseguinte': fmt = '%Y-%m-%d%%20%H:%M'
+	else: fmt = '%Y-%m-%d %H-%M-%S'
+
+	if xbmcaddon.Addon().getSetting('horaportuguesa') == 'true':
+		dt  = datetime.now()
+		if sapo=='diaseguinte':
+			dts = dt.strftime('%Y-%m-') + str(int(dt.strftime('%d')) + 1) +dt.strftime('%%20%H:%M')
+			#special dia seguinte case
+		else: dts = dt.strftime(fmt)
+		return dts
+	else:
+		import pytz
+		dt  = datetime.now()
+		timezona= xbmcaddon.Addon().getSetting('timezone2')
+		terradamaquina=str(pytz.timezone(pytz.all_timezones[int(timezona)]))
+		if sapo=='diaseguinte': dia=int(dt.strftime('%d')) + 1
+		else: dia=int(dt.strftime('%d'))
+		d = pytz.timezone(terradamaquina).localize(datetime(int(dt.strftime('%Y')), int(dt.strftime('%m')), dia, hour=int(dt.strftime('%H')), minute=int(dt.strftime('%M'))))
+		lisboa=pytz.timezone('Europe/Lisbon')
+		convertido=d.astimezone(lisboa)
+
+		dts=convertido.strftime(fmt)
+		return dts
+			
 ############################################################################################################
 #                                               GET PARAMS                                                 #
 ############################################################################################################          
@@ -320,4 +414,5 @@ elif mode==2: listar_canais_url(str(name),str(url))
 elif mode==3: listar_grupos_adultos(str(url),str(senha))
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
+elif mode==31: programacao_canal(str(name))
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
