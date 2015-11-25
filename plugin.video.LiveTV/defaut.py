@@ -16,14 +16,12 @@
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
-import time
-####################################################### CONSTANTES #####################################################
+from bs4 import BeautifulSoup
 
-global g_macAddress
-global g_timer
+####################################################### CONSTANTES #####################################################
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
@@ -34,34 +32,16 @@ __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
 __SKIN__ = 'v1'
 __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
+__EPG__ = 'http://www.pcteckserv.com/GrupoKodi/epg.gz'
+__FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.2.1/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.livetv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 ###################################################################################
 #                              Iniciar Addon		                                  #
 ###################################################################################
-
-def mac_for_ip():
-	macadresses = xbmc.getInfoLabel("Network.MacAddress")
-	if xbmc.getInfoLabel('Network.MacAddress') != None:
-		if not ":" in macadresses:
-			time.sleep(3)
-			macadresses = xbmc.getInfoLabel('Network.MacAddress')
-	g_timer = time.time()
-	return macadresses
-	
-	
-# def returMac():
-	# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
-	# if not ":" in g_macAddress:
-		# time.sleep(2)
-		# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
-	
-	
-	# return g_macAddress
-  
 def menu():
 	check_login = login()
 	if check_login['mac']['tem'] == 'no':
@@ -80,6 +60,16 @@ def menu():
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
+
+def mac_for_ip():
+	macadresses = xbmc.getInfoLabel("Network.MacAddress")
+	if xbmc.getInfoLabel('Network.MacAddress') != None:
+		if not ":" in macadresses:
+			time.sleep(3)
+			macadresses = xbmc.getInfoLabel('Network.MacAddress')
+	g_timer = time.time()
+	return macadresses
+	
 
 def login():
 	informacoes = {
@@ -109,10 +99,14 @@ def login():
 		return informacoes
 	else:
 		try:
-			# ipmac = socket.gethostbyname(socket.gethostname())
+
+			net = Net()
+			net.set_cookies(__COOKIE_FILE__)
+			teste = net.http_GET('http://google.pt', headers=__HEADERS__).content #para "ganhar" MAC ADDRESS 
 
 			macaddr = mac_for_ip();
-			if macaddr == 'Ocupada':
+
+			if macaddr == 'Ocupada' or macaddr == 'Busy':
 				informacoes['mac']['tem'] = 'yes'
 				informacoes['sucesso']['resultado'] = 'ocupado'
 			else:
@@ -123,8 +117,7 @@ def login():
 				else:
 					macadd = macaddr.lower()
 
-				net = Net()
-				net.set_cookies(__COOKIE_FILE__)
+				
 				dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macadd}
 				#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 				codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
@@ -176,6 +169,10 @@ def login():
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			return informacoes
 
+
+		if informacoes['sucesso']['resultado'] == 'ocupado':
+			informacoes = login()
+
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
@@ -209,6 +206,8 @@ def Menu_inicial(men):
 		else:
 			addDir(nome,link,None,1,logo)
 
+	#thread.start_new_thread( obter_ficheiro_epg, () )
+
 def listar_grupos_adultos(url,senha):
 	if(__ADDON__.getSetting("login_adultos") == ''):
 		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
@@ -232,19 +231,134 @@ def listar_grupos(url):
 		
 def listar_canais_url(nome,url):
 	page_with_xml = urllib2.urlopen(url).readlines()
+	f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
+	codigo = f.read()
+	f.close()
+	ts = time.time()
+	st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
+
+	
 	for line in page_with_xml:
 		params = line.split(',')
 		try:
-			  nomee = params[0]
-			  img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			  rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			  grup = params[3]
-			  id_it = params[4]
-			  if(grup == nome):
-				addLink(nomee,rtmp,img)
+			nomee = params[0]
+			img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+			rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+			grup = params[3]
+			id_it = params[4].rstrip()
+			
+			if(grup == nome):
+				twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
+
+				twrv.start()
+				programa = twrv.join() 
+
+				if programa != '':
+					nomewp = nomee + " | "+ programa
+				else:
+					nomewp = nomee
+				#print nomewp
+				addLink(nomewp,rtmp,img,id_it)
 		except:
-			  pass
+			pass
 	xbmc.executebuiltin("Container.SetViewMode(500)")
+
+def obter_ficheiro_epg():
+
+	if not xbmcvfs.exists(__FOLDER_EPG__):
+		xbmcvfs.mkdirs(__FOLDER_EPG__)
+
+	"""horaAtual = time.strftime("%d/%m/%Y")
+	
+	ficheiroData = os.path.join(__FOLDER_EPG__, 'ultima.txt')
+
+	if not xbmcvfs.exists(ficheiroData):
+		f = open(ficheiroData, mode="w")
+		f.write("")
+		f.close()
+
+	f = open(ficheiroData, mode="r")
+	dataAntiga = f.read()
+	f.close()
+
+	if (time.strptime(dataAntiga, "%d/%m/%Y")) < horaAtual or not dataAntiga:
+		f = open(ficheiroData, mode="w")
+		f.write(str(horaAtual))
+		f.close()"""
+
+	urllib.urlretrieve(__EPG__, os.path.join(__FOLDER_EPG__, 'epg.gz'))		
+
+	for gzip_path in glob.glob(__FOLDER_EPG__ + "/*.gz"):
+		inf = gzip.open(gzip_path, 'rb')
+		s = inf.read()
+		inf.close()
+
+		gzip_fname = os.path.basename(gzip_path)
+		fname = gzip_fname[:-3]
+		uncompressed_path = os.path.join(__FOLDER_EPG__, fname)
+
+		open(uncompressed_path, 'w').write(s)
+
+
+def getProgramacaoDiaria(idCanal, diahora, codigo):
+	source = re.compile('<programme channel="'+idCanal+'" start="(.+?) \+0100" stop="(.+?) \+0100">\s+<title lang="pt">(.+?)<\/title>').findall(codigo)
+
+	programa = ''
+
+	#print idCanal
+	#print source
+
+	for start, stop, programa1  in source:
+
+		if(int(start) < diahora and int(stop) > diahora):
+			programa = programa1
+
+	#print programa
+
+
+	return programa
+
+
+def programacao_canal(idCanal,url,imagem):
+	codigo = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
+	ts = time.time()
+	st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d'))
+
+	diahora = int(str(st)+"060000")
+
+	source = re.compile('<programme channel="'+idCanal+'" start="(.+?) \+0100" stop="(.+?) \+0100">\s+<title lang="pt">(.+?)<\/title>').findall(codigo.read())
+
+	programa = ''
+
+	for start, stop, programa1  in source:
+		if(int(start) < diahora and int(stop) > diahora):
+			# print "PROGRAMCAO TOTAL ================>"
+			# print programa1
+			# print start
+			# print stop
+			addList(programa1,url,imagem)
+
+
+####################### THREADS ######################
+
+from threading import Thread
+
+class ThreadWithReturnValue(Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs, Verbose)
+        self._return = None
+    def run(self):
+        if self._Thread__target is not None:
+            self._return = self._Thread__target(*self._Thread__args,
+                                                **self._Thread__kwargs)
+    def join(self):
+        Thread.join(self)
+        return self._return
+
+
+
+
 ###################################################################################
 #                              DEFININCOES		                                  #
 ###################################################################################		
@@ -272,25 +386,35 @@ def addFolder(name,url,mode,iconimage,folder):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
 	
-def addLink(name,url,iconimage):
+def addLink(name,url,iconimage,idCanal):
 	cm=[]
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage))))
+	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
 	#cm.append(('Ver programação', "XBMC.RunPlugin(%s?mode=%s&name=%s&url=%s)"%(sys.argv[0],31,name,url)))
 	liz.addContextMenuItems(cm, replaceItems=False)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
+def addList(name,url,iconimage):
+	
+	ok=True
+	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	liz.setProperty('fanart_image', iconimage)
+	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	return ok
+
+
 ###############################################################################################################
-#                                                   EPG                                                     #
+#                                                   EPG                                                       #
 ###############################################################################################################
 
 def abrir_url(url,erro=True):
     try:
-        print "A fazer request normal de: " + url
+		#print "A fazer request normal de: " + url
         req = urllib2.Request(url)
         req.add_header('User-Agent', user_agent)
         response = urllib2.urlopen(req)
@@ -306,56 +430,7 @@ def abrir_url(url,erro=True):
         sys.exit(0)
  
 
-def programacao_canal(nome):
-    dia=horaportuguesa(True)
-    diaseguinte=horaportuguesa('diaseguinte')
-    url='http://services.sapo.pt/EPG/GetChannelListByDateIntervalJson?channelSiglas='+nome+'&startDate=' + dia +':01&endDate='+ diaseguinte + ':02'
-    ref=int(0)
-    link=abrir_url(url)
-    titles=['[B][COLOR white]Programação:[/COLOR][/B]']
- 
-    programas=re.compile('{"Actor":.+?"Description":"(.+?)".+?"StartTime":".+?-.+?-(.+?) (.+?):(.+?):.+?".+?"Title":"(.+?)"').findall(link)
-    for descprog,dia, horas,minutos, nomeprog in programas:
-        ref=ref+1
-        if dia==datetime.now().strftime('%d'): dia='Hoje'
-        else: dia='Amanhã'
-        titles.append('\n[B][COLOR blue]%s %s:%s[/COLOR][/B] - [B][COLOR gold]%s[/COLOR][/B] - %s' % (dia,horas,minutos,nomeprog,descprog))
-    programacao='\n'.join(titles)
-   
-    try:
-        xbmc.executebuiltin("ActivateWindow(10147)")
-        window = xbmcgui.Window(10147)
-        xbmc.sleep(100)
-        window.getControl(1).setLabel('TV Portuguesa - %s' % (nome.encode('utf-8')))
-        window.getControl(5).setText(programacao)
-    except: pass
- 
- 
-def horaportuguesa(sapo):
-	if sapo==True or sapo=='diaseguinte': fmt = '%Y-%m-%d%%20%H:%M'
-	else: fmt = '%Y-%m-%d %H-%M-%S'
 
-	if xbmcaddon.Addon().getSetting('horaportuguesa') == 'true':
-		dt  = datetime.now()
-		if sapo=='diaseguinte':
-			dts = dt.strftime('%Y-%m-') + str(int(dt.strftime('%d')) + 1) +dt.strftime('%%20%H:%M')
-			#special dia seguinte case
-		else: dts = dt.strftime(fmt)
-		return dts
-	else:
-		import pytz
-		dt  = datetime.now()
-		timezona= xbmcaddon.Addon().getSetting('timezone2')
-		terradamaquina=str(pytz.timezone(pytz.all_timezones[int(timezona)]))
-		if sapo=='diaseguinte': dia=int(dt.strftime('%d')) + 1
-		else: dia=int(dt.strftime('%d'))
-		d = pytz.timezone(terradamaquina).localize(datetime(int(dt.strftime('%Y')), int(dt.strftime('%m')), dia, hour=int(dt.strftime('%H')), minute=int(dt.strftime('%M'))))
-		lisboa=pytz.timezone('Europe/Lisbon')
-		convertido=d.astimezone(lisboa)
-
-		dts=convertido.strftime(fmt)
-		return dts
-			
 ############################################################################################################
 #                                               GET PARAMS                                                 #
 ############################################################################################################          
@@ -383,26 +458,19 @@ iconimage=None
 link=None
 senha=None
 
-try:
-        url=urllib.unquote_plus(params["url"])
-except:
-        pass
-try:
-        name=urllib.unquote_plus(params["name"])
-except:
-        pass
-try:
-        mode=int(params["mode"])
-except:
-        pass
-try:        
-        iconimage=urllib.unquote_plus(params["iconimage"])
-except:
-        pass
-try:        
-        senha=urllib.unquote_plus(params["senha"])
-except:
-        pass
+try:url=urllib.unquote_plus(params["url"])
+except:pass
+try:name=urllib.unquote_plus(params["name"])
+except:pass
+try:mode=int(params["mode"])
+except:pass
+try:iconimage=urllib.unquote_plus(params["iconimage"])
+except:pass
+try:senha=urllib.unquote_plus(params["senha"])
+except:pass
+try:idCanal=urllib.unquote_plus(params["idCanal"])
+except:pass
+
 
 ###############################################################################################################
 #                                                   MODOS                                                     #
@@ -414,5 +482,5 @@ elif mode==2: listar_canais_url(str(name),str(url))
 elif mode==3: listar_grupos_adultos(str(url),str(senha))
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
-elif mode==31: programacao_canal(str(name))
+elif mode==31: programacao_canal(idCanal,url,iconimage)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
