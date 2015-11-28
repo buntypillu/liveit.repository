@@ -25,6 +25,7 @@ import time
 global g_macAddress
 global g_timer
 
+__estilagem__ = 'novo'
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
@@ -36,7 +37,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.2.6/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.3.1/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 ###################################################################################
@@ -51,16 +52,6 @@ def mac_for_ip():
 			macadresses = xbmc.getInfoLabel('Network.MacAddress')
 	g_timer = time.time()
 	return macadresses
-	
-	
-# def returMac():
-	# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
-	# if not ":" in g_macAddress:
-		# time.sleep(2)
-		# g_macAddress = xbmc.getInfoLabel("Network.MacAddress")
-	
-	
-	# return g_macAddress
   
 def menu():
 	check_login = login()
@@ -69,13 +60,13 @@ def menu():
 	else:
 		if check_login['sucesso']['resultado'] == 'yes':
 			Menu_inicial(check_login)
-			addDir('Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
+			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
 		elif(check_login['sucesso']['resultado'] == 'ocupado'):
 			__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, __SITEAddon__+"Imagens/definicoes.png", 0)
-			addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
+			addDir('Alterar Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
+			addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
 ###################################################################################
 #                              Login Addon		                                  #
@@ -205,19 +196,19 @@ def Menu_inicial(men):
 		tipo = menu['tipo']
 		senha = menu['senha']
 		if(tipo == 'adulto'):
-			addDir(nome,link,senha,3,logo)
+			addDir(nome,link,senha,3,'Miniatura',logo)
 		else:
-			addDir(nome,link,None,1,logo)
+			addDir(nome,link,None,1,'Miniatura',logo)
 
-def listar_grupos_adultos(url,senha):
+def listar_grupos_adultos(url,senha,estilo):
 	if(__ADDON__.getSetting("login_adultos") == ''):
 		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
 	elif(__ADDON__.getSetting("login_adultos") != senha):
 		__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 	else:
-		listar_grupos(url)
+		listar_grupos(url,estilo)
 	
-def listar_grupos(url):
+def listar_grupos(url,estilo):
 	page_with_xml = urllib2.urlopen(url).readlines()
 	for line in page_with_xml:
 		params = line.split(',')
@@ -225,36 +216,53 @@ def listar_grupos(url):
 			nomee = params[0]
 			imag = params[1]
 			urlll = params[2]
-			addDir(nomee,urlll,None,2,imag)
+			estil = params[3]
+			paramss = estil.split('\n')
+			addDir(nomee,urlll,None,2,paramss[0],imag)
 		except:
 			pass
-	xbmc.executebuiltin("Container.SetViewMode(500)")
-		
-def listar_canais_url(nome,url):
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+	
+def listar_canais_url(nome,url,estilo):
 	page_with_xml = urllib2.urlopen(url).readlines()
 	for line in page_with_xml:
 		params = line.split(',')
 		try:
-			  nomee = params[0]
-			  img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			  rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			  grup = params[3]
-			  id_it = params[4]
-			  if(grup == nome):
+			nomee = params[0]
+			img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+			rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+			grup = params[3]
+			id_it = params[4]
+			if(grup == nome):
 				addLink(nomee,rtmp,img)
 		except:
-			  pass
-	xbmc.executebuiltin("Container.SetViewMode(500)")
+			pass
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+
 ###################################################################################
 #                              DEFININCOES		                                  #
-###################################################################################		
+###################################################################################	
+def returnestilo(estilonovo):
+	__estilagem__ = ""
+	if estilonovo == "Lista Grande":
+		__estilagem__ = "Container.SetViewMode(51)"
+	elif estilonovo == "Lista":
+		__estilagem__ ="Container.SetViewMode(50)"
+	elif estilonovo == "Miniatura":
+		__estilagem__ ="Container.SetViewMode(500)"
+	elif estilonovo == "Amplo":
+		__estilagem__ = "Container.SetViewMode(551)"
+	return __estilagem__
+	
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir('Entrar novamente', 'url', None, None, __SITEAddon__+"Imagens/retroceder.png", 0)
-	xbmc.executebuiltin("Container.SetViewMode(500)")
+	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png", 0)
+	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
-def addDir(name,url,senha,mode,iconimage,pasta=True,total=1):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)
+def addDir(name,url,senha,mode,estilo,iconimage,pasta=True,total=1):
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	contextMenuItems = []
@@ -290,7 +298,7 @@ def addLink(name,url,iconimage):
 
 def abrir_url(url,erro=True):
     try:
-        print "A fazer request normal de: " + url
+        #print "A fazer request normal de: " + url
         req = urllib2.Request(url)
         req.add_header('User-Agent', user_agent)
         response = urllib2.urlopen(req)
@@ -382,6 +390,7 @@ mode=None
 iconimage=None
 link=None
 senha=None
+estilo=None
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -389,6 +398,10 @@ except:
         pass
 try:
         name=urllib.unquote_plus(params["name"])
+except:
+        pass
+try:
+        estilo=urllib.unquote_plus(params["estilo"])
 except:
         pass
 try:
@@ -409,9 +422,9 @@ except:
 ###############################################################################################################
 
 if mode==None or url==None or len(url)<1: menu()
-elif mode==1: listar_grupos(str(url))
-elif mode==2: listar_canais_url(str(name),str(url))
-elif mode==3: listar_grupos_adultos(str(url),str(senha))
+elif mode==1: listar_grupos(str(url),estilo)
+elif mode==2: listar_canais_url(str(name),str(url),estilo)
+elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo)
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
 elif mode==31: programacao_canal(str(name))
