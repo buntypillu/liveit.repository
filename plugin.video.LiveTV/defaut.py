@@ -37,7 +37,7 @@ __SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
 __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __ALERTA__ = xbmcgui.Dialog().ok
 
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.3.1/').decode('utf-8'), 'cookie.mrpiracy')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV-3.3.10/').decode('utf-8'), 'cookie.mrpiracy')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 ###################################################################################
@@ -59,6 +59,19 @@ def menu():
 		xbmc.executebuiltin("Container.SetViewMode(51)")
 	else:
 		if check_login['sucesso']['resultado'] == 'yes':
+			menus = {
+				'nome': '',
+				'logo': '',
+				'link': '',
+				'tipo': '',
+				'senha': ''
+				}
+			menus['nome'] = "Patrocinadores"
+			menus['logo'] = check_login['info']['logo']
+			menus['link'] = check_login['info']['link']
+			menus['tipo'] = "patrocinadores"
+			menus['senha'] = ""
+			check_login['menus'].append(menus)
 			Menu_inicial(check_login)
 			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
@@ -90,7 +103,8 @@ def login():
 		},
 		'info' : {
 			'epg': '',
-			'logo': ''
+			'logo': '',
+			'link': ''
 		},
 		'menus': []
 	} # 
@@ -118,7 +132,7 @@ def login():
 				net.set_cookies(__COOKIE_FILE__)
 				dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macadd}
 				#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
-				codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
+				codigo_fonte = net.http_POST(__SITE__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 				informacoes['macestado']['mac'] == macadd
 				
 				elems = ET.fromstring(codigo_fonte)
@@ -137,10 +151,12 @@ def login():
 								informacoes['user']['senhaadulto'] = d.text		
 					elif(child.tag == 'info'):
 						for e in child:
-							if(e.tag == 'Epg'):
+							if(e.tag == 'epg'):
 								informacoes['info']['epg'] = e.text
-							elif(e.tag == 'Logos'):
-								informacoes['info']['logos'] = e.text
+							elif(e.tag == 'logo'):
+								informacoes['info']['logo'] = e.text
+							elif(e.tag == 'link'):
+								informacoes['info']['link'] = e.text
 					elif(child.tag == 'menus'):
 						menu = {
 								'nome': '',
@@ -166,14 +182,13 @@ def login():
 		except:
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			return informacoes
-
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
 			else:
 				if informacoes['mac']['tem'] == 'no':
 					__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				else:
+				else:						
 					xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
 		else:
 			if informacoes['mac']['tem'] == 'no':
@@ -197,6 +212,8 @@ def Menu_inicial(men):
 		senha = menu['senha']
 		if(tipo == 'adulto'):
 			addDir(nome,link,senha,3,'Miniatura',logo)
+		elif(tipo == 'patrocinadores'):
+			addDir(nome,link,None,1,'Lista',logo)
 		else:
 			addDir(nome,link,None,1,'Miniatura',logo)
 
@@ -225,21 +242,22 @@ def listar_grupos(url,estilo):
 	xbmc.executebuiltin(estiloSelect)
 	
 def listar_canais_url(nome,url,estilo):
-	page_with_xml = urllib2.urlopen(url).readlines()
-	for line in page_with_xml:
-		params = line.split(',')
-		try:
-			nomee = params[0]
-			img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
-			grup = params[3]
-			id_it = params[4]
-			if(grup == nome):
-				addLink(nomee,rtmp,img)
-		except:
-			pass
-	estiloSelect = returnestilo(estilo)
-	xbmc.executebuiltin(estiloSelect)
+	if url != 'nada':
+		page_with_xml = urllib2.urlopen(url).readlines()
+		for line in page_with_xml:
+			params = line.split(',')
+			try:
+				nomee = params[0]
+				img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+				rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
+				grup = params[3]
+				id_it = params[4]
+				if(grup == nome):
+					addLink(nomee,rtmp,img)
+			except:
+				pass
+		estiloSelect = returnestilo(estilo)
+		xbmc.executebuiltin(estiloSelect)
 
 ###################################################################################
 #                              DEFININCOES		                                  #
