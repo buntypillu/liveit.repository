@@ -34,12 +34,10 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="3.3.18">
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="3.4.1">
   <requires>
     <import addon="xbmc.python" version="2.19.0"/>
 	<import addon="script.module.t0mm0.common" version="1.0.0"/>
-	<import addon="script.module.beautifulsoup4" version="4.3.2"/>
-	<import addon="script.module.urlresolver" version="1.0.5"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="defaut.py">
     <provides>video</provides>
@@ -50,15 +48,15 @@
 
 	Espero que gostem e disfrutem.
 
-	Realizado por: Administrador (J.R), participacao de Helder Azevedo.
+	Realizado por: Administrador (J.R).
 
 	Sempre Atualizado 24 horas por dia.
 	</description>
 	<language>pt</language>
     <platform>all</platform>
     <license></license>
-    <forum></forum>
-    <website></website>
+    <forum>http://www.pcteckserv.com/Forum/</forum>
+    <website>https://www.facebook.com/groups/LIVEITTV/</website>
     <email></email>
     <source></source>
   </extension>

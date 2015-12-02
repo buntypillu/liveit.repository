@@ -17,7 +17,6 @@
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
-from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 ####################################################### CONSTANTES #####################################################
 
@@ -49,9 +48,9 @@ def mac_for_ip():
 	macadresses = xbmc.getInfoLabel("Network.MacAddress")
 	if xbmc.getInfoLabel('Network.MacAddress') != None:
 		if not ":" in macadresses:
-			time.sleep(3)
+			time.sleep(2)
 			macadresses = xbmc.getInfoLabel('Network.MacAddress')
-	g_timer = time.time()
+	#g_timer = time.time()
 	return macadresses
   
 def menu():
