@@ -18,9 +18,9 @@
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
+
 ####################################################### CONSTANTES #####################################################
 
-global g_macAddress
 global g_timer
 
 __estilagem__ = 'novo'
@@ -48,7 +48,7 @@ def mac_for_ip():
 	macadresses = xbmc.getInfoLabel("Network.MacAddress")
 	if xbmc.getInfoLabel('Network.MacAddress') != None:
 		if not ":" in macadresses:
-			time.sleep(2)
+			time.sleep(3)
 			macadresses = xbmc.getInfoLabel('Network.MacAddress')
 	#g_timer = time.time()
 	return macadresses
@@ -72,7 +72,12 @@ def menu():
 			menus['tipo'] = "patrocinadores"
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
+
 			Menu_inicial(check_login)
+			print "rei"
+			print check_login['datafim']['data']
+			print "rei 2"
+			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Lista Grande', __SITEAddon__+"Imagens/doacoes.png", 0)
 			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
 		elif(check_login['sucesso']['resultado'] == 'ocupado'):
@@ -101,6 +106,9 @@ def login():
 		'macestado' :{
 			'mac': ''
 		},
+		'datafim' :{
+			'data': ''
+		},
 		'info' : {
 			'epg': '',
 			'logo': '',
@@ -116,6 +124,9 @@ def login():
 		try:
 			# ipmac = socket.gethostbyname(socket.gethostname())
 
+			# ts = time.time()
+			# dtt = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y (%H:%M:%S)')
+			# , 'data_nova': dtt
 			macaddr = mac_for_ip();
 			
 			if macaddr == 'Ocupada':
@@ -129,10 +140,12 @@ def login():
 				else:
 					macadd = macaddr.lower()
 
+				print "mac"
+				print macadd
+				
 				net = Net()
 				net.set_cookies(__COOKIE_FILE__)
 				dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macadd}
-				#dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 				codigo_fonte = net.http_POST(__SITE__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 				informacoes['macestado']['mac'] == macadd
 				
@@ -148,6 +161,11 @@ def login():
 								informacoes['user']['nome'] = d.text
 							elif(d.tag == 'Email'):
 								informacoes['user']['email'] = d.text
+							elif(d.tag == 'DataFim'):
+								try:
+									informacoes['datafim']['data'] = "Membro Ativo até "+ d.text
+								except:
+									informacoes['datafim']['data'] = "Membro Ativo Sem Doacao!"
 							elif(d.tag == 'SenhaAdultos'):
 								informacoes['user']['senhaadulto'] = d.text		
 					elif(child.tag == 'info'):
@@ -279,7 +297,9 @@ def listar_canais_url(nome,url,estilo):
 		estiloSelect = returnestilo(estilo)
 		xbmc.executebuiltin(estiloSelect)
 		
-		
+###############################################################################################################
+#                                                   EPG                                                     #
+###############################################################################################################
 def obter_ficheiro_epg():
 
 	if not xbmcvfs.exists(__FOLDER_EPG__):
@@ -327,7 +347,6 @@ def getProgramacaoDiaria(idCanal, diahora, codigo):
 
 		if(int(start) < diahora and int(stop) > diahora):
 			programa = programa1
-
 	return programa
 
 
@@ -360,7 +379,6 @@ def programacao_canal(idCanal):
 
 
 	programacao = '\n'.join(titles)
-
 	try:
 		xbmc.executebuiltin("ActivateWindow(10147)")
 		window = xbmcgui.Window(10147)
@@ -407,6 +425,9 @@ def abrirDefinincoes():
 	__ADDON__.openSettings()
 	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png", 0)
 	xbmc.executebuiltin("Container.SetViewMode(51)")
+
+def abrirNada():
+	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
 def addDir(name,url,senha,mode,estilo,iconimage,pasta=True,total=1):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)
@@ -438,27 +459,6 @@ def addLink(name,url,iconimage,idCanal):
 	liz.addContextMenuItems(cm, replaceItems=False)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
-
-###############################################################################################################
-#                                                   EPG                                                     #
-###############################################################################################################
-
-def abrir_url(url,erro=True):
-    try:
-        #print "A fazer request normal de: " + url
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', user_agent)
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
-        return link
-    except urllib2.HTTPError, e:
-        host='http://' + url.split('/')[2]
-        xbmcgui.Dialog().ok('TV Portuguesa',str(urllib2.HTTPError(e.url, e.code, "Erro na página.", e.hdrs, e.fp)),'Verifique manualmente se a página está operacional.',host)
-        sys.exit(0)
-    except urllib2.URLError, e:
-        xbmcgui.Dialog().ok('TV Portuguesa',"Erro na página. Verifique manualmente",'se a página está operacional. ' + url)
-        sys.exit(0)
 
 ############################################################################################################
 #                                               GET PARAMS                                                 #
@@ -527,5 +527,6 @@ elif mode==2: listar_canais_url(str(name),str(url),estilo)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo)
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
+elif mode==2000: abrirNada()
 elif mode==31: programacao_canal(idCanal)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
