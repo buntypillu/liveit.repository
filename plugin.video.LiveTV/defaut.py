@@ -72,11 +72,7 @@ def menu():
 			menus['tipo'] = "patrocinadores"
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
-
 			Menu_inicial(check_login)
-			print "rei"
-			print check_login['datafim']['data']
-			print "rei 2"
 			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Lista Grande', __SITEAddon__+"Imagens/doacoes.png", 0)
 			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
@@ -140,9 +136,6 @@ def login():
 				else:
 					macadd = macaddr.lower()
 
-				print "mac"
-				print macadd
-				
 				net = Net()
 				net.set_cookies(__COOKIE_FILE__)
 				dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macadd}
