@@ -73,7 +73,7 @@ def menu():
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
 			Menu_inicial(check_login)
-			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Lista Grande', __SITEAddon__+"Imagens/doacoes.png", 0)
+			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Lista Grande', __SITEAddon__+"Imagens/estadomembro.png", 0)
 			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
 			xbmc.executebuiltin("Container.SetViewMode(51)")
 		elif(check_login['sucesso']['resultado'] == 'ocupado'):
