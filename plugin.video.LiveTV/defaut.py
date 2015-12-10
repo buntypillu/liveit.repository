@@ -73,15 +73,15 @@ def menu():
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
 			Menu_inicial(check_login)
-			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Lista Grande', __SITEAddon__+"Imagens/estadomembro.png", 0)
-			addDir('Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
-			xbmc.executebuiltin("Container.SetViewMode(51)")
+			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png", 0)
+			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png", 0)
+			xbmc.executebuiltin("Container.SetViewMode(500)")
 		elif(check_login['sucesso']['resultado'] == 'ocupado'):
 			__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, 'Lista Grande', __SITEAddon__+"Imagens/definicoes.png", 0)
-			addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png", 0)
-			xbmc.executebuiltin("Container.SetViewMode(51)")
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png", 0)
+			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png", 0)
+			xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
