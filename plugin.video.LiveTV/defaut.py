@@ -36,10 +36,12 @@ __SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
 __EPG__ = 'http://www.pcteckserv.com/GrupoKodi/epg.gz'
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
 __ALERTA__ = xbmcgui.Dialog().ok
-
+base_server = 'http://178.62.95.238:8008/'
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.livetv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+
+
 ###################################################################################
 #                              Iniciar Addon		                                  #
 ###################################################################################
@@ -56,9 +58,10 @@ def mac_for_ip():
 def menu():
 	check_login = login()
 	if check_login['mac']['tem'] == 'no':
-		xbmc.executebuiltin("Container.SetViewMode(51)")
+		xbmc.executebuiltin("Container.SetViewMode(500)")
 	else:
 		if check_login['sucesso']['resultado'] == 'yes':
+			#abrir_cookie(base_server + 'canais/liberar/', True)
 			menus = {
 				'nome': '',
 				'logo': '',
@@ -85,7 +88,7 @@ def menu():
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
-
+		
 def login():
 	informacoes = {
 		'user' : {
@@ -257,6 +260,7 @@ def listar_grupos(url,estilo):
 	
 def listar_canais_url(nome,url,estilo):
 	if url != 'nada':
+		#data = abrir_cookie(url).decode('utf8')
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
 		codigo = f.read()
