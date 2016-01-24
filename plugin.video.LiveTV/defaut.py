@@ -18,8 +18,6 @@
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
-from resources.lib import gPlayer
-
 
 
 ####################################################### CONSTANTES #####################################################
@@ -284,10 +282,10 @@ def listar_canais_url(nome,url,estilo,tipo):
 				grup = params[3]
 				id_it = params[4].rstrip()
 				srt_f = ""
-				if(tipo == 'filme_serie'):
+				if	tipo == 'Filme' or tipo == 'Serie':
 					srt_f = params[5]
 
-				if(grup == nome):
+				if	grup == nome:
 					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
 
 					twrv.start()
@@ -460,7 +458,6 @@ def addLink(name,url,iconimage,idCanal,srtfilm):
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
 	liz.addContextMenuItems(cm, replaceItems=False)
-	
 	if srtfilm != '':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
@@ -468,18 +465,22 @@ def addLink(name,url,iconimage,idCanal,srtfilm):
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
-def play_srt(name,url,iconimage,srtfilm):
-	item = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage, path=url)
-	item.setInfo( type="Video", infoLabels={ "Title": name , "Plot" : name } )
-	player = gPlayer.gPlayer()
-	player.play(url, item)
-	xbmc.sleep(4000)
-	xbmc.executebuiltin('Dialog.Close(all, true)')
-	time.sleep(2)
+def play_srt(name,url,iconimage,legendas):
+	playlist = xbmc.PlayList(1)
+	playlist.clear()
+	listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	listitem.setInfo("Video", {"title":name})
+	listitem.setProperty('mimetype', 'video/x-msvideo')
+	listitem.setProperty('IsPlayable', 'true')
+	playlist.add(url, listitem)
+	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listitem)
+	player = xbmc.Player()
+	player.play(playlist)
 	while not (player.isPlaying()):
-		xbmc.sleep(1000)
-	if srtfilm != '':
-		player.setSubtitles(srtfilm.encode("utf-8"))
+		xbmc.sleep(30)
+		time.sleep(30)
+	if legendas != '':
+		player.setSubtitles(legendas)
 
 ############################################################################################################
 #                                               GET PARAMS                                                 #
