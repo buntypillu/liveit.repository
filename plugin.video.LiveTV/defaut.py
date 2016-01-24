@@ -18,6 +18,9 @@
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
+from resources.lib import gPlayer
+
+
 
 ####################################################### CONSTANTES #####################################################
 
@@ -40,7 +43,6 @@ base_server = 'http://178.62.95.238:8008/'
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.livetv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -76,14 +78,14 @@ def menu():
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
 			Menu_inicial(check_login)
-			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png", 0)
-			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png", 0)
+			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'', 0)
+			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'', 0)
 			xbmc.executebuiltin("Container.SetViewMode(500)")
 		elif(check_login['sucesso']['resultado'] == 'ocupado'):
 			__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png", 0)
-			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png", 0)
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'', 0)
+			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'', 0)
 			xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
 #                              Login Addon		                                  #
@@ -226,23 +228,25 @@ def Menu_inicial(men):
 		tipo = menu['tipo']
 		senha = menu['senha']
 		if(tipo == 'adulto'):
-			addDir(nome,link,senha,3,'Miniatura',logo)
+			addDir(nome,link,senha,3,'Miniatura',logo,tipo)
 		elif(tipo == 'patrocinadores'):
-			addDir(nome,link,None,1,'Lista',logo)
+			addDir(nome,link,None,1,'Lista',logo,tipo)
+		elif(tipo == 'filme_serie'):
+			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 		else:
-			addDir(nome,link,None,1,'Miniatura',logo)
+			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 			
 	thread.start_new_thread( obter_ficheiro_epg, () )
 
-def listar_grupos_adultos(url,senha,estilo):
+def listar_grupos_adultos(url,senha,estilo,tipo):
 	if(__ADDON__.getSetting("login_adultos") == ''):
 		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
 	elif(__ADDON__.getSetting("login_adultos") != senha):
 		__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 	else:
-		listar_grupos(url,estilo)
+		listar_grupos(url,estilo,tipo)
 	
-def listar_grupos(url,estilo):
+def listar_grupos(url,estilo,tipo):
 	page_with_xml = urllib2.urlopen(url).readlines()
 	for line in page_with_xml:
 		params = line.split(',')
@@ -252,13 +256,13 @@ def listar_grupos(url,estilo):
 			urlll = params[2]
 			estil = params[3]
 			paramss = estil.split('\n')
-			addDir(nomee,urlll,None,2,paramss[0],imag)
+			addDir(nomee,urlll,None,2,paramss[0],imag,tipo)
 		except:
 			pass
 	estiloSelect = returnestilo(estilo)
 	xbmc.executebuiltin(estiloSelect)
 	
-def listar_canais_url(nome,url,estilo):
+def listar_canais_url(nome,url,estilo,tipo):
 	if url != 'nada':
 		#data = abrir_cookie(url).decode('utf8')
 		page_with_xml = urllib2.urlopen(url).readlines()
@@ -277,6 +281,10 @@ def listar_canais_url(nome,url,estilo):
 				rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
 				grup = params[3]
 				id_it = params[4].rstrip()
+				srt_f = ""
+				if(tipo == 'filme_serie'):
+					srt_f = params[5]
+
 				if(grup == nome):
 					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
 
@@ -288,7 +296,7 @@ def listar_canais_url(nome,url,estilo):
 					else:
 						nomewp = nomee
 					
-					addLink(nomewp,rtmp,img,id_it)
+					addLink(nomewp,rtmp,img,id_it,srt_f)
 			except:
 				pass
 		estiloSelect = returnestilo(estilo)
@@ -420,19 +428,16 @@ def returnestilo(estilonovo):
 	
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png", 0)
+	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', '',__SITEAddon__+"Imagens/retroceder.png",'', 0)
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 
 def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
-def addDir(name,url,senha,mode,estilo,iconimage,pasta=True,total=1):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)
+def addDir(name,url,senha,mode,estilo,iconimage,tipo,pasta=True,total=1):
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	contextMenuItems = []
-	contextMenuItems.append(('Movie Information', 'XBMC.Action(Info)'))
-	liz.addContextMenuItems(contextMenuItems, replaceItems=True)
 	liz.setProperty('fanart_image', iconimage)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
 	return ok
@@ -445,17 +450,34 @@ def addFolder(name,url,mode,iconimage,folder):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
 	
-def addLink(name,url,iconimage,idCanal):
+def addLink(name,url,iconimage,idCanal,srtfilm):
 	cm=[]
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
-	#cm.append(('Ver programação', "XBMC.RunPlugin(%s?mode=%s&name=%s&url=%s)"%(sys.argv[0],31,name,url)))
 	liz.addContextMenuItems(cm, replaceItems=False)
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	
+	if srtfilm != '':
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+	else:
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
+
+def play_srt(name,url,iconimage,srtfilm):
+	item = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage, path=url)
+	item.setInfo( type="Video", infoLabels={ "Title": name , "Plot" : name } )
+	player = gPlayer.gPlayer()
+	player.play(url, item)
+	xbmc.sleep(4000)
+	xbmc.executebuiltin('Dialog.Close(all, true)')
+	time.sleep(2)
+	while not (player.isPlaying()):
+		xbmc.sleep(1000)
+	if srtfilm != '':
+		player.setSubtitles(srtfilm.encode("utf-8"))
 
 ############################################################################################################
 #                                               GET PARAMS                                                 #
@@ -484,6 +506,9 @@ iconimage=None
 link=None
 senha=None
 estilo=None
+srtfilm=None
+idCanal=None
+tipologia=None
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -513,17 +538,28 @@ try:
 		idCanal=urllib.unquote_plus(params["idCanal"])
 except:
 		pass
+try:
+		srtfilm=urllib.unquote_plus(params["srtfilm"])
+except:
+		pass
+try:
+		tipologia=urllib.unquote_plus(params["tipologia"])
+except:
+		pass
+		
 
 ###############################################################################################################
 #                                                   MODOS                                                     #
 ###############################################################################################################
 
 if mode==None or url==None or len(url)<1: menu()
-elif mode==1: listar_grupos(str(url),estilo)
-elif mode==2: listar_canais_url(str(name),str(url),estilo)
-elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo)
+elif mode==1: listar_grupos(str(url),estilo,tipologia)
+elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia)
+elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia)
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==31: programacao_canal(idCanal)
+elif mode==333: play_srt(str(name),str(url),iconimage,srtfilm)
+
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
