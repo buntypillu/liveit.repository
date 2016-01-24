@@ -227,12 +227,14 @@ def Menu_inicial(men):
 		link = menu['link']
 		tipo = menu['tipo']
 		senha = menu['senha']
-		if(tipo == 'adulto'):
+		if(tipo == 'Adulto'):
 			addDir(nome,link,senha,3,'Miniatura',logo,tipo)
 		elif(tipo == 'patrocinadores'):
 			addDir(nome,link,None,1,'Lista',logo,tipo)
-		elif(tipo == 'filme_serie'):
+		elif(tipo == 'Filme'):
 			addDir(nome,link,None,1,'Miniatura',logo,tipo)
+		elif(tipo == 'Serie'):
+			addDir(nome,link,None,1,'Lista Grande',logo,tipo)
 		else:
 			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 			
