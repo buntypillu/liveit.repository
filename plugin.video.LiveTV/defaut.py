@@ -275,6 +275,7 @@ def listar_canais_url(nome,url,estilo,tipo):
 			refres = ','
 
 		for line in page_with_xml:
+			total = len(line)
 			params = line.split(refres)	
 			try:
 				nomee = params[0]
@@ -297,22 +298,25 @@ def listar_canais_url(nome,url,estilo,tipo):
 
 					if	tipo == 'Filme' or tipo == 'Serie':
 						srt_f = params[5]
-						descri = params[6]
-						actors = 'Elenco: '+'xpto'
-						plot = 'Descrição: '+descri
-						imdb = 'http://www.imdb.com/title/tt4510398/'
-						criador = 'Criador: '+'Zeca'
-						infoLabels = {'Title':nomewp, 'Actors':actors, 'Plot':plot, 'Writer': criador, "Code":imdb }
+						ano = params[6]
+						realizador = 'Director: '+params[7]
+						descri = params[8]
+						
+						detalhes1 = 'Género: '+grup
+						argumento = 'Live!t-TV'
+						plot = 'Enredo: '+descri
+						detalhes2 = 'Ano: '+ano
+						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2}
 					else:
 						infoLabels = {'Title':nomewp}
 					
-					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,infoLabels)
+					#addDirM(filme['title'], str({'torrents': filme['items'], 'imdb': filme['imdb'], 'poster': filme['poster_big']}), 6, filme['poster_big'], total, True)
+					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,infoLabels,total)
 			except:
 				pass
 		estiloSelect = returnestilo(estilo)
 		xbmc.executebuiltin(estiloSelect)
-	
-	
+
 ###############################################################################################################
 #                                                   EPG                                                     #
 ###############################################################################################################
@@ -427,16 +431,25 @@ class ThreadWithReturnValue(Thread):
 ###################################################################################	
 def returnestilo(estilonovo):
 	__estilagem__ = ""
-	if estilonovo == "Lista Grande":
-		__estilagem__ = "Container.SetViewMode(51)"
-	elif estilonovo == "Lista":
+	
+	if estilonovo == "Lista":
 		__estilagem__ ="Container.SetViewMode(50)"
+	elif estilonovo == "Lista Grande":
+		__estilagem__ = "Container.SetViewMode(51)"
 	elif estilonovo == "Miniatura":
 		__estilagem__ ="Container.SetViewMode(500)"
-	elif estilonovo == "Amplo":
-		__estilagem__ = "Container.SetViewMode(551)"
+	elif estilonovo == "Posters":
+		__estilagem__ ="Container.SetViewMode(501)"
+	elif estilonovo == "Fanart":
+		__estilagem__ = "Container.SetViewMode(508)"
+	elif estilonovo == "Media Info 1":
+		__estilagem__ = "Container.SetViewMode(504)"
+	elif estilonovo == "Media Info 2":
+		__estilagem__ = "Container.SetViewMode(503)"
+	elif estilonovo == "Media Info 3":
+		__estilagem__ = "Container.SetViewMode(515)"
 	return __estilagem__
-	
+
 def abrirDefinincoes():
 	__ADDON__.openSettings()
 	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png",'')
@@ -466,19 +479,23 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,infoLabels,total=1
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	print 'Rei Nome: '+name
 	if tipo == 'Filme' or tipo == 'Serie':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
 	else:
 		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
 	liz.setInfo( type="Video", infoLabels=infoLabels)
 	
+	if tipo == 'Filme':	
+		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
+	elif tipo == 'Serie':
+		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
 	if tipo == 'Filme' or tipo == 'Serie':
-		xbmcplugin.setContent(int(sys.argv[1]), 'Filmes e Séries')
+		#xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	else:
 		liz.addContextMenuItems(cm, replaceItems=True)
-		xbmcplugin.setContent(int(sys.argv[1]), 'Canais')
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 	
