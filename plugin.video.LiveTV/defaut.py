@@ -270,7 +270,7 @@ def listar_canais_url(nome,url,estilo,tipo):
 		ts = time.time()
 		st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
 		if tipo == 'Filme' or tipo == 'Serie':
-			refres = '§'
+			refres = '**'
 		else:
 			refres = ','
 
