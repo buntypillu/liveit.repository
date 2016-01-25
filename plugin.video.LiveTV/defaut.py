@@ -19,7 +19,6 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbm
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
 
-
 ####################################################### CONSTANTES #####################################################
 
 global g_timer
@@ -232,7 +231,7 @@ def Menu_inicial(men):
 		elif(tipo == 'Filme'):
 			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 		elif(tipo == 'Serie'):
-			addDir(nome,link,None,1,'Lista Grande',logo,tipo)
+			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 		else:
 			addDir(nome,link,None,1,'Miniatura',logo,tipo)
 			
@@ -264,27 +263,27 @@ def listar_grupos(url,estilo,tipo):
 	
 def listar_canais_url(nome,url,estilo,tipo):
 	if url != 'nada':
-		#data = abrir_cookie(url).decode('utf8')
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
 		codigo = f.read()
 		f.close()
 		ts = time.time()
 		st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
-	
-		# page_with_xml = urllib2.urlopen(url).readlines()
+		if tipo == 'Filme' or tipo == 'Serie':
+			refres = '§'
+		else:
+			refres = ','
+
 		for line in page_with_xml:
-			params = line.split(',')
+			params = line.split(refres)	
 			try:
 				nomee = params[0]
 				img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
 				rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
 				grup = params[3]
 				id_it = params[4].rstrip()
-				srt_f = ""
-				if	tipo == 'Filme' or tipo == 'Serie':
-					srt_f = params[5]
-
+				srt_f = ''
+				descri = ''
 				if	grup == nome:
 					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
 
@@ -295,13 +294,25 @@ def listar_canais_url(nome,url,estilo,tipo):
 						nomewp = nomee + " | "+ programa
 					else:
 						nomewp = nomee
+
+					if	tipo == 'Filme' or tipo == 'Serie':
+						srt_f = params[5]
+						descri = params[6]
+						actors = 'Elenco: '+'xpto'
+						plot = 'Descrição: '+descri
+						imdb = 'http://www.imdb.com/title/tt4510398/'
+						criador = 'Criador: '+'Zeca'
+						infoLabels = {'Title':nomewp, 'Actors':actors, 'Plot':plot, 'Writer': criador, "Code":imdb }
+					else:
+						infoLabels = {'Title':nomewp}
 					
-					addLink(nomewp,rtmp,img,id_it,srt_f)
+					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,infoLabels)
 			except:
 				pass
 		estiloSelect = returnestilo(estilo)
 		xbmc.executebuiltin(estiloSelect)
-		
+	
+	
 ###############################################################################################################
 #                                                   EPG                                                     #
 ###############################################################################################################
@@ -450,21 +461,27 @@ def addFolder(name,url,mode,iconimage,folder):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
 	
-def addLink(name,url,iconimage,idCanal,srtfilm):
+def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,infoLabels,total=1):
 	cm=[]
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
-	liz.addContextMenuItems(cm, replaceItems=False)
-	if srtfilm != '':
+	print 'Rei Nome: '+name
+	if tipo == 'Filme' or tipo == 'Serie':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
 	else:
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal))))
+	liz.setInfo( type="Video", infoLabels=infoLabels)
+	
+	if tipo == 'Filme' or tipo == 'Serie':
+		xbmcplugin.setContent(int(sys.argv[1]), 'Filmes e Séries')
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	else:
+		liz.addContextMenuItems(cm, replaceItems=True)
+		xbmcplugin.setContent(int(sys.argv[1]), 'Canais')
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
-
+	
 def play_srt(name,url,iconimage,legendas):
 	playlist = xbmc.PlayList(1)
 	playlist.clear()
@@ -512,6 +529,7 @@ estilo=None
 srtfilm=None
 idCanal=None
 tipologia=None
+descricao=None
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -549,6 +567,10 @@ try:
 		tipologia=urllib.unquote_plus(params["tipologia"])
 except:
 		pass
+try:
+        descricao=urllib.unquote_plus(params["descricao"])
+except:
+        pass
 		
 
 ###############################################################################################################

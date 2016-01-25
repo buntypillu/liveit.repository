@@ -15,4 +15,9 @@
       <setting label="[B][COLOR green]Informação para Filmes:[/B][/COLOR]" type="lsep" />
       <setting id="metadata" type="bool" label="Sem Metadata"/>
    </category>
+   <category label="Tipos de vista">
+      <setting label="[B][COLOR green]Definições de vista:[/B][/COLOR]" type="lsep" />
+     <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande" default="0"/>
+     <setting id="filmesSeriesView" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Posters|Fanart|Media Info 1|Media Info 2|Media Info 3" default="0"/>
+   </category>
 </settings>
