@@ -26,6 +26,7 @@ global g_timer
 __estilagem__ = 'novo'
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
+__CWD__ = xbmc.translatePath( __ADDON__.getAddonInfo('path') ).decode("utf-8")
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
 __SETTING__	= xbmcaddon.Addon().getSetting
 __ART_FOLDER__	= os.path.join(__ADDON_FOLDER__,'resources','img')
@@ -40,6 +41,9 @@ base_server = 'http://178.62.95.238:8008/'
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.livetv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -248,7 +252,8 @@ def listar_grupos_adultos(url,senha,estilo,tipo):
 def listar_grupos(url,estilo,tipo):
 	page_with_xml = urllib2.urlopen(url).readlines()
 	for line in page_with_xml:
-		params = line.split(',')
+		objecto = line.decode('latin-1').encode("utf-8")
+		params = objecto.split(',')
 		try:
 			nomee = params[0]
 			imag = params[1]
@@ -273,10 +278,10 @@ def listar_canais_url(nome,url,estilo,tipo):
 			refres = '**'
 		else:
 			refres = ','
-
 		for line in page_with_xml:
 			total = len(line)
-			params = line.split(refres)	
+			objecto = line.decode('latin-1').encode("utf-8")
+			params = objecto.split(refres)	
 			try:
 				nomee = params[0]
 				img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
@@ -300,14 +305,14 @@ def listar_canais_url(nome,url,estilo,tipo):
 						srt_f = params[5]
 						ano = params[6]
 						realizador = 'Director: '+params[7]
-						descri = params[8]#.text.encode('utf-8')
-						#encode('utf-8')
-						
+						descri = params[8]
 						detalhes1 = grup
 						argumento = 'Live!t-TV'
 						plot = 'Enredo: '+descri
 						detalhes2 = ano
-						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2}
+						imdb = '4510398'
+						votes = '5 estrelas'
+						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2, 'IMDBNumber':imdb, 'Votes':votes}
 					else:
 						infoLabels = {'Title':nomewp}
 					
