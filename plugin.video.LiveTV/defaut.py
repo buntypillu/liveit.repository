@@ -300,13 +300,14 @@ def listar_canais_url(nome,url,estilo,tipo):
 						srt_f = params[5]
 						ano = params[6]
 						realizador = 'Director: '+params[7]
-						descri = params[8]
+						descri = params[8]#.text.encode('utf-8')
+						#encode('utf-8')
 						
-						detalhes1 = 'Género: '+grup
+						detalhes1 = grup
 						argumento = 'Live!t-TV'
 						plot = 'Enredo: '+descri
-						detalhes2 = 'Ano: '+ano
-						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2}
+						detalhes2 = ano
+						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2}
 					else:
 						infoLabels = {'Title':nomewp}
 					
