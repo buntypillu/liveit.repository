@@ -62,11 +62,10 @@ def mac_for_ip():
 def menu():
 	check_login = login()
 	if check_login['mac']['tem'] == 'no':
-		xbmc.executebuiltin("Container.SetViewMode(500)")
+		__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')				
 	else:
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
-				#abrir_cookie(base_server + 'canais/liberar/', True)
 				menus = {
 					'nome': '',
 					'logo': '',
@@ -83,13 +82,27 @@ def menu():
 				Menu_inicial(check_login)
 				addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'')
 				addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
-				xbmc.executebuiltin("Container.SetViewMode(500)")
-		elif check_login['sucesso']['resultado'] == 'ocupado' or check_login['sucesso']['resultado'] == '':
-			__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
+			elif check_login['sucesso']['resultado'] == 'ocupado':
+				__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
+				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'')
+			elif check_login['sucesso']['resultado'] == 'utilizador':
+				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
+				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'')
+			elif check_login['sucesso']['resultado'] == 'senha':
+				__ALERTA__('Live!t TV', 'Senha incorreta.')
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
+				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'')
+			elif check_login['sucesso']['resultado'] == 'ativo':
+				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email registoliveit@pcteckserv.com.')
+			else:
+				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 		else:
 			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
 			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'')
-			xbmc.executebuiltin("Container.SetViewMode(500)")
+
+		xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
@@ -202,36 +215,13 @@ def login():
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			return informacoes
 
-		if informacoes['sucesso']['resultado'] != '':
-			if informacoes['sucesso']['resultado'] == 'no':
+		if informacoes['sucesso']['resultado'] == 'yes':
+			if informacoes['user']['nome'] == '':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
 			else:
-				if informacoes['sucesso']['resultado'] == 'ocupado':
-					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
-				else:
-					if informacoes['mac']['tem'] == 'no':
-						__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-					else:
-						if informacoes['user']['nome'] == '':
-							__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
-						else:
-							net.save_cookies(__COOKIE_FILE__)
-							xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-		else:
-			if informacoes['mac']['tem'] == 'no':
-				__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-			else:
-				if informacoes['mac']['tem'] == '':
-					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
-				else:
-					if informacoes['sucesso']['resultado'] == 'yes':
-						if informacoes['user']['nome'] == '':
-							__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
-						else:
-							net.save_cookies(__COOKIE_FILE__)
-							xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
-					else:
-						__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				net.save_cookies(__COOKIE_FILE__)
+				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+
 		return informacoes
 
 ###############################################################################################################
