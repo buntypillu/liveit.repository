@@ -23,6 +23,7 @@ import xml.etree.ElementTree as ET
 
 global g_timer
 
+macaddr = ''
 __estilagem__ = 'novo'
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
@@ -42,8 +43,8 @@ __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -63,26 +64,27 @@ def menu():
 	if check_login['mac']['tem'] == 'no':
 		xbmc.executebuiltin("Container.SetViewMode(500)")
 	else:
-		if check_login['sucesso']['resultado'] == 'yes':
-			#abrir_cookie(base_server + 'canais/liberar/', True)
-			menus = {
-				'nome': '',
-				'logo': '',
-				'link': '',
-				'tipo': '',
-				'senha': ''
-				}
-			menus['nome'] = "Participacoes"
-			menus['logo'] = check_login['info']['logo']
-			menus['link'] = check_login['info']['link']
-			menus['tipo'] = "patrocinadores"
-			menus['senha'] = ""
-			check_login['menus'].append(menus)
-			Menu_inicial(check_login)
-			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'')
-			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
-			xbmc.executebuiltin("Container.SetViewMode(500)")
-		elif(check_login['sucesso']['resultado'] == 'ocupado'):
+		if check_login['user']['nome'] != '':
+			if check_login['sucesso']['resultado'] == 'yes':
+				#abrir_cookie(base_server + 'canais/liberar/', True)
+				menus = {
+					'nome': '',
+					'logo': '',
+					'link': '',
+					'tipo': '',
+					'senha': ''
+					}
+				menus['nome'] = "Participacoes"
+				menus['logo'] = check_login['info']['logo']
+				menus['link'] = check_login['info']['link']
+				menus['tipo'] = "patrocinadores"
+				menus['senha'] = ""
+				check_login['menus'].append(menus)
+				Menu_inicial(check_login)
+				addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'')
+				addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
+				xbmc.executebuiltin("Container.SetViewMode(500)")
+		elif check_login['sucesso']['resultado'] == 'ocupado' or check_login['sucesso']['resultado'] == '':
 			__ALERTA__('Live!t TV', 'Entre novamente para iniciar a sua Secção.')
 		else:
 			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'')
@@ -129,10 +131,9 @@ def login():
 			# ts = time.time()
 			# dtt = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y (%H:%M:%S)')
 			# , 'data_nova': dtt
-			macaddr = mac_for_ip();
-			
+			macaddr = mac_for_ip()
 			if macaddr == 'Ocupada':
-				informacoes['mac']['tem'] = 'yes'
+				informacoes['mac']['tem'] = ''
 				informacoes['sucesso']['resultado'] = 'ocupado'
 			else:
 				sisss = platform.system()
@@ -141,7 +142,7 @@ def login():
 					macadd = trrrr.upper()
 				else:
 					macadd = macaddr.lower()
-
+				
 				net = Net()
 				net.set_cookies(__COOKIE_FILE__)
 				dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password"), 'macadress': macadd}
@@ -200,21 +201,37 @@ def login():
 		except:
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			return informacoes
+
 		if informacoes['sucesso']['resultado'] != '':
 			if informacoes['sucesso']['resultado'] == 'no':
 				__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
 			else:
-				if informacoes['mac']['tem'] == 'no':
-					__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				else:						
-					xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+				if informacoes['sucesso']['resultado'] == 'ocupado':
+					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				else:
+					if informacoes['mac']['tem'] == 'no':
+						__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
+					else:
+						if informacoes['user']['nome'] == '':
+							__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
+						else:
+							net.save_cookies(__COOKIE_FILE__)
+							xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
 		else:
 			if informacoes['mac']['tem'] == 'no':
 				__ALERTA__('Live!t TV', 'Equipamento ainda não registado. Por favor registe.')
-				
 			else:
-				net.save_cookies(__COOKIE_FILE__)
-				xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+				if informacoes['mac']['tem'] == '':
+					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				else:
+					if informacoes['sucesso']['resultado'] == 'yes':
+						if informacoes['user']['nome'] == '':
+							__ALERTA__('Live!t TV', 'Utilizador e/ou Senha incorretos.')
+						else:
+							net.save_cookies(__COOKIE_FILE__)
+							xbmc.executebuiltin("XBMC.Notification(Live!t TV, Sessão iniciada: "+ informacoes['user']['nome'] +", '10000', "+__ADDON_FOLDER__+"/icon.png)")
+					else:
+						__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 		return informacoes
 
 ###############################################################################################################
