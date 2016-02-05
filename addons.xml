@@ -34,11 +34,10 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="4.6.11">
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="4.7.1">
   <requires>
     <import addon="xbmc.python" version="2.19.0"/>
 	<import addon="script.module.t0mm0.common" version="1.0.0"/>
-	<import addon="script.module.metahandler" version="1.0.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="defaut.py">
     <provides>video</provides>
