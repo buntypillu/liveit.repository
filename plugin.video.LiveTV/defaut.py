@@ -239,7 +239,7 @@ def Menu_inicial(men):
 		link = menu['link']
 		tipo = menu['tipo']
 		senha = menu['senha']
-		if(tipo == 'Adulto'):
+		if(tipo == 'Adulto'):		
 			addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser)
 		elif(tipo == 'patrocinadores'):
 			addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser)
@@ -253,35 +253,46 @@ def Menu_inicial(men):
 	thread.start_new_thread( obter_ficheiro_epg, () )
 
 def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user):
-	if(__ADDON__.getSetting("login_adultos") == ''):
-		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
-	elif(__ADDON__.getSetting("login_adultos") != senha):
-		__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
-	else:
-		listar_grupos(url,estilo,tipo,tipo_user)
+	passa = True
+	if tipo_user == 'Teste':
+		passa = False
+		__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')	
+	if passa == True:
+		if(__ADDON__.getSetting("login_adultos") == ''):
+			__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
+		elif(__ADDON__.getSetting("login_adultos") != senha):
+			__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
+		else:
+			listar_grupos(url,estilo,tipo,tipo_user)
 	
 def listar_grupos(url,estilo,tipo,tipo_user):
-	page_with_xml = urllib2.urlopen(url).readlines()
-	for line in page_with_xml:
-		objecto = line.decode('latin-1').encode("utf-8")
-		params = objecto.split(',')
-		try:
-			nomee = params[0]
-			imag = params[1]
-			urlll = params[2]
-			estil = params[3]
-			urlllpg = params[4]
-			paramss = estil.split('\n')
-			if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'Patrocinador':
-				addDir(nomee,urlllpg,None,2,paramss[0],imag,tipo,tipo_user)
-			else:
-				addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user)
-		except:
-			pass
-	estiloSelect = returnestilo(estilo)
-	xbmc.executebuiltin(estiloSelect)
+	passa = True
+	if tipo_user == 'Teste':
+		if tipo == 'Serie' or tipo == 'Filme' or tipo == 'patrocinadores':
+			passa = False
+			__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
+	if passa == True:
+		page_with_xml = urllib2.urlopen(url).readlines()
+		for line in page_with_xml:
+			objecto = line.decode('latin-1').encode("utf-8")
+			params = objecto.split(',')
+			try:
+				nomee = params[0]
+				imag = params[1]
+				urlll = params[2]
+				estil = params[3]
+				urlllpg = params[4]
+				paramss = estil.split('\n')
+				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'Patrocinador':
+					addDir(nomee,urlllpg,None,2,paramss[0],imag,tipo,tipo_user)
+				else:
+					addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user)
+			except:
+				pass
+		estiloSelect = returnestilo(estilo)
+		xbmc.executebuiltin(estiloSelect)
 	
-def listar_canais_url(nome,url,estilo,tipo):
+def listar_canais_url(nome,url,estilo,tipo,tipo_user):
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -622,7 +633,7 @@ except:
 
 if mode==None or url==None or len(url)<1: menu()
 elif mode==1: listar_grupos(str(url),estilo,tipologia,tipo_user)
-elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia)
+elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user)
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
