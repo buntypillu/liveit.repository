@@ -240,7 +240,7 @@ def listar_grupos(url,estilo,tipo,tipo_user):
 				estil = params[3]
 				urlllpg = params[4]
 				paramss = estil.split('\n')
-				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'Patrocinador':
+				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
 					addDir(nomee,urlllpg,None,2,paramss[0],imag,tipo,tipo_user)
 				else:
 					addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user)
