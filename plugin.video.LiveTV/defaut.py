@@ -224,10 +224,10 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user):
 	
 def listar_grupos(url,estilo,tipo,tipo_user):
 	passa = True
-	if tipo_user == 'Teste':
-		if tipo == 'Serie' or tipo == 'Filme' or tipo == 'patrocinadores':
-			passa = False
-			__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
+	#if tipo_user == 'Teste':
+		#if tipo == 'Serie' or tipo == 'Filme' or tipo == 'patrocinadores':
+		#	passa = False
+		#	__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
 	if passa == True:
 		page_with_xml = urllib2.urlopen(url).readlines()
 		for line in page_with_xml:
@@ -500,8 +500,8 @@ def play_srt(name,url,iconimage,legendas):
 	player = xbmc.Player()
 	player.play(playlist)
 	while not (player.isPlaying()):
-		xbmc.sleep(30)
-		time.sleep(30)
+		xbmc.sleep(80)
+		time.sleep(80)
 	if legendas != '':
 		player.setSubtitles(legendas)
 
