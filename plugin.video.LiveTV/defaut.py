@@ -69,23 +69,23 @@ def menu():
 			menus['senha'] = ""
 			check_login['menus'].append(menus)
 			Menu_inicial(check_login)
-			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'','')
-			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','')
+			addDir(check_login['datafim']['data'], 'url', None, 2000, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'','','')
+			addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','')
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','')
-			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','')
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','')
+			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','')
 		elif check_login['sucesso']['resultado'] == 'senha':
 			__ALERTA__('Live!t TV', 'Senha incorreta.')
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','')
-			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','')
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','')
+			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','')
 		elif check_login['sucesso']['resultado'] == 'ativo':
 			__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email registoliveit@pcteckserv.com.')
 		else:
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 	else:
-		addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','')
-		addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','')
+		addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','')
+		addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','')
 
 	xbmc.executebuiltin("Container.SetViewMode(500)")
 ###################################################################################
@@ -98,6 +98,7 @@ def login():
 			'nome': '',
 			'email': '',
 			'tipo': '',
+			'servidor': '',
 			'senhaadulto': ''
 		},
 		'sucesso' :{
@@ -139,6 +140,8 @@ def login():
 							informacoes['user']['nome'] = d.text
 						elif(d.tag == 'Email'):
 							informacoes['user']['email'] = d.text
+						elif(d.tag == 'Servidor'):
+							informacoes['user']['servidor'] = d.text
 						elif(d.tag == 'Tipo'):
 							informacoes['user']['tipo'] = d.text
 						elif(d.tag == 'DataFim'):
@@ -190,6 +193,7 @@ def login():
 
 def Menu_inicial(men):
 	_tipouser = men['user']['tipo']
+	_servidoruser = men['user']['servidor']
 	for menu in men['menus']:
 		nome = menu['nome']
 		logo = menu['logo']
@@ -197,19 +201,19 @@ def Menu_inicial(men):
 		tipo = menu['tipo']
 		senha = menu['senha']
 		if(tipo == 'Adulto'):		
-			addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser)
+			addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servidoruser)
 		elif(tipo == 'patrocinadores'):
-			addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser)
+			addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servidoruser)
 		elif(tipo == 'Filme'):
-			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser)
+			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser)
 		elif(tipo == 'Serie'):
-			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser)
+			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser)
 		else:
-			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser)
+			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser)
 			
 	thread.start_new_thread( obter_ficheiro_epg, () )
 
-def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user):
+def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user):
 	passa = True
 	if tipo_user == 'Teste':
 		passa = False
@@ -220,9 +224,9 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user):
 		elif(__ADDON__.getSetting("login_adultos") != senha):
 			__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 		else:
-			listar_grupos(url,estilo,tipo,tipo_user)
+			listar_grupos(url,estilo,tipo,tipo_user,servidor_user)
 	
-def listar_grupos(url,estilo,tipo,tipo_user):
+def listar_grupos(url,estilo,tipo,tipo_user,servidor_user):
 	passa = True
 	#if tipo_user == 'Teste':
 		#if tipo == 'Serie' or tipo == 'Filme' or tipo == 'patrocinadores':
@@ -238,18 +242,22 @@ def listar_grupos(url,estilo,tipo,tipo_user):
 				imag = params[1]
 				urlll = params[2]
 				estil = params[3]
-				urlllpg = params[4]
+				urlllserv1 = params[4]
+				urlllserv2 = params[5]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
-					addDir(nomee,urlllpg,None,2,paramss[0],imag,tipo,tipo_user)
+					if servidor_user == 'Servidor1':
+						addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user)
+					else:
+						addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user)
 				else:
-					addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user)
+					addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user)
 			except:
 				pass
 		estiloSelect = returnestilo(estilo)
 		xbmc.executebuiltin(estiloSelect)
 	
-def listar_canais_url(nome,url,estilo,tipo,tipo_user):
+def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user):
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -441,14 +449,14 @@ def returnestilo(estilonovo):
 
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png",'','')
+	addDir('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png",'','','')
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 
 def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
-def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,pasta=True,total=1):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)
+def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,pasta=True,total=1):
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
@@ -537,6 +545,7 @@ idCanal=None
 tipologia=None
 descricao=None
 tipo_user=None
+servidor_user=None
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -582,6 +591,10 @@ try:
 		tipo_user=urllib.unquote_plus(params["tipo_user"])
 except:
 		pass
+try:
+		servidor_user=urllib.unquote_plus(params["servidor_user"])
+except:
+		pass
 		
 
 ###############################################################################################################
@@ -589,9 +602,9 @@ except:
 ###############################################################################################################
 
 if mode==None or url==None or len(url)<1: menu()
-elif mode==1: listar_grupos(str(url),estilo,tipologia,tipo_user)
-elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user)
-elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user)
+elif mode==1: listar_grupos(str(url),estilo,tipologia,tipo_user,servidor_user)
+elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user)
+elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user)
 elif mode==10: minhaConta()
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
