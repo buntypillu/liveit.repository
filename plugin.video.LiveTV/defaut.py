@@ -62,6 +62,11 @@ def menu():
 				'tipo': '',
 				'senha': ''
 				}
+			if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
+				if check_login['user']['dias'] == '5' or check_login['user']['dias'] == '4' or check_login['user']['dias'] == '3' or check_login['user']['dias'] == '2' or check_login['user']['dias'] == '1':
+					__ALERTA__('Live!t TV', 'Faltam '+check_login['user']['dias']+' dias para o serviço expirar.')
+				if check_login['user']['dias'] == '0':
+					__ALERTA__('Live!t TV', 'É hoje que o seu serviço expira. Faça a sua Renovação. Caso não faça irá ficar Inactivo Hoje.')
 			menus['nome'] = "Participacoes"
 			menus['logo'] = check_login['info']['logo']
 			menus['link'] = check_login['info']['link']
@@ -93,6 +98,7 @@ def menu():
 ###################################################################################
 def minhaConta(data_user):
 	addDir(data_user, 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/estadomembro.png",'','','','')
+	addDir('Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','')
    #addDir('Favoritos', __SITE__+'favoritos.php', 11, os.path.join(__ART_FOLDER__, __SKIN__, 'favoritos.png'), 1)
 
 
@@ -103,6 +109,7 @@ def login():
 			'nome': '',
 			'email': '',
 			'tipo': '',
+			'dias': '',
 			'servidor': '',
 			'senhaadulto': ''
 		},
@@ -134,7 +141,7 @@ def login():
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
 			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
-			codigo_fonte = net.http_POST(__SITE__+'LoginAddon.php',form_data=dados,headers=__HEADERS__).content
+			codigo_fonte = net.http_POST(__SITE__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 			elems = ET.fromstring(codigo_fonte)
 			for child in elems:
 				if(child.tag == 'sucesso'):
@@ -149,6 +156,8 @@ def login():
 							informacoes['user']['servidor'] = d.text
 						elif(d.tag == 'Tipo'):
 							informacoes['user']['tipo'] = d.text
+						elif(d.tag == 'dias'):
+							informacoes['user']['dias'] = d.text
 						elif(d.tag == 'DataFim'):
 							try:
 								informacoes['datafim']['data'] = "Membro Ativo até "+ d.text
@@ -214,7 +223,15 @@ def Menu_inicial(men):
 		elif(tipo == 'Serie'):
 			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
 		else:
-			addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+			if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
+				if nome == 'TVs':
+					addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+					addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+				else:
+					addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+			else:
+				addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+		
 			
 	thread.start_new_thread( obter_ficheiro_epg, () )
 
@@ -229,14 +246,10 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user):
 		elif(__ADDON__.getSetting("login_adultos") != senha):
 			__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 		else:
-			listar_grupos(url,estilo,tipo,tipo_user,servidor_user)
+			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user)
 	
-def listar_grupos(url,estilo,tipo,tipo_user,servidor_user):
+def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user):
 	passa = True
-	#if tipo_user == 'Teste':
-		#if tipo == 'Serie' or tipo == 'Filme' or tipo == 'patrocinadores':
-		#	passa = False
-		#	__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
 	if passa == True:
 		page_with_xml = urllib2.urlopen(url).readlines()
 		for line in page_with_xml:
@@ -251,10 +264,15 @@ def listar_grupos(url,estilo,tipo,tipo_user,servidor_user):
 				urlllserv2 = params[5]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
-					if servidor_user == 'Servidor1':
+					if nome_nov == 'TVs-Free':
+						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
+					elif servidor_user == 'Servidor1':
 						addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 					else:
 						addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
+				elif tipo_user == 'Patrocinador':
+					if nome_nov == 'TVs-Free':
+						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 				else:
 					addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 			except:
@@ -611,7 +629,7 @@ except:
 ###############################################################################################################
 
 if mode==None or url==None or len(url)<1: menu()
-elif mode==1: listar_grupos(str(url),estilo,tipologia,tipo_user,servidor_user)
+elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servidor_user)
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user)
 elif mode==10: minhaConta(data_user)
