@@ -336,7 +336,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user):
 						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2, 'IMDBNumber':imdb, 'Votes':votes}
 					else:
 						infoLabels = {'Title':nomewp}
-
+					#addDirM(filme['title'], str({'torrents': filme['items'], 'imdb': filme['imdb'], 'poster': filme['poster_big']}), 6, filme['poster_big'], total, True)
 					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,id_p,infoLabels,total)
 			except:
 				pass
@@ -453,6 +453,7 @@ def favoritos(url):
 
 	xbmc.executebuiltin("Container.SetViewMode(500)")
 
+
 def adicionaFavorito(idCanal):
 	net = Net()
 	net.set_cookies(__COOKIE_FILE__)
@@ -468,10 +469,12 @@ def adicionaFavorito(idCanal):
 				__ALERTA__('Live!t TV', 'Já está adicionado na sua página de favoritos.')
 			else: 
 				__ALERTA__('Live!t TV', 'Erro. Por favor tente mais tarde.')
+
 			
 def RemoveFavorito(idCanal):
 	net = Net()
 	net.set_cookies(__COOKIE_FILE__)
+	print "Sou ID:"+idCanal
 	dados = {'username': __ADDON__.getSetting("login_name"), 'idcanal': idCanal}
 	codigo_fonte = net.http_POST(__SITE__+'RemFav.php',form_data=dados,headers=__HEADERS__).content
 	elems = ET.fromstring(codigo_fonte)
@@ -482,6 +485,7 @@ def RemoveFavorito(idCanal):
 				__ALERTA__('Live!t TV', 'Removeu com Sucesso. Por favor saia do menu favoritos e volte a entrar.')
 			else: 
 				__ALERTA__('Live!t TV', 'Erro. Por favor tente mais tarde.')
+
 			
 def programacao_canal(idCanal):
 
@@ -592,11 +596,13 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,id_p,infoLabels,to
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	
-	cm.append(('Add Favoritos', 'XBMC.RunPlugin(%s?mode=55&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal), urllib.quote_plus(id_p))))
-	
-	if tipo != 'Filme' and tipo != 'Serie':
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal), urllib.quote_plus(id_p))))
+	if tipo == 'Filme' or tipo == 'Serie':
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
+	else:
+		if tipo != 'Praia':
+			cm.append(('Add Favoritos', 'XBMC.RunPlugin(%s?mode=55&name=%s&idffCanal=%s)'%(sys.argv[0],name,id_p)))
+			cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&idCanal=%s)'%(sys.argv[0], name, idCanal)))
+
 	liz.setInfo( type="Video", infoLabels=infoLabels)
 	
 	if tipo == 'Filme':	
@@ -617,25 +623,13 @@ def addLinkFavorito(name,url,iconimage,idCanal,srtfilm,descricao,tipo,id_p,infoL
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	
-	cm.append(('Rem Favoritos', 'XBMC.RunPlugin(%s?mode=66&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],name,urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal), id_p)))
-	
-	if tipo != 'Filme' and tipo != 'Serie':
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(idCanal), urllib.quote_plus(id_p))))
+	cm.append(('Rem Favoritos', 'XBMC.RunPlugin(%s?mode=66&name=%s&idffCanal=%s)'%(sys.argv[0],name,id_p)))
+	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&idCanal=%s)'%(sys.argv[0],name,idCanal)))	
 	liz.setInfo( type="Video", infoLabels=infoLabels)
-	
-	if tipo == 'Filme':	
-		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
-	elif tipo == 'Serie':
-		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
-
-	if tipo == 'Filme' or tipo == 'Serie':
-		#xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
-	else:
-		liz.addContextMenuItems(cm, replaceItems=True)
-		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	liz.addContextMenuItems(cm, replaceItems=True)
+	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+		
 	return ok
 	
 def play_srt(name,url,iconimage,legendas):
@@ -720,7 +714,7 @@ try:
 except:
 		pass
 try:
-		idffCanal=urllib.unquote_plus(params["idffCanal"])
+		idffCanal=params["idffCanal"]
 except:
 		pass
 try:
