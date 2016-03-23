@@ -243,11 +243,11 @@ def Menu_inicial(men):
 def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user):
 	passa = True
 	if tipo_user == 'Teste':
-		if servidor_user == None:
+		if servidor_user == "Teste":
 			passa = False
 			__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
 		else:
-			if servidor_user == '':
+			if servidor_user == 'Teste':
 				passa = False
 				__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')	
 	if passa == True:
@@ -288,7 +288,9 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user):
 						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 				else:
 					if tipo_user == 'Teste':
-						if servidor_user != None:
+						if servidor_user == "Teste":
+							addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
+						else:
 							if servidor_user != '':
 								if servidor_user == 'Servidor1':
 									addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
@@ -298,8 +300,6 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user):
 									addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 							else:
 								addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
-						else:
-							addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 					else:
 						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'')
 			except:
