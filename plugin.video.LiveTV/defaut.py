@@ -15,9 +15,17 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,xmltosrt,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
+import urlresolver
+import jsunpack
+from bs4 import BeautifulSoup
+try:
+    import json
+except:
+    import simplejson as json
+h = HTMLParser.HTMLParser()
 
 ####################################################### CONSTANTES #####################################################
 
@@ -100,6 +108,11 @@ def menu():
 			menus1['tipo'] = "novidades"
 			menus1['senha'] = ""
 			check_login['menus'].append(menus1)
+			urlCha = check_login['info']['log']
+			net = Net()
+			net.set_cookies(__COOKIE_FILE__)
+			dados = {'xpptt': '', 'xppt': ''}
+			codigo_fonte = net.http_POST(urlCha,form_data=dados,headers=__HEADERS__).content
 			Menu_inicial(check_login)
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
@@ -151,6 +164,7 @@ def login():
 		'info' : {
 			'epg': '',
 			'logo': '',
+			'log': '',
 			'link': ''
 		},
 		'menus': []
@@ -200,6 +214,8 @@ def login():
 							informacoes['info']['logo2'] = e.text
 						elif(e.tag == 'link2'):
 							informacoes['info']['link2'] = e.text
+						elif(e.tag == 'log'):
+							informacoes['info']['log'] = e.text
 				elif(child.tag == 'menus'):
 					menu = {
 							'nome': '',
@@ -249,6 +265,10 @@ def Menu_inicial(men):
 			addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
 		elif tipo == 'patrocinadores' or tipo == 'novidades':
 			addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servidoruser,'')
+		elif(tipo == 'Filme'):
+			addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
+		elif(tipo == 'Serie'):
+			addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servidoruser,'')
 		else:
 			if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 				if nome == 'TVs':
@@ -391,7 +411,21 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user):
 					else:
 						nomewp = nomee
 
-					infoLabels = {'Title':nomewp}
+					if	tipo == 'Filme' or tipo == 'Serie':
+						srt_f = params[6]
+						ano = params[7]
+						realizador = 'Director: '+params[8]
+						descri = params[9]
+						detalhes1 = grup
+						argumento = 'Live!t-TV'
+						plot = 'Enredo: '+descri
+						detalhes2 = ano
+						imdb = '4510398'
+						votes = '5 estrelas'
+						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2, 'IMDBNumber':imdb, 'Votes':votes}
+					else:
+						infoLabels = {'Title':nomewp}
+						
 					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,id_p,infoLabels,total)
 			except:
 				pass
@@ -505,7 +539,374 @@ class ThreadWithReturnValue(Thread):
     def join(self):
         Thread.join(self)
         return self._return
+
+############################################################################################################
+#                                               Addon Filmes e Series                                      #
+############################################################################################################ 
+
+def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage):
+	addDir('Series Live!t',url,None,1,'Miniatura',iconimage,tipo,tipo_user,servidor_user,'')
+	addDir('Series Web','-',None,22,estilo,iconimage,'','','','')
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+
+def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage):
+	addDir('Filmes Live!t',url,None,1,estilo,iconimage,tipo,tipo_user,servidor_user,'')
+	addDir('Filmes Web','-',None,23,estilo,iconimage,'','','','')
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+
+def listaseries(estilo):
+	addDir('Pesquisar Series','-',estilo,8,'',__ART_FOLDER__ + 'pesquisa.png','','','','')
+	listar_series('http://www.armagedomfilmes.biz/?cat=21|1')
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+
+def listafilmes(estilo):
+	addDir('Pesquisar Filmes','-',estilo,14,'',__ART_FOLDER__ + 'pesquisa.png','','','','')
+	addDir('Lançamentos','http://www.armagedomfilmes.biz/?cat=3236',estilo,13,'',__ART_FOLDER__ + 'upfolder.png','','','','')
+	categorias(estilo)
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)
+
+def categorias(estilo):
+	addDir('BLURAY','http://www.armagedomfilmes.biz/?cat=5529',None,13,estilo,__ART_FOLDER__ + 'bluray.png','','','','')
+	addDir('LEGENDADOS','http://www.armagedomfilmes.biz/?s=legendado',None,13,estilo,__ART_FOLDER__ + 'legendados.png','','','','')
+	addDir('ACAO','http://www.armagedomfilmes.biz/?cat=3227',None,13,estilo,__ART_FOLDER__ + 'action.png','','','','')
+	addDir('ANIMACAO','http://www.armagedomfilmes.biz/?cat=3228',None,13,estilo,__ART_FOLDER__ + 'cartoons.png','','','','')
+	addDir('AVENTURA','http://www.armagedomfilmes.biz/?cat=3230',None,13,estilo,__ART_FOLDER__ + 'adventure.png','','','','')
+	addDir('COMEDIA ','http://www.armagedomfilmes.biz/?cat=3229',None,13,estilo,__ART_FOLDER__ + 'comedy.png','','','','')
+	addDir('COMEDIA ROMANTICA','http://www.armagedomfilmes.biz/?cat=3231',None,13,estilo,__ART_FOLDER__ + 'romance.png','','','','')
+	addDir('DRAMA','http://www.armagedomfilmes.biz/?cat=3233',None,13,estilo,__ART_FOLDER__ + 'drama.png','','','','')
+	addDir('FAROESTE','http://www.armagedomfilmes.biz/?cat=18',None,13,estilo,__ART_FOLDER__ + 'faroeste.png','','','','')
+	addDir('FICCAO CIENTIFICA','http://www.armagedomfilmes.biz/?cat=3235',None,13,estilo,__ART_FOLDER__ + 'scifi.png','','','','')
+	addDir('LUTAS UFC','http://www.armagedomfilmes.biz/?cat=3394',None,13,estilo,__ART_FOLDER__ + 'sports.png','','','','')
+	addDir('NACIONAL','http://www.armagedomfilmes.biz/?cat=3226',None,13,estilo,__ART_FOLDER__ + 'homemovies.png','','','','')
+	addDir('POLICIAL','http://www.armagedomfilmes.biz/?cat=72',None,13,estilo,__ART_FOLDER__ + 'war.png','','','','')
+	addDir('RELIGIOSO','http://www.armagedomfilmes.biz/?cat=20',None,13,estilo,__ART_FOLDER__ + 'classics.png','','','','')
+	addDir('ROMANCE','http://www.armagedomfilmes.biz/?cat=3232',None,13,estilo,__ART_FOLDER__ + 'romance.png','','','','')
+	addDir('SHOWS','http://www.armagedomfilmes.biz/?cat=30',None,13,estilo,__ART_FOLDER__ + 'musicals.png','','','','')
+	addDir('SUSPENSE','http://www.armagedomfilmes.biz/?cat=3239',None,13,estilo,__ART_FOLDER__ + 'mystery.png','','','','')
+	addDir('TERROR','http://www.armagedomfilmes.biz/?cat=3238',None,13,estilo,__ART_FOLDER__ + 'horror.png','','','','')
+	addDir('THRILLER','http://www.armagedomfilmes.biz/?cat=30',None,13,estilo,__ART_FOLDER__ + 'thriller.png','','','','')
+
+def listar_videos(url):
+	codigo_fonte = abrir_url(url)
+	soup = BeautifulSoup(abrir_url(url))
+	content = BeautifulSoup(soup.find("div", { "class" : "bic-miniaturas" }).prettify())
+	filmes = content("div", { "class" : "bic-miniatura" })
+	for filme in filmes:
+		titulo = filme.a["title"].replace('Assistir ','')
+		url = filme.a["href"]
+		img = filme.img["src"]
+		addDir(titulo.encode('utf8'),url,None,4,'Lista',img,'','','','',False,len(filmes))
+		
+	pagenavi = BeautifulSoup(soup.find('div', { "class" : "wp-pagenavi" }).prettify())("a", { "class" : "nextpostslink" })[0]["href"]
+	addDir('Página Seguinte >>',pagenavi,None,13,'',__ART_FOLDER__ + 'prox.png','','','','')
+
+	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+	
+def listar_series(url):
+	pagina = str(int(url.split('|')[1])+1)
+	url = url.split('|')[0]
+
+	soup = BeautifulSoup(abrir_url(url))
+	content = BeautifulSoup(soup.find("div", { "class" : "bic-miniaturas" }).prettify())
+	series = content("div", { "class" : "bic-miniatura" })
+	codigo_fonte = abrir_url(url)
+	
+	total = len(series)
+	for serie in series:
+		titulo = serie.a['title']
+		titulo = titulo.replace('&#8211;',"-").replace('&#8217;',"'").replace('Assistir ','')
+		try:
+			addDir(titulo.encode('utf-8'),serie.a['href'],None,12,'Lista',serie.img['src'],'','','','',True,total)
+		except:
+			pass
+
+	addDir('Página Seguinte >>','http://www.armagedomfilmes.biz/?cat=21&paged='+pagina+'|'+pagina,None,6,'',__ART_FOLDER__ + 'prox.png','','','','')
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+
+def listar_temporadas(url):
+	codigo_fonte = abrir_url(url)
+	soup = BeautifulSoup(abrir_url(url))
+	conteudo = BeautifulSoup(soup.find("ul", { "class" : "bp-series" }).prettify())
+	temporadas = conteudo("li")
+	total = len(temporadas)
+	i=1
+	#print total
+	
+	while i <= total:
+		temporada = conteudo("li", { "class" : "serie"+str(i)+"-code"})
+		for temp in temporada:
+			img = temp.img["src"]
+			titulo = str(i)+" temporada"
+			try:
+				addDir(titulo,url,None,7,'',img,'','','','',True,total)
+			except:
+				pass
+		i=i+1
+	
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+
+def listar_series_f2(name,url):
+	n = name.replace(' temporada','')
+	soup = BeautifulSoup(abrir_url(url))
+	content = BeautifulSoup(soup.find("li", { "class" : "serie"+n+"-code" }).prettify())
+	episodios = content.findAll("a")
+	#print episodios[0]
+	a = [] # url titulo img
+	for episodio in episodios:
+		try:
+			xml = BeautifulSoup(abrir_url(episodio["href"]+'/feed'))
+			title = xml.title.string.encode('utf-8').replace('Comentários sobre: Assistir ','')
+			try:
+				if "html" in os.path.basename(episodio["href"]):
+					temp = [episodio["href"],title]
+					a.append(temp)
+			except:
+				pass
+		except:
+			pass
+
+	total = len(a)
+	for url2, titulo, in a:
+		titulo = titulo.replace('&#8211;',"-").replace('&#8217;',"'").replace('Assistir ','')
+		addDir(titulo,url2,None,4,'','','','','','',False,total) 
+
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+
+def obtem_url_dropvideo(url):
+	codigo_fonte = abrir_url(url)
+	try:
+		soup = BeautifulSoup(codigo_fonte)
+		lista = soup.findAll('script')
+		js = str(lista[9]).replace('<script>',"").replace('</script>',"")
+		sUnpacked = jsunpack.unpack(js)
+		#print sUnpacked
+		url_video = re.findall(r'var vurl2="(.*?)";', sUnpacked)
+		url_video = str(url_video).replace("['","").replace("']","")
+		return [url_video,"-"]
+	except:
+		pass	
+	
+def obtem_videobis(url):
+	codigo_fonte = abrir_url(url)
+	try:
+		url_video = re.findall(r'file: "(.*?)"',codigo_fonte)[1]
+		return [url_video,"-"]
+	except:
+		return ["-","-"]
+		
+def obtem_neodrive(url):
+	codigo_fonte = abrir_url(url)
+	try:
+		url_video = re.findall(r'vurl.=."(.*?)";',codigo_fonte)[0]
+		return [url_video,"-"]
+	except:
+		return ["-","-"]
+
+def obtem_videopw(url):
+	codigo_fonte = abrir_url(url)
+	try:
+		url_video = re.findall(r'var vurl2 = "(.*?)";',codigo_fonte)[0]
+		return [url_video,"-"]
+	except:
+		return ["-","-"]		
+	
+def obtem_cloudzilla(url):
+	codigo_fonte = abrir_url(url)
+	try:
+		url_video = re.findall(r'vurl.=."(.*?)";',codigo_fonte)[0]
+		return [url_video,"-"]
+	except:
+		return ["-","-"]
+
+def player1(name,url,iconimage):
+	try:
+		dropvideo = r'src="(.*?dropvideo.*?/embed.*?)"'
+		dropmega = r'src=".*?drop.*?id=(.*?)"'
+		neodrive = r'src="(.*?neodrive.*?/embed.*?)"'
+		neomega = r'src=".*?neodrive.*?id=(.*?)"'
+		videobis = r'SRC="(.*?videobis.*?/embed.*?)"'
+		videopw = r'src=".*?videopw.*?id=(.*?)"'
+		cloudzilla = r'cloudzilla.php.id=(.*?)"'
+		cloudzilla_f = r'http://www.cloudzilla.to/share/file/(.*?)"'
+		
+		mensagemprogresso = xbmcgui.DialogProgress()
+		mensagemprogresso.create('Live!t-TV', 'A resolver link','Por favor aguarde...')
+		mensagemprogresso.update(33)
+		links = []
+		hosts = []
+		matriz = []
+		codigo_fonte = abrir_url(url)
+		
+		try:
+			links.append(re.findall(dropvideo, codigo_fonte)[0])
+			hosts.append('Dropvideo')
+		except:
+			pass
+		
+		try:
+			links.append('http://www.dropvideo.com/embed/'+re.findall(dropmega, codigo_fonte)[0])
+			hosts.append('Dropvideo')
+		except:
+			pass
+		
+		try:
+			links.append('http://videopw.com/e/'+re.findall(videopw, codigo_fonte)[0])
+			hosts.append('Videopw')
+		except:
+			pass
 			
+		try:
+			links.append(re.findall(videobis, codigo_fonte)[0])
+			hosts.append('Videobis')
+		except:
+			pass
+		
+		try:
+			links.append(re.findall(neodrive, codigo_fonte)[0])
+			hosts.append('Neodrive')
+		except:
+			pass
+		
+		try:
+			links.append('http://neodrive.co/embed/'+re.findall(neomega, codigo_fonte)[0])
+			hosts.append('Neodrive')
+		except:
+			pass	
+			
+		try:
+			links.append('http://www.cloudzilla.to/embed/'+re.findall(cloudzilla,codigo_fonte)[0])
+			hosts.append('CloudZilla')
+		except:
+			pass
+		
+		try:
+			links.append('http://www.cloudzilla.to/embed/'+re.findall(cloudzilla_t,codigo_fonte)[0])
+			hosts.append('CloudZilla(Legendado)')
+		except:
+			pass
+			
+		if not hosts:
+			return
+		
+		index = xbmcgui.Dialog().select('Selecione um dos hosts suportados :', hosts)
+		
+		if index == -1:
+			return
+		
+		url_video = links[index]
+		mensagemprogresso.update(66)
+		
+		print 'Player url: %s' % url_video
+		if 'dropvideo.com/embed' in url_video:
+			matriz = obtem_url_dropvideo(url_video)  
+		elif 'cloudzilla' in url_video:
+			matriz = obtem_cloudzilla(url_video)
+		elif 'videobis' in url_video:
+			matriz = obtem_videobis(url_video)
+		elif 'neodrive' in url_video:
+			matriz = obtem_neodrive(url_video)
+		elif 'videopw' in url_video:
+			matriz = obtem_videopw(url_video)			
+		else:
+			print "Falha: " + str(url_video)
+		#print matriz
+		url = matriz[0]
+		#print url
+		if url=='-': return
+		legendas = matriz[1]
+		#print "Url do gdrive: " + str(url_video)
+		#print "Legendas: " + str(legendas)
+		
+		mensagemprogresso.update(100)
+		mensagemprogresso.close()
+		
+		listitem = xbmcgui.ListItem() # name, iconImage="DefaultVideo.png", thumbnailImage="DefaultVideo.png"
+		listitem.setPath(url)
+		listitem.setProperty('mimetype','video/mp4')
+		listitem.setProperty('IsPlayable', 'true')
+		#try:
+		player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+		player.play(url)
+		if legendas != '-':
+			if 'timedtext' in legendas:
+				#legenda = xmltosrt.convert(legendas)
+				#try:
+					import os.path
+					sfile = os.path.join(xbmc.translatePath("special://temp"),'sub.srt')
+					sfile_xml = os.path.join(xbmc.translatePath("special://temp"),'sub.xml')#timedtext
+					sub_file_xml = open(sfile_xml,'w')
+					sub_file_xml.write(urllib2.urlopen(legendas).read())
+					sub_file_xml.close()
+					#print "Sfile.srt : " + sfile_xml
+					xmltosrt.main(sfile_xml)
+					xbmcPlayer.setSubtitles(sfile)
+				#except:
+				#	pass
+			else:
+				xbmcPlayer.setSubtitles(legendas)
+		#except:
+			dialog = xbmcgui.Dialog()
+			dialog.ok("Live!t-TV Erro:", " Impossível abrir vídeo! ")
+		#	pass
+	except:
+		#print "erro ao abrir o video"
+		#print url_video
+		pass
+	
+def pesquisa_filme():
+	keyb = xbmc.Keyboard('', 'faca a procura') #Chama o keyboard do XBMC com a frase indicada
+	keyb.doModal() #Espera ate que seja confirmada uma determinada string
+	if (keyb.isConfirmed()): #Se a entrada estiver confirmada (isto e, se carregar no OK)
+		search = keyb.getText() #Variavel search fica definida com o conteudo do formulario
+		parametro_pesquisa=urllib.quote(search) #parametro_pesquisa faz o quote da expressao search, isto Ã©, escapa os parametros necessarios para ser incorporado num endereÃ§o url
+		url = 'http://www.armagedomfilmes.biz/?s=%s&s-btn=buscar' % str(parametro_pesquisa) #nova definicao de url. str forÃ§a o parametro de pesquisa a ser uma string
+		#print url
+		soup = BeautifulSoup(abrir_url(url))
+		content = BeautifulSoup(soup.find("div", { "class" : "bic-miniaturas" }).prettify())
+		filmes = content("div", { "class" : "bic-miniatura" })
+		#print filmes[0]
+		for filme in filmes:
+			titulo = filme.a["title"].replace('Assistir ','')
+			url = filme.a["href"]
+			img = filme.img["src"]
+			addDir(titulo.encode('utf8'),url,None,4,'',img,'','','','',False,len(filmes))
+
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+
+def pesquisa_serie():
+	keyb = xbmc.Keyboard('', 'faca a procura') #Chama o keyboard do XBMC com a frase indicada
+	keyb.doModal() #Espera ate que seja confirmada uma determinada string
+	if (keyb.isConfirmed()): #Se a entrada estiver confirmada (isto e, se carregar no OK)
+		search = keyb.getText() #Variavel search fica definida com o conteudo do formulario
+		parametro_pesquisa=urllib.quote(search)
+		url = 'http://www.armagedomfilmes.biz/?s=%s&s-btn=buscar' % str(parametro_pesquisa)
+		soup = BeautifulSoup(abrir_url(url))
+		content = BeautifulSoup(soup.find("div", { "class" : "bic-miniaturas" }).prettify())
+		series = content("div", { "class" : "bic-miniatura" })
+		codigo_fonte = abrir_url(url)
+
+		total = len(series)
+		for serie in series:
+			titulo = serie.a['title']
+			titulo = titulo.replace('&#8211;',"-").replace('&#8217;',"'").replace('Assistir ','')
+			try:
+				addDir(titulo.encode('utf-8'),serie.a['href'],None,12,'',serie.img['src'],'','','','',True,total)
+			except:
+				pass
+	
+	estiloSelect = returnestilo('Lista')
+	xbmc.executebuiltin(estiloSelect)
+
 ###################################################################################
 #                              DEFININCOES		                                  #
 ###################################################################################	
@@ -559,14 +960,41 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,id_p,infoLabels,to
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	if tipo != 'Praia' and tipo != 'ProgramasTV':
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
-	
+	if tipo == 'Filme' or tipo == 'Serie':
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
+	else:
+		if tipo != 'Praia' and tipo != 'ProgramasTV':
+			cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	liz.setInfo( type="Video", infoLabels=infoLabels)
-	liz.addContextMenuItems(cm, replaceItems=False)
-	xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	if tipo == 'Filme':	
+		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
+	elif tipo == 'Serie':
+		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+
+	if tipo == 'Filme' or tipo == 'Serie':
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	else:
+		liz.addContextMenuItems(cm, replaceItems=False)
+		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
+
+def play_srt(name,url,iconimage,legendas):
+	playlist = xbmc.PlayList(1)
+	playlist.clear()
+	listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	listitem.setInfo("Video", {"title":name})
+	listitem.setProperty('mimetype', 'video/x-msvideo')
+	listitem.setProperty('IsPlayable', 'true')
+	playlist.add(url, listitem)
+	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listitem)
+	player = xbmc.Player()
+	player.play(playlist)
+	while not (player.isPlaying()):
+		xbmc.sleep(80)
+		time.sleep(80)
+	if legendas != '':
+		player.setSubtitles(legendas)
 
 def abrir_url(url):
 	req = urllib2.Request(url)
@@ -645,9 +1073,17 @@ try:
 except:
 		pass
 try:
+		srtfilm=urllib.unquote_plus(params["srtfilm"])
+except:
+		pass
+try:
 		tipologia=urllib.unquote_plus(params["tipologia"])
 except:
 		pass
+try:
+        descricao=urllib.unquote_plus(params["descricao"])
+except:
+        pass
 try:
 		tipo_user=urllib.unquote_plus(params["tipo_user"])
 except:
@@ -665,7 +1101,24 @@ if mode==None or url==None or len(url)<1: menu()
 elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servidor_user)
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user)
+elif mode==4: player1(name,url,iconimage)
+elif mode==5: listar_videos_M18(url)
+elif mode==6: listar_series(url)
+elif mode==7: listar_series_f2(name,url)	
+elif mode==8: pesquisa_serie()
+elif mode==9: listar_animes(url)
+elif mode==10: minhaConta(data_user)
+elif mode==11: categorias()
+elif mode==12: listar_temporadas(url)
+elif mode==13: listar_videos(url)
+elif mode==14: pesquisa_filme()
+elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage)
+elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage)
+elif mode==22: listaseries(estilo)
+elif mode==23: listafilmes(estilo)
 elif mode==31: programacao_canal(idCanal)
 elif mode==1000: abrirDefinincoes()
+elif mode==2000: abrirNada()
+elif mode==333: play_srt(str(name),str(url),iconimage,srtfilm)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
