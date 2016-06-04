@@ -108,11 +108,11 @@ def menu():
 			menus1['tipo'] = "novidades"
 			menus1['senha'] = ""
 			check_login['menus'].append(menus1)
-			urlCha = check_login['info']['log']
-			net = Net()
-			net.set_cookies(__COOKIE_FILE__)
-			dados = {'xpptt': '', 'xppt': ''}
-			codigo_fonte = net.http_POST(urlCha,form_data=dados,headers=__HEADERS__).content
+			#urlCha = check_login['info']['log']
+			#net = Net()
+			#net.set_cookies(__COOKIE_FILE__)
+			#dados = {'xpptt': '', 'xppt': ''}
+			#codigo_fonte = net.http_POST(urlCha,form_data=dados,headers=__HEADERS__).content
 			Menu_inicial(check_login)
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
