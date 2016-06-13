@@ -15,11 +15,12 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,xmltosrt,os,json,threading,xbmcvfs,cookielib,sys,platform,time,gzip,glob,datetime,thread
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,xmltosrt,os,json,threading,xbmcvfs,sys,platform,time,gzip,glob,datetime,thread
 from t0mm0.common.net import Net
 import xml.etree.ElementTree as ET
 import urlresolver
 import jsunpack
+import mechanize, cookielib
 from bs4 import BeautifulSoup
 try:
     import json
@@ -108,11 +109,8 @@ def menu():
 			menus1['tipo'] = "novidades"
 			menus1['senha'] = ""
 			check_login['menus'].append(menus1)
-			#urlCha = check_login['info']['log']
-			#net = Net()
-			#net.set_cookies(__COOKIE_FILE__)
-			#dados = {'xpptt': '', 'xppt': ''}
-			#codigo_fonte = net.http_POST(urlCha,form_data=dados,headers=__HEADERS__).content
+			estado = abrir_cookie(check_login['info']['user'], check_login['info']['password'], check_login['info']['log'], check_login['info']['log'] + 'canais/liberar/', True)
+			print 'Rei: '+estado
 			Menu_inicial(check_login)
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
@@ -131,6 +129,36 @@ def menu():
 		addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','')
 
 	xbmc.executebuiltin("Container.SetViewMode(500)")
+	
+def abrir_cookie(usser, seenha, service, url, New=False):
+	import mechanize
+	import cookielib
+
+	br = mechanize.Browser()
+	cj = cookielib.LWPCookieJar()
+	br.set_cookiejar(cj)
+	if not New:
+		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_onsaleuk"), ignore_discard=False, ignore_expires=False)
+		br.set_handle_equiv(True)
+		br.set_handle_gzip(True)
+		br.set_handle_redirect(True)
+		br.set_handle_referer(True)
+		br.set_handle_robots(False)
+		br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+	if New:
+		br.open(service + 'admin/')
+		br.select_form(nr=0)
+		br.form['password']= seenha
+		br.form['username']= usser
+		br.submit()
+		cj.save(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"))
+		try:
+			br.open(url,timeout=50000000)
+		except:
+			br.open(url)
+		return br.response().read()
+
 ###################################################################################
 #                              Login Addon		                                  #
 ###################################################################################
@@ -164,7 +192,11 @@ def login():
 		'info' : {
 			'epg': '',
 			'logo': '',
+			'logo2': '',
 			'log': '',
+			'user': '',
+			'password': '',
+			'link2': '',
 			'link': ''
 		},
 		'menus': []
@@ -216,6 +248,10 @@ def login():
 							informacoes['info']['link2'] = e.text
 						elif(e.tag == 'log'):
 							informacoes['info']['log'] = e.text
+						elif(e.tag == 'user'):
+							informacoes['info']['user'] = e.text
+						elif(e.tag == 'password'):
+							informacoes['info']['password'] = e.text
 				elif(child.tag == 'menus'):
 					menu = {
 							'nome': '',
