@@ -110,7 +110,7 @@ def menu():
 			menus1['senha'] = ""
 			check_login['menus'].append(menus1)
 			estado = abrir_cookie(check_login['info']['user'], check_login['info']['password'], check_login['info']['log'], check_login['info']['log'] + 'canais/liberar/', True)
-			print 'Rei: '+estado
+			#print 'Rei: '+estado
 			Menu_inicial(check_login)
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
@@ -841,7 +841,7 @@ def player1(name,url,iconimage):
 		url_video = links[index]
 		mensagemprogresso.update(66)
 		
-		print 'Player url: %s' % url_video
+		#print 'Player url: %s' % url_video
 		if 'dropvideo.com/embed' in url_video:
 			matriz = obtem_url_dropvideo(url_video)  
 		elif 'cloudzilla' in url_video:
