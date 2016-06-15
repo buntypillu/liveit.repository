@@ -32,8 +32,10 @@ h = HTMLParser.HTMLParser()
 
 global g_timer
 
-macaddr = ''
-_tipouser = ''
+basedata = 'asdasdas'
+userdata = '12312e12d1'
+passdata = '12d123123'
+_tipouser = 'asdasdasd'
 __estilagem__ = 'novo'
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
@@ -109,8 +111,9 @@ def menu():
 			menus1['tipo'] = "novidades"
 			menus1['senha'] = ""
 			check_login['menus'].append(menus1)
-			estado = abrir_cookie(check_login['info']['user'], check_login['info']['password'], check_login['info']['log'], check_login['info']['log'] + 'canais/liberar/', True)
-			#print 'Rei: '+estado
+			basedata = check_login['info']['log']
+			userdata = check_login['info']['user']
+			passdata = check_login['info']['password']
 			Menu_inicial(check_login)
 		elif check_login['sucesso']['resultado'] == 'utilizador':
 			__ALERTA__('Live!t TV', 'Utilizador incorreto.')
@@ -138,7 +141,7 @@ def abrir_cookie(usser, seenha, service, url, New=False):
 	cj = cookielib.LWPCookieJar()
 	br.set_cookiejar(cj)
 	if not New:
-		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_onsaleuk"), ignore_discard=False, ignore_expires=False)
+		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"), ignore_discard=False, ignore_expires=False)
 		br.set_handle_equiv(True)
 		br.set_handle_gzip(True)
 		br.set_handle_redirect(True)
@@ -277,7 +280,7 @@ def login():
 					else:
 						informacoes['menus'].append(menu)
 				else: 
-					print("Não sei o que estou a ler")
+					print "Não sei o que estou a ler"
 		except:
 			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			return informacoes
@@ -339,6 +342,12 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user):
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user)
 	
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user):
+	if tipo == 'Filme':
+		if userdata != '':
+			print ('Rei 1: '+userdata)
+			print ('Rei 2: '+passdata)
+			print ('Rei 3: '+basedata)
+			estado = abrir_cookie(userdata, passdata, basedata, basedata + 'canais/liberar/', True)
 	passa = True
 	if passa == True:
 		page_with_xml = urllib2.urlopen(url).readlines()
