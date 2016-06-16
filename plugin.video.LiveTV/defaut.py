@@ -477,11 +477,31 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 					else:
 						infoLabels = {'Title':nomewp}
 						
-					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,id_p,infoLabels,total)
+					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 			except:
 				pass
 		estiloSelect = returnestilo(estilo)
 		xbmc.executebuiltin(estiloSelect)
+
+def play_mult_canal(arg, icon, nome, tipouser):
+	#playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+	playlist = xbmc.PlayList(1)
+	playlist.clear()
+	#__ALERTA__('Live!t TV', 'Zequinha')
+	listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	listitem.setInfo("Video", {"title":name})
+	listitem.setProperty('mimetype', 'video/x-msvideo')
+	listitem.setProperty('IsPlayable', 'true')
+	playlist.add(url, listitem)
+	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listitem)
+	player = xbmc.Player()		
+	try:
+		player.play(playlist)
+	except:
+		if tipouser == 'Teste':
+			__ALERTA__('Live!t TV', 'Sendo Free tem estas paragens ou falhas. Adquire agora o premium vai ao grupo e fala com o Administrador.')
+		else:
+			__ALERTA__('Live!t TV', 'Faça Retroceder 3 vezes no comando e tente novamente.')
 
 ###############################################################################################################
 #                                                   EPG                                                     #
@@ -1006,14 +1026,15 @@ def addFolder(name,url,mode,iconimage,folder):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
 	
-def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,id_p,infoLabels,total=1):
+def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabels,total=1):
 	cm=[]
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
 	if tipo == 'Filme' or tipo == 'Serie':
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)+"&tipo_user="+str(tipo_user)
 	else:
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&tipo_user="+str(tipo_user)
 		if tipo != 'Praia' and tipo != 'ProgramasTV':
 			cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	liz.setInfo( type="Video", infoLabels=infoLabels)
@@ -1027,7 +1048,7 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,id_p,infoLabels,to
 	else:
 		liz.addContextMenuItems(cm, replaceItems=False)
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	return ok
 
 def play_srt(name,url,iconimage,legendas):
@@ -1183,6 +1204,7 @@ elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,se
 elif mode==22: listaseries(estilo)
 elif mode==23: listafilmes(estilo)
 elif mode==31: programacao_canal(idCanal)
+elif mode==105: play_mult_canal(url, iconimage, name, tipo_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==333: play_srt(str(name),str(url),iconimage,srtfilm)
