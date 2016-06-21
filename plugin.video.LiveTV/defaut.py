@@ -15,22 +15,13 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,xmltosrt,os,json,threading,xbmcvfs,sys,platform,time,gzip,glob,datetime,thread
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,xmltosrt,os,threading,xbmcvfs,sys,platform,time,gzip,glob,datetime,thread
 from BeautifulSoup import BeautifulSoup
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 from t0mm0.common.net import Net
 from datetime import date
 import xml.etree.ElementTree as ET
 import urlresolver
-import jsunpack
-import mechanize, cookielib
-from bs4 import BeautifulSoup
-
-try:
-    import json
-except:
-    import simplejson as json
-h = HTMLParser.HTMLParser()
 
 import re, htmlentitydefs
 reload(sys)
@@ -42,6 +33,7 @@ global g_timer
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
+__ADDONVERSION__ = __ADDON__.getAddonInfo('version')
 __CWD__ = xbmc.translatePath( __ADDON__.getAddonInfo('path') ).decode("utf-8")
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
 __SETTING__	= xbmcaddon.Addon().getSetting
@@ -49,27 +41,30 @@ __ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
 __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
 _ICON_ = __ADDON_FOLDER__ + '/icon.png'
 __SKIN__ = 'v1'
-__SITE__ = 'http://www.pcteckserv.com/GrupoKodi/PHP/'
-__SITEAddon__ = 'http://www.pcteckserv.com/GrupoKodi/Addon/'
-__EPG__ = 'http://www.pcteckserv.com/GrupoKodi/epg.gz'
+__SITE__ = 'http://liveitkodi.com/PHP/'
+__SITEAddon__ = 'http://liveitkodi.com/Addon/'
+__EPG__ = 'http://liveitkodi.com/epg.gz'
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
 __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'addon_cookies_liveit')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 user_agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36'
-
+debug = __ADDON__.getSetting('debug')
 xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
 _VERSAO_ = str(xml.addon['version'])
 _NOMEADDON_ = str(xml.addon['name'])
 check_login = {}
 
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
+resolve_url=['180upload.com', 'allmyvideos.net', 'bestreams.net', 'clicknupload.com', 'cloudzilla.to', 'movshare.net', 'novamov.com', 'nowvideo.sx', 'videoweed.es', 'daclips.in', 'datemule.com', 'fastvideo.in', 'faststream.in', 'filehoot.com', 'filenuke.com', 'sharesix.com', 'docs.google.com', 'plus.google.com', 'picasaweb.google.com', 'gorillavid.com', 'gorillavid.in', 'grifthost.com', 'hugefiles.net', 'ipithos.to', 'ishared.eu', 'kingfiles.net', 'mail.ru', 'my.mail.ru', 'videoapi.my.mail.ru', 'mightyupload.com', 'mooshare.biz', 'movdivx.com', 'movpod.net', 'movpod.in', 'movreel.com', 'mrfile.me', 'nosvideo.com', 'openload.io', 'played.to', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'primeshare.tv', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'sharerepo.com', 'stagevu.com', 'streamcloud.eu', 'streamin.to', 'thefile.me', 'thevideo.me', 'tusfiles.net', 'uploadc.com', 'zalaa.com', 'uploadrocket.net', 'uptobox.com', 'v-vids.com', 'veehd.com', 'vidbull.com', 'videomega.tv', 'vidplay.net', 'vidspot.net', 'vidto.me', 'vidzi.tv', 'vimeo.com', 'vk.com', 'vodlocker.com', 'xfileload.com', 'xvidstage.com', 'zettahost.tv']
+g_ignoreSetResolved=['plugin.video.dramasonline','plugin.video.f4mTester','plugin.video.shahidmbcnet','plugin.video.SportsDevil','plugin.stream.vaughnlive.tv','plugin.video.ZemTV-shani']
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
 ###################################################################################
-  
+def addon_log(string):
+	if debug == 'true':
+		xbmc.log("[addon.live!t-tv-%s]: %s" %(__ADDONVERSION__, string))
+
 def menu():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
 		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
@@ -142,39 +137,6 @@ def menu():
 			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
 
 		xbmc.executebuiltin("Container.SetViewMode(500)")
-	
-def abrir_cookie(usser, seenha, service, url, New=False):
-	import mechanize
-	import cookielib
-
-	br = mechanize.Browser()
-	cj = cookielib.LWPCookieJar()
-	br.set_cookiejar(cj)
-	if not New:
-		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"), ignore_discard=False, ignore_expires=False)
-		br.set_handle_equiv(True)
-		br.set_handle_gzip(True)
-		br.set_handle_redirect(True)
-		br.set_handle_referer(True)
-		br.set_handle_robots(False)
-		br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-	if New:
-		br.open(service + 'admin/')
-		br.select_form(nr=0)
-		br.form['password']= seenha
-		br.form['username']= usser
-		br.submit()
-		cj.save(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"))
-		try:
-			br.open(url,timeout=50000000)
-		except:
-			br.open(url)
-		return br.response().read()
-
-def getSoup(url):
-	data = abrir_cookie('','','',url).decode('utf8')
-	return BeautifulSOAP(data, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
 
 ###################################################################################
 #                              Login Addon		                                  #
@@ -357,9 +319,6 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,sserv,su
 
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
 	if url != 'url':
-		if tipo == 'Filme':
-			xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_NOMEADDON_,'A verificar os seus dados de acesso.', 2000, _ICON_))
-			estado = abrir_cookie(suseree, spassee, sservee, sservee + 'canais/liberar/', True)
 		page_with_xml = urllib2.urlopen(url).readlines()
 		for line in page_with_xml:
 			objecto = line.decode('latin-1').encode("utf-8")
@@ -477,10 +436,10 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 						detalhes2 = ano
 						imdb = '4510398'
 						votes = '5 estrelas'
-						infoLabels = {'Title':nomewp, 'Plot':plot, 'Writer': argumento, 'Director':realizador, 'Genre':detalhes1, 'Year': detalhes2, 'Aired':detalhes2, 'IMDBNumber':imdb, 'Votes':votes}
+						infoLabels = {'title':nomewp, 'plot':plot, 'writer': argumento, 'director':realizador, 'genre':detalhes1, 'year': detalhes2, 'aired':detalhes2, 'IMDBNumber':imdb, 'votes':votes, "credits": nomewp}
 					else:
-						infoLabels = {'Title':nomewp}
-						
+						infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
+					print 'Nome Novo: '+nomewp
 					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 			except:
 				pass
@@ -488,17 +447,19 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 		xbmc.executebuiltin(estiloSelect)
 
 def play_mult_canal(arg, icon, nome, tipouser):
-	#playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-	playlist = xbmc.PlayList(1)
+	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
-	#__ALERTA__('Live!t TV', 'Zequinha')
-	listitem = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	listitem.setInfo("Video", {"title":name})
+	listitem = xbmcgui.ListItem(nome, iconImage=icon, thumbnailImage=icon)
+	listitem.setInfo("Video", {"title":nome})
 	listitem.setProperty('mimetype', 'video/x-msvideo')
 	listitem.setProperty('IsPlayable', 'true')
-	playlist.add(url, listitem)
+	#listitem = xbmcgui.ListItem(nome, iconImage=icon, thumbnailImage=icon)
+	#listitem.setInfo("Video", {"title":nome})
+	listitem.setProperty('mimetype', 'video/x-msvideo')
+	listitem.setProperty('IsPlayable', 'true')
+	player = xbmc.Player()
+	playlist.add(url=arg, listitem=listitem)
 	xbmcplugin.setResolvedUrl(handle=int(sys.argv[1]), succeeded=True, listitem=listitem)
-	player = xbmc.Player()		
 	try:
 		player.play(playlist)
 	except:
@@ -506,6 +467,16 @@ def play_mult_canal(arg, icon, nome, tipouser):
 			__ALERTA__('Live!t TV', 'Sendo Free tem estas paragens ou falhas. Adquire agora o premium vai ao grupo e fala com o Administrador.')
 		else:
 			__ALERTA__('Live!t TV', 'Faça Retroceder 3 vezes no comando e tente novamente.')
+
+def playsetresolved(url, iconimage, name, tipouser, setresolved=True):
+	if setresolved:
+		liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+		liz.setInfo(type='Video', infoLabels={'Title':name})
+		liz.setProperty("IsPlayable","true")
+		liz.setPath(url)
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+	else:
+		xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
 
 ###############################################################################################################
 #                                                   EPG                                                     #
@@ -1029,17 +1000,27 @@ def addFolder(name,url,mode,iconimage,folder):
 	liz.setProperty('fanart_image', iconimage)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
-	
+
 def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabels,total=1):
 	cm=[]
 	ok=True
-	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', iconimage)
+	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)	
 	if tipo == 'Filme' or tipo == 'Serie':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=333&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+ "&srtfilm=" + urllib.quote_plus(srtfilm)+"&tipo_user="+str(tipo_user)
 	else:
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&tipo_user="+str(tipo_user)
-		if tipo != 'Praia' and tipo != 'ProgramasTV':
+		if url.startswith('magnet:?xt='):
+			if '&' in url and not '&amp;' in url :
+				url = url.replace('&','&amp;')
+			url = 'plugin://plugin.video.pulsar/play?uri=' + url
+			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=15&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&tipo_user="+str(tipo_user)
+		else:
+			if 'plugin://plugin.video.youtube/play/?video_id=' in url:
+				url = url.replace('plugin://plugin.video.youtube/play/?video_id=','https://www.youtube.com/watch?v=')
+				u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=24&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&tipo_user="+str(tipo_user)
+			else:
+				u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&tipo_user="+str(tipo_user)
+	liz.setProperty('fanart_image', iconimage)
+	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie' and tipo != 'Adulto':
 			cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	liz.setInfo( type="Video", infoLabels=infoLabels)
 	if tipo == 'Filme':	
@@ -1079,6 +1060,25 @@ def abrir_url(url):
 	link=response.read()
 	response.close()
 	return link
+
+def ytdl_download(url,title,media_type='video'):
+	import youtubedl
+	if not url == '':
+		if media_type== 'audio':
+			youtubedl.single_YD(url,download=True,audio=True)
+		else:
+			youtubedl.single_YD(url,download=True)
+	elif xbmc.Player().isPlaying() == True :
+		import YDStreamExtractor
+		if YDStreamExtractor.isDownloading() == True:
+			YDStreamExtractor.manageDownloads()
+		else:
+			xbmc_url = xbmc.Player().getPlayingFile()
+			xbmc_url = xbmc_url.split('|User-Agent=')[0]
+			info = {'url':xbmc_url,'title':title,'media_type':media_type}
+			youtubedl.single_YD('',download=True,dl_info=info)
+	else:
+		xbmc.executebuiltin("XBMC.Notification(DOWNLOAD,First Play [COLOR yellow]WHILE playing download[/COLOR] ,10000)")
 
 ############################################################################################################
 #                                               GET PARAMS                                                 #
@@ -1203,12 +1203,21 @@ elif mode==11: categorias()
 elif mode==12: listar_temporadas(url)
 elif mode==13: listar_videos(url)
 elif mode==14: pesquisa_filme()
+elif mode==15:
+    addon_log("setResolvedUrl")
+    if not url.startswith("plugin://plugin") or not any(x in url for x in g_ignoreSetResolved):
+        item = xbmcgui.ListItem(path=url)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+    else:
+        print 'Not setting setResolvedUrl'
+        xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,s_serv,s_user,s_pass)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,s_serv,s_user,s_pass)
 elif mode==22: listaseries(estilo)
 elif mode==23: listafilmes(estilo)
+elif mode==24: ytdl_download(url,name,'video')
 elif mode==31: programacao_canal(idCanal)
-elif mode==105: play_mult_canal(url, iconimage, name, tipo_user)
+elif mode==105: play_mult_canal(url,iconimage,name,tipo_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==333: play_srt(str(name),str(url),iconimage,srtfilm)
