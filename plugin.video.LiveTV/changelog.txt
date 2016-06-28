@@ -1,0 +1,6 @@
+v5.5.9 (28/06/2016)
+- Ver filmes
+- Ver series
+- Pesquisa
+- Filmes/Series por categorias
+- Filmes/Series por ano
