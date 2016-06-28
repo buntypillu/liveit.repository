@@ -75,6 +75,7 @@ def menu():
 		abrirDefinincoes()
 	else:
 		check_login = login()
+		database = Database.isExists()
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
 				#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t TV - Sessão: '+check_login['user']['nome']+', Versão do addon: '+_VERSAO_, '8000, _ICON_))
@@ -566,8 +567,6 @@ class ThreadWithReturnValue(Thread):
 #                                               Addon Filmes e Series                                      #
 ############################################################################################################ 
 def menuFilmes():
-	database = Database.isExists()
-
 	addDir2('Filmes', __SITEFILMES__+'kodi_filmes.php', 111, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'))
 	addDir2('Pesquisa', __SITEFILMES__, 120, __FANART__, 111, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'procurar.png'))
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
@@ -577,8 +576,6 @@ def menuFilmes():
 	vista_menu()
 
 def menuSeries():
-	database = Database.isExists()
-
 	addDir2('Series', __SITEFILMES__+'kodi_series.php', 111, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'))
 	addDir2('Pesquisa', __SITEFILMES__, 121, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'procurar.png'))
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
