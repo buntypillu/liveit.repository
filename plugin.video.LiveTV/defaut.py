@@ -15,10 +15,9 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,pprint,datetime,thread,time
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,pprint,datetime,thread,time,sys,platform,gzip,glob
 import xml.etree.ElementTree as ET
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
-from t0mm0.common.net import Net
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
@@ -77,7 +76,8 @@ def menu():
 		check_login = login()
 
 		database = Database.isExists()
-
+		__ALERTA__('Live!t TV', database)
+		
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
 				#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t TV - Sessão: '+check_login['user']['nome']+', Versão do addon: '+_VERSAO_, '8000, _ICON_))
@@ -153,7 +153,6 @@ def minhaConta(data_user,estilo):
 	addDir('Definições', 'url', None, 1000, estilo, __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
 
 def login():
-	database = Database.isExists()
 	informacoes = {
 		'user' : {
 			'nome': '',
@@ -272,7 +271,6 @@ def login():
 ###############################################################################################################
 
 def Menu_inicial(men):
-	database = Database.isExists()
 	_tipouser = men['user']['tipo']
 	_nomeuser = 'Live!t-TV ('+men['user']['nome']+')'
 	for menu in men['menus']:
@@ -380,7 +378,6 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 #                                                   Listar Canais                                             #
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
-	database = Database.isExists()
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -578,6 +575,15 @@ def menuFilmes():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Filmes por Ano', __SITEFILMES__+'kodi_filmes.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Filmes por Genero', __SITEFILMES__+'kodi_filmes.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+	if Trakt.loggedIn():
+		dp = xbmcgui.DialogProgress()
+		dp.create('Live!t-TV Trakt')
+		dp.update(0, "A Carregar os Filmes vistos no Trakt")
+		filmesTraktVistos()
+
+		dp.close()
+
+		addDir('Trakt', __SITE__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 
 	vista_menu()
 
@@ -588,14 +594,21 @@ def menuSeries():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Series por Ano', __SITEFILMES__+'kodi_series.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Series por Genero', __SITEFILMES__+'kodi_series.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+	if Trakt.loggedIn():
+		dp = xbmcgui.DialogProgress()
+		dp.create('Live!t-TV Trakt')
+		dp.update(50, "A Carregar as Series vistas no Trakt")
+		seriesTraktVistos()
 
+		dp.close()
+
+		addDir('Trakt', __SITE__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 	vista_menu()
 
 def removerAcentos(txt, encoding='utf-8'):
 	return normalize('NFKD', txt.decode(encoding)).encode('ASCII','ignore')
 
 def getList(url, pagina):
-	database = Database.isExists()
 	tipo = ''
 	categoria = ''
 	naovai = False
@@ -605,7 +618,6 @@ def getList(url, pagina):
 		codigo_fonte = net.http_GET(url, headers=__HEADERS__).content.encode('utf8')
 	except:
 		naovai = True
-	database = Database.isExists()
 	if naovai == False:
 		if 'kodi_filmes.php' in url:
 			tipo = 'kodi_filmes'
@@ -1366,6 +1378,227 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
         while player_mr.playing:
             xbmc.sleep(5000)
             player_mr.trackerTempo()
+
+def loginTrakt():
+	Trakt.traktAuth()
+
+def menuTrakt():
+	addDir('Progresso', __SITE__, 702, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
+	addDir('Watchlist Filmes', 'https://api-v2launch.trakt.tv/sync/watchlist/movies', 703, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
+	addDir('Watchlist Series', 'https://api-v2launch.trakt.tv/sync/watchlist/shows', 703, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
+	vista_menu()
+
+def seriesTraktVistos():
+    url = 'https://api-v2launch.trakt.tv/users/%s/watched/shows' % __ADDON__.getSetting('utilizadorTrakt')
+
+    vistos = Trakt.getTrakt(url, login=False)
+    vistos = json.loads(vistos)
+
+    for v in vistos:
+        if v["show"]["ids"]["imdb"] is None:
+            continue
+
+        for s in v["seasons"]:
+            if s['number'] == 0:
+                continue
+
+            temporadaNumero = s["number"]
+
+            for e in s["episodes"]:
+                episodioN = e["number"]
+
+                episodioInfo = Database.selectEpisodioDB(v["show"]["ids"]["imdb"], temporadaNumero, episodioN)
+                if episodioInfo is None:
+                    if Database.selectSerieDB(v["show"]["ids"]["imdb"]) is None:
+                        lixo = Trakt.getSerie(v["show"]["ids"]["imdb"])
+                        Database.markwatchedEpisodioDB(v["show"]["ids"]["imdb"], temporadaNumero, episodioN)
+                    else:
+                        infoEpis = json.loads(Trakt.getTVDBByEpSe(v["show"]["ids"]["imdb"], temporadaNumero, episodioN))
+                        Database.insertEpisodio(infoEpis["name"], infoEpis["plot"], infoEpis["imdb"], infoEpis["tvdb"], infoEpis["season"], infoEpis["episode"], infoEpis["fanart"], infoEpis["poster"], infoEpis["aired"], infoEpis["serie"], infoEpis["traktid"], actores=infoEpis['actors'])
+                        Database.markwatchedEpisodioDB(v["show"]["ids"]["imdb"], temporadaNumero, episodioN)
+                else:
+                    if Database.isWatchedSerieDB(v["show"]["ids"]["imdb"], temporadaNumero, episodioN):
+                        continue
+                    Database.markwatchedEpisodioDB(v["show"]["ids"]["imdb"], temporadaNumero, episodioN)
+
+
+def filmesTraktVistos():
+    url = 'https://api-v2launch.trakt.tv/users/%s/watched/movies' % __ADDON__.getSetting('utilizadorTrakt')
+
+    vistos = Trakt.getTrakt(url, login=False)
+    vistos = json.loads(vistos)
+
+
+    for v in vistos:
+        if v["movie"]["ids"]["imdb"] is None:
+            continue
+        filme = Database.selectFilmeDB(v["movie"]["ids"]["imdb"])
+        if filme is None:
+            infoFilme = json.loads(Trakt.getFilme(v["movie"]["ids"]["imdb"], ''))
+            Database.markwatchedFilmeDB(v["movie"]["ids"]["imdb"])
+        else:
+            Database.markwatchedFilmeDB(v["movie"]["ids"]["imdb"])
+
+def watchlistTrakt(url):
+
+    if 'shows' in url:
+        tipo = 'series'
+    elif 'movies' in url:
+        tipo = 'filmes'
+
+    dados = Trakt.getTrakt(url)
+    dados = json.loads(dados)
+
+    if tipo == 'filmes':
+        for f in dados:
+            if f["movie"]["ids"]["imdb"] is None:
+                continue
+
+            imdb = f["movie"]["ids"]["imdb"]
+            filme = Database.selectFilmeDB(imdb)
+            if filme is None:
+                infoFilme = json.loads(Trakt.getFilme(imdb, ''))
+                poster = infoFilme["poster"]
+                fanart = infoFilme["fanart"]
+                nomeOriginal = infoFilme["nome"]
+                ano = infoFilme["ano"]
+                infoLabels = {'Title': infoFilme["nome"], 'Year': infoFilme["ano"], 'Genre': infoFilme["categoria"], 'Plot': infoFilme["plot"], 'Code': imdb}
+            else:
+                infoLabels = {'Title': filme[1], 'Year': filme[8], 'Genre': filme[3], 'Plot': filme[2], 'Code': filme[0] }
+                poster = filme[6]
+                fanart = filme[5]
+                nomeOriginal = filme[1]
+                ano = filme[8]
+
+            try:
+                nomeOriginal = unicode(nomeOriginal, 'utf-8')
+            except:
+                nomeOriginal = nomeOriginal
+
+            addVideo(nomeOriginal+' ('+ano+')', __SITE__+'kodi_filme.php?imdb='+imdb, 3, fanart, 'filme', 0, 0, infoLabels, poster)
+    elif tipo == 'series':
+
+        for s in dados:
+
+            if s["show"]["ids"]["imdb"] is None:
+                continue
+
+            imdb = s["show"]["ids"]["imdb"]
+
+            serie = Database.selectSerieDB(imdb)
+            if serie is None:
+                infoSerie = json.loads(Trakt.getSerie(imdb, ''))
+                poster = infoSerie["poster"]
+                fanart = infoSerie["fanart"]
+                nomeOriginal = infoSerie["nome"]
+                ano = infoSerie["ano"]
+
+                infoLabels = {"Title": infoSerie["nome"], 'Aired':infoSerie['aired'], 'Plot':infoSerie['plot'], 'Year':infoSerie['ano'], 'Genre':infoSerie['categoria'], 'Code': infoSerie["imdb"]}
+            else:
+                infoLabels = {"Title": serie[0], 'Aired':serie[8], 'Plot':serie[1], 'Genre':serie[5], 'Code':serie[2], 'Year': serie[9]}
+                poster = serie[7]
+                fanart = serie[6]
+                nomeOriginal = serie[0]
+                ano = serie[9]
+
+            try:
+                nomeOriginal = unicode(nomeOriginal, 'utf-8')
+            except:
+                nomeOriginal = nomeOriginal
+
+            addDir(nomeOriginal, __SITE__+"kodi_serie.php?imdb="+imdb, 4, fanart, pagina, 'serie', infoLabels, poster)
+
+def progressoTrakt():
+    url = 'http://api-v2launch.trakt.tv/users/%s/watched/shows?extended=full,images' % __ADDON__.getSetting('utilizadorTrakt')
+
+    progresso = Trakt.getTrakt(url, login=False)
+    progresso = json.loads(progresso)
+
+    dataAgora = datetime.datetime.now()
+    for serie in progresso:
+        url = 'https://api-v2launch.trakt.tv/shows/%s/progress/watched?hidden=false&specials=false' % serie["show"]["ids"]["slug"]
+
+        data = Trakt.getTrakt(url)
+
+        #pprint.pprint(data)
+        if data == "asd":
+            continue
+        data = json.loads(data)
+        series = {}
+        imdbid = serie["show"]["ids"]["imdb"]
+        fanart = serie["show"]["images"]["fanart"]["full"]
+        poster = serie["show"]["images"]["poster"]["full"]
+        slug = serie["show"]["ids"]["imdb"]
+        try:
+            episodioN = str(data["next_episode"]["number"])
+            temporadaNumero = str(data["next_episode"]["season"])
+        except:
+            continue
+        url = 'https://api-v2launch.trakt.tv/shows/%s/seasons/%s/episodes/%s?extended=full' % (imdbid, temporadaNumero, episodioN)
+        airedData = json.loads(Trakt.getTrakt(url))
+
+        airedData = airedData["first_aired"].split("T")[0]
+        airedData = airedData.split("-")
+
+        if datetime.datetime(int(airedData[0]), int(airedData[1]), int(airedData[2])) > dataAgora:
+            continue
+
+        episodioInfo = Database.selectEpisodioDB(imdbid, temporadaNumero, episodioN)
+        if episodioInfo is None:
+            if Database.selectSerieDB(imdbid) is None:
+                lixo = Trakt.getSerie(imdbid)
+
+                infoEpis = Database.selectEpisodioDB(imdbid, temporadaNumero, episodioN)
+
+                infoLabels = {'Title':infoEpis[0], 'Actors':infoEpis[7], 'Plot':infoEpis[1], 'Season':infoEpis[2], 'Episode':infoEpis[3], "Code":imdbid, 'Aired': infoEpis[6] }
+                poster = infoEpis[5]
+                fanart = infoEpis[4]
+                nomeEpisodio = infoEpis[0]
+                temporadaEpisodioDB = infoEpis[2]
+                numeroEpisodioDB = infoEpis[3]
+                serieTitulo = infoEpis[11]
+
+        else:
+            infoLabels = {'Title':episodioInfo[0], 'Actors':episodioInfo[7], 'Plot':episodioInfo[1], 'Season':episodioInfo[2], 'Episode':episodioInfo[3], "Code":imdbid, 'Aired': episodioInfo[6] }
+            poster = episodioInfo[5]
+            fanart = episodioInfo[4]
+            nomeEpisodio = episodioInfo[0]
+            temporadaEpisodioDB = episodioInfo[2]
+            numeroEpisodioDB = episodioInfo[3]
+            serieTitulo = episodioInfo[11]
+
+        urlmr = '%skodi_serie.php?t=%s&imdb=%s&e=%s#%s' % (__SITE__, temporadaEpisodioDB, imdbid, numeroEpisodioDB, numeroEpisodioDB)
+        addVideo("[B]"+serieTitulo+"[/B] "+temporadaNumero+'x'+episodioN+' . '+nomeEpisodio, urlmr, 3, fanart, 'episodio', temporadaEpisodioDB, numeroEpisodioDB, infoLabels, poster, serieTitulo)
+
+        #thread.start_new_thread(infoSerieProgressoTraktWorker, (imdbid, temporadaNumero, episodioN,))
+
+def infoSerieProgressoTraktWorker(imdbid, temporadaNumero, episodioN):
+    episodioInfo = Database.selectEpisodioDB(imdbid, temporadaNumero, episodioN)
+    if episodioInfo is None:
+        if Database.selectSerieDB(imdbid) is None:
+            lixo = Trakt.getSerie(imdbid)
+
+            infoEpis = Database.selectEpisodioDB(imdbid, temporadaNumero, episodioN)
+
+            infoLabels = {'Title':infoEpis[0], 'Actors':infoEpis[7], 'Plot':infoEpis[1], 'Season':infoEpis[2], 'Episode':infoEpis[3], "Code":imdbid, 'Aired': infoEpis[6] }
+            poster = infoEpis[5]
+            fanart = infoEpis[4]
+            nomeEpisodio = infoEpis[0]
+            temporadaEpisodioDB = infoEpis[2]
+            numeroEpisodioDB = infoEpis[3]
+            serieTitulo = infoEpis[11]
+
+    else:
+        infoLabels = {'Title':episodioInfo[0], 'Actors':episodioInfo[7], 'Plot':episodioInfo[1], 'Season':episodioInfo[2], 'Episode':episodioInfo[3], "Code":imdbid, 'Aired': episodioInfo[6] }
+        poster = episodioInfo[5]
+        fanart = episodioInfo[4]
+        nomeEpisodio = episodioInfo[0]
+        temporadaEpisodioDB = episodioInfo[2]
+        numeroEpisodioDB = episodioInfo[3]
+        serieTitulo = episodioInfo[11]
+
+    urlmr = '%skodi_serie.php?t=%s&imdb=%s&e=%s#%s' % (__SITE__, temporadaEpisodioDB, imdbid, numeroEpisodioDB, numeroEpisodioDB)
+    addVideo("[B]"+serieTitulo+"[/B] "+temporadaNumero+'x'+episodioN+' . '+nomeEpisodio, urlmr, 3, fanart, 'episodio', temporadaEpisodioDB, numeroEpisodioDB, infoLabels, poster, serieTitulo)
 
 def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")

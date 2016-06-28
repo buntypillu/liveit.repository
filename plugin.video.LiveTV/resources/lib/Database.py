@@ -9,7 +9,7 @@ except:
 
 import xbmcvfs, os, sys, xbmc
 
-__DB_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf8'), 'cachemovielpct.db')
+__DB_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf8'), 'cacheliveit.db')
 
 def isExists():
     if not xbmcvfs.exists(__DB_FILE__):
