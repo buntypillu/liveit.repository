@@ -75,7 +75,9 @@ def menu():
 		abrirDefinincoes()
 	else:
 		check_login = login()
+
 		database = Database.isExists()
+
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
 				#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t TV - Sessão: '+check_login['user']['nome']+', Versão do addon: '+_VERSAO_, '8000, _ICON_))
@@ -151,6 +153,7 @@ def minhaConta(data_user,estilo):
 	addDir('Definições', 'url', None, 1000, estilo, __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
 
 def login():
+	database = Database.isExists()
 	informacoes = {
 		'user' : {
 			'nome': '',
@@ -269,6 +272,7 @@ def login():
 ###############################################################################################################
 
 def Menu_inicial(men):
+	database = Database.isExists()
 	_tipouser = men['user']['tipo']
 	_nomeuser = 'Live!t-TV ('+men['user']['nome']+')'
 	for menu in men['menus']:
@@ -376,6 +380,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 #                                                   Listar Canais                                             #
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
+	database = Database.isExists()
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -567,6 +572,7 @@ class ThreadWithReturnValue(Thread):
 #                                               Addon Filmes e Series                                      #
 ############################################################################################################ 
 def menuFilmes():
+	database = Database.isExists()
 	addDir2('Filmes', __SITEFILMES__+'kodi_filmes.php', 111, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'))
 	addDir2('Pesquisa', __SITEFILMES__, 120, __FANART__, 111, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'procurar.png'))
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
@@ -576,6 +582,7 @@ def menuFilmes():
 	vista_menu()
 
 def menuSeries():
+	database = Database.isExists()
 	addDir2('Series', __SITEFILMES__+'kodi_series.php', 111, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'))
 	addDir2('Pesquisa', __SITEFILMES__, 121, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'procurar.png'))
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
@@ -588,6 +595,7 @@ def removerAcentos(txt, encoding='utf-8'):
 	return normalize('NFKD', txt.decode(encoding)).encode('ASCII','ignore')
 
 def getList(url, pagina):
+	database = Database.isExists()
 	tipo = ''
 	categoria = ''
 	naovai = False
@@ -597,7 +605,7 @@ def getList(url, pagina):
 		codigo_fonte = net.http_GET(url, headers=__HEADERS__).content.encode('utf8')
 	except:
 		naovai = True
-
+	database = Database.isExists()
 	if naovai == False:
 		if 'kodi_filmes.php' in url:
 			tipo = 'kodi_filmes'
@@ -619,7 +627,7 @@ def getList(url, pagina):
 			match = re.compile('<div\s+class="movie-info">\s+<a\s+href="(.+?)"\s+class="movie-name">.+?<\/a>\s+<d.+?><\/div>\s+<d.+?>\s+<d.+?>\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
 		elif tipo == 'kodi_series':
 			match = re.compile('<div\s+class="movie-info">\s+<a\s+href="(.+?)"\s+class="movie-name">.+?<\/a>\s+<d.+?><\/div>\s+<d.+?>\s+<d.+?>\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
-
+		database = Database.isExists()
 		if tipo == 'kodi_filmes':
 
 			for link, cat in match:
