@@ -301,14 +301,14 @@ class OpenLoad():
 				if jsonResult['status'] == 200:
 					return jsonResult['result']['url'] + '?mime=true'  #really?? :facepalm:
 				else:
-					self.messageOk('MrPiracy.club', "FILE: "+jsonResult['msg'])
+					self.messageOk('Live!t-TV', "FILE: "+jsonResult['msg'])
 
 			else:
 
-				self.messageOk('MrPiracy.xyz', "TICKET: "+jsonResult['msg'])
+				self.messageOk('Live!t-TV', "TICKET: "+jsonResult['msg'])
 				return False
 		except:
-			self.messageOk('MrPiracy.club', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
+			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
 
 	def getCaptcha(self, image):
 		try:
@@ -324,11 +324,11 @@ class OpenLoad():
 			if(letters.isConfirmed()):
 				result = letters.getText()
 				if result == '':
-					self.messageOk('MrPiracy.club', 'Tens de colocar o texto da imagem para aceder ao video.')
+					self.messageOk('Live!t-TV', 'Tens de colocar o texto da imagem para aceder ao video.')
 				else:
 					return result
 			else:
-				self.messageOk('MrPiracy.club', 'Erro no Captcha')
+				self.messageOk('Live!t-TV', 'Erro no Captcha')
 		finally:
 			dialog.close()
 
@@ -367,7 +367,7 @@ class VideoMega():
 		if match:
 			return match.group(1) + '|User-Agent=%s' % (self.headers)
 		else:
-			self.messageOk('MrPiracy.xyz', 'Video nao encontrado.')
+			self.messageOk('Live!t-TV', 'Video nao encontrado.')
 
 class Vidzi():
 	def __init__(self, url):
@@ -413,7 +413,7 @@ class Vidzi():
 				if stream:
 					return stream.group(1)
 
-		self.messageOk('MrPiracy.club', 'Video nao encontrado. Escolha outro servidor')
+		self.messageOk('Live!t-TV', 'Video nao encontrado. Escolha outro servidor')
 
 
 	def getSubtitle(self):

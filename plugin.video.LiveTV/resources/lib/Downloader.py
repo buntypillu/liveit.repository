@@ -16,7 +16,7 @@ class Downloader:
                             except: pass
 
             dp = xbmcgui.DialogProgress()
-            dp.create('MrPiracy.xyz Downloader')
+            dp.create('Live!t-TV Downloader')
             dp.update(0,name)
             xbmc.sleep(500)
             start_time = time.time()
