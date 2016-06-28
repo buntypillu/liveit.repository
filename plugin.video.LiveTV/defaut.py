@@ -140,7 +140,7 @@ def menu():
 			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
 			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
 
-		vista_menu()
+		xbmc.executebuiltin("Container.SetViewMode(500)")
 
 ###################################################################################
 #                              Login Addon		                                  #
@@ -596,7 +596,7 @@ def getList(url, pagina):
 		codigo_fonte = net.http_GET(url, headers=__HEADERS__).content.encode('utf8')
 	except:
 		naovai = True
-	
+
 	if naovai == False:
 		if 'kodi_filmes.php' in url:
 			tipo = 'kodi_filmes'
@@ -678,7 +678,7 @@ def getList(url, pagina):
 					nomeOriginal = unicode(nomeOriginal, 'utf-8')
 				except:
 					nomeOriginal = nomeOriginal
-				addDir2(nomeOriginal, __SITEFILMES__+"kodi_"+link, 4, fanart, pagina, 'serie', infoLabels, poster)
+				addDir2(nomeOriginal, __SITEFILMES__+"kodi_"+link, 114, fanart, pagina, 'serie', infoLabels, poster)
 		if categoria == '':
 			addDir2('Proximo', __SITEFILMES__+tipo+'.php?pagina='+str(int(pagina)+1)+''+anoLink, 111, __FANART__, int(pagina)+1, poster= os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
 		else:
