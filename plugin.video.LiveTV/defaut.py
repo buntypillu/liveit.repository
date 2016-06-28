@@ -76,7 +76,7 @@ def menu():
 		check_login = login()
 
 		database = Database.isExists()
-		__ALERTA__('Live!t TV', database)
+		#__ALERTA__('Live!t TV', database)
 		
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
