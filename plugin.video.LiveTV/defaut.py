@@ -15,7 +15,7 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,HTMLParser,os,json,threading,xbmcvfs,sys,platform,time,gzip,glob,datetime,thread
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,pprint,datetime,thread,time
 import xml.etree.ElementTree as ET
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 from t0mm0.common.net import Net
@@ -30,8 +30,6 @@ from resources.lib import URLResolverMedia
 from resources.lib import Trakt
 from resources.lib import Database
 from unicodedata import normalize
-
-h = HTMLParser.HTMLParser()
 
 ####################################################### CONSTANTES #####################################################
 
@@ -52,7 +50,7 @@ __SITEAddon__ = 'http://liveitkodi.com/Addon/'
 __EPG__ = 'http://liveitkodi.com/epg.gz'
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
 __ALERTA__ = xbmcgui.Dialog().ok
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.LiveTV')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 debug = __ADDON__.getSetting('debug')
 xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
@@ -369,9 +367,9 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			except:
 				pass
 	
-	vista_menu()
-	#estiloSelect = returnestilo(estilo)
-	#xbmc.executebuiltin(estiloSelect)	
+	#vista_menu()
+	estiloSelect = returnestilo(estilo)
+	xbmc.executebuiltin(estiloSelect)	
 
 ###############################################################################################################
 #                                                   Listar Canais                                             #

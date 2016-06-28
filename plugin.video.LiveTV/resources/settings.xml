@@ -9,7 +9,7 @@
 	  <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="false"/>
 	  <setting type="sep" />
 	  <setting label="Definições de vista:" type="lsep" />
-      <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura" default="2"/>
+      <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura" default="0"/>
 	  <setting id="canaisView" type="enum" label="Vista de Canais" values="Lista|Lista Grande|Miniatura" default="2"/>
       <setting id="filmesSeriesView" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Posters|Fanart|Media Info 1|Media Info 2|Media Info 3" default="4"/>
       <setting id="temporadasView" type="enum" label="Vista de temporadas" values="Lista|Lista Grande|Miniatura" default="2"/>

@@ -286,6 +286,15 @@ def getSerie(idIMDB, categoria=None, slug=None):
     else:
         fanart = resultado["images"]["fanart"]["full"]
 
+    """try:
+        poster = 'http://thetvdb.com/banners/'+soup.filename.text
+    except:
+        poster = resultado["images"]["poster"]["full"]
+    try:
+        fanart = resultado["images"]["fanart"]["full"]
+    except:
+        fanart = 'http://thetvdb.com/banners/'+soup.filename.text
+    """
     nomeSerie = resultado['title']
 
     airedSerie = soup.series.firstaired.text
@@ -358,17 +367,24 @@ def getTVDBByEpSe(idIMDB, temporada, episodio, slug=None):
     except:
         actores = ''
 
-
-    if resultado["images"]["poster"]["full"] is None:
+    try:
+        data['poster'] = 'http://thetvdb.com/banners/'+soup.filename.text
+    except:
+        data['poster'] = resultado["images"]["poster"]["full"]
+    """if resultado["images"]["poster"]["full"] is None:
         data['poster'] = 'http://thetvdb.com/banners/'+soup.filename.text
     else:
         data['poster'] = resultado["images"]["poster"]["full"]
-
-    if resultado["images"]["fanart"]["full"] is None:
+"""
+    try:
+        data['fanart'] = resultado["images"]["fanart"]["full"]
+    except:
+        data['fanart'] = 'http://thetvdb.com/banners/'+soup.filename.text
+    """if resultado["images"]["fanart"]["full"] is None:
         data['fanart'] = 'http://thetvdb.com/banners/'+soup.filename.text
     else:
         data['fanart'] = resultado["images"]["fanart"]["full"]
-
+"""
     #Database.insertEpisodio(soup.episodename.text, soup.overview.text, idIMDB, idTVDB, temporada, episodio, data['fanart'], data['poster'], soup.firstaired.text, serieNome, traktid, categoria=categoria, actores=actores)
 
     data['serie'] = serieNome
