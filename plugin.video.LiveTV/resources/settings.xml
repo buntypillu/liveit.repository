@@ -4,8 +4,19 @@
       <setting label="[B][COLOR green]Dados de conta:[/B][/COLOR]" type="lsep" />
       <setting id="login_name" type="text" label="Utilizador" default=""/>
       <setting id="login_password" type="text" label="Senha" default="" option="hidden" enable="!eq(-1,false)"/>
-	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/> 
-	  <setting id="debug" type="bool" label="Enable Add-on Debugging" default="true"/>	  
+	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/>
+	  <setting type="sep" />
+	  <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="false"/>
+	  <setting type="sep" />
+	  <setting label="Definições de vista:" type="lsep" />
+      <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura" default="2"/>
+	  <setting id="canaisView" type="enum" label="Vista de Canais" values="Lista|Lista Grande|Miniatura" default="2"/>
+      <setting id="filmesSeriesView" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Posters|Fanart|Media Info 1|Media Info 2|Media Info 3" default="4"/>
+      <setting id="temporadasView" type="enum" label="Vista de temporadas" values="Lista|Lista Grande|Miniatura" default="2"/>
+      <setting id="episodiosView" type="enum" label="Vista de episodios" values="Lista|Lista Grande|Miniatura|Media Info 1|Media Info 2|Media Info 3" default="2"/>
+	   <setting type="sep" />
+	  <setting label="Pasta para download:" type="lsep" />
+      <setting label="" type="folder" id="pastaDownloads" source="auto" option="writeable" default="Escolha a pasta para Download" enable="!eq(-2,false)"/>
    </category>
    <category label="Idioma">
 	  <setting label="[B][COLOR green]Idioma da Conta:[/B][/COLOR]" type="lsep" />
