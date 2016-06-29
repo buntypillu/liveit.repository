@@ -1606,7 +1606,10 @@ def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
 def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,data_user,sserv,suser,spass,pasta=True,total=1):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&lolserv="+sserv+"&loluser="+suser+"&lolpass="+spass
+	if(tipo == 'pesquisa'):
+		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)
+	else:
+		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&lolserv="+sserv+"&loluser="+suser+"&lolpass="+spass
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
