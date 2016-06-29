@@ -49,7 +49,7 @@ __SITEAddon__ = 'http://liveitkodi.com/Addon/'
 __EPG__ = 'http://liveitkodi.com/epg.gz'
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
 __ALERTA__ = xbmcgui.Dialog().ok
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.LiveTV')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 debug = __ADDON__.getSetting('debug')
 xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
@@ -305,8 +305,7 @@ def Menu_inicial(men):
 			addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 		elif(tipo == 'pesquisa'):
 			if _tipouser != 'Teste':
-				
-				addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+				addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'','','','')
 		else:
 			if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 				if nome == 'TVs':
@@ -592,15 +591,15 @@ def menuFilmes():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Filmes por Ano', __SITEFILMES__+'kodi_filmes.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Filmes por Genero', __SITEFILMES__+'kodi_filmes.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
-	if Trakt.loggedIn():
-		dp = xbmcgui.DialogProgress()
-		dp.create('Live!t-TV Trakt')
-		dp.update(0, "A Carregar os Filmes vistos no Trakt")
-		filmesTraktVistos()
+	#if Trakt.loggedIn():
+	#	dp = xbmcgui.DialogProgress()
+	#	dp.create('Live!t-TV Trakt')
+	#	dp.update(0, "A Carregar os Filmes vistos no Trakt")
+	#	filmesTraktVistos()
 
-		dp.close()
+	#	dp.close()
 
-		addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
+	#	addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 
 	vista_menu()
 
@@ -610,15 +609,15 @@ def menuSeries():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Series por Ano', __SITEFILMES__+'kodi_series.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Series por Genero', __SITEFILMES__+'kodi_series.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
-	if Trakt.loggedIn():
-		dp = xbmcgui.DialogProgress()
-		dp.create('Live!t-TV Trakt')
-		dp.update(50, "A Carregar as Series vistas no Trakt")
-		seriesTraktVistos()
+	#if Trakt.loggedIn():
+	#	dp = xbmcgui.DialogProgress()
+	#	dp.create('Live!t-TV Trakt')
+	#	dp.update(50, "A Carregar as Series vistas no Trakt")
+	#	seriesTraktVistos()
 
-		dp.close()
+	#	dp.close()
 
-		addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
+	#	addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 	vista_menu()
 
 def removerAcentos(txt, encoding='utf-8'):
@@ -883,14 +882,13 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 				tabela = 'programas_kodi'
 			
 			dados = {'searchBox': strPesquisa, 'tabela': tabela}
-			codigo_fonte = net.http_POST(site,form_data=dados,headers=__HEADERS__).content
+			codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content
 		else:
 			dados = {'searchBox': strPesquisa}
-			codigo_fonte = net.http_POST(site,form_data=dados,headers=__HEADERS__).content.encode('utf8')
-
-		match = re.compile('<div\s+class="movie-info".+>\s+<a\s+href="(.+?)".+class="movie-name">.+?<\/a>\s+<d.+\s+<d.+\s+<d.+\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
+			codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content.encode('utf8')
 
 		if server == 0 or server == 1:
+			match = re.compile('<div\s+class="movie-info".+>\s+<a\s+href="(.+?)".+class="movie-name">.+?<\/a>\s+<d.+\s+<d.+\s+<d.+\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
 			if match != []: 
 				for link, cat in match:
 					if server == 0:

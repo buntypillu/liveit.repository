@@ -7,11 +7,6 @@
 	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/>
    </category>
    <category label="Filmes e Séries">
-        <setting label="Trakt:" type="lsep" />
-        <setting id="utilizadorTrakt" type="action" label="Utilizador" option="close" action="RunPlugin(plugin://plugin.video.LiveTV/?mode=700&url=necessario)" />
-    		<setting id="tokenTrakt" type="text" option="hidden" visible="false" label="" default="" />
-    		<setting id="refreshTrakt" type="text" option="hidden" visible="false" label="" default="" />
-        <setting type="sep" />
         <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="true"/>
 		<setting type="sep" />
 		<setting label="Pasta para download:" type="lsep" />
