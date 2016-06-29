@@ -47,7 +47,7 @@ __SKIN__ = 'v2'
 __SITE__ = 'http://liveitkodi.com/PHP/'
 __SITEAddon__ = 'http://liveitkodi.com/Addon/'
 __EPG__ = 'http://liveitkodi.com/epg.gz'
-__FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epg')
+__FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epglive')
 __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
@@ -481,24 +481,6 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 def obter_ficheiro_epg():
 	if not xbmcvfs.exists(__FOLDER_EPG__):
 		xbmcvfs.mkdirs(__FOLDER_EPG__)
-
-	"""horaAtual = time.strftime("%d/%m/%Y")
-	
-	ficheiroData = os.path.join(__FOLDER_EPG__, 'ultima.txt')
-
-	if not xbmcvfs.exists(ficheiroData):
-		f = open(ficheiroData, mode="w")
-		f.write("")
-		f.close()
-
-	f = open(ficheiroData, mode="r")
-	dataAntiga = f.read()
-	f.close()
-
-	if (time.strptime(dataAntiga, "%d/%m/%Y")) < horaAtual or not dataAntiga:
-		f = open(ficheiroData, mode="w")
-		f.write(str(horaAtual))
-		f.close()"""
 
 	urllib.urlretrieve(__EPG__, os.path.join(__FOLDER_EPG__, 'epg.gz'))		
 
