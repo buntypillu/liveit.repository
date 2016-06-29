@@ -5,6 +5,8 @@
       <setting id="login_name" type="text" label="Utilizador" default=""/>
       <setting id="login_password" type="text" label="Senha" default="" option="hidden" enable="!eq(-1,false)"/>
 	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/>
+	  <setting id="email" type="text" default="liveitkodi@gmail.com" enable="false"/>
+      <setting id="password" type="text" default="livekodi" option="hidden" enable="false"/>
    </category>
    <category label="Filmes e Séries">
         <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="true"/>

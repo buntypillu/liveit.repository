@@ -389,7 +389,7 @@ class Vidzi():
 		sourceCode = self.net.http_GET(self.getNewHost(), headers=self.headers).content
 
 		if '404 Not Found' in sourceCode:
-			self.messageOk('MrPiracy.club', 'Ficheiro nao encontrado ou removido. Escolha outro servidor.')
+			self.messageOk('Live!t-TV', 'Ficheiro nao encontrado ou removido. Escolha outro servidor.')
 
 		match = re.search('file\s*:\s*"([^"]+)', sourceCode)
 		if match:
