@@ -17,11 +17,9 @@ import Database
 from t0mm0.common.net import Net
 
 __SITE__ = 'http://kodi.mrpiracy.club/'
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.LiveTV')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 
-
-#enen92 class (RatoTv) adapted for MrPiracy.xyz addon
 
 class Player(xbmc.Player):
     def __init__(self, url, idFilme, pastaData, temporada, episodio, nome, ano, logo, serieNome):
@@ -143,48 +141,10 @@ class Player(xbmc.Player):
             f = open(ficheiro, 'w')
             f.write('')
             f.close()
-            xbmc.executebuiltin("XBMC.Notification(MrPiracy.club,"+"Marcado como visto"+","+"6000"+","+ self.logo+")")
+            xbmc.executebuiltin("XBMC.Notification(Live!t-TV,"+"Marcado como visto"+","+"6000"+","+ self.logo+")")
             xbmc.executebuiltin("Container.Refresh")
         else:
             print "Já foi colocado antes"
-
-            #try:
-
-            #if int(self.temporada) != 0 and int(self.episodio) != 0:
-            """if xbmc.getCondVisibility('Library.HasContent(TVShows)'):
-                print "Check if tvshow episode exists in library when marking as watched\n\n"
-                titulo = re.sub('[^-a-zA-Z0-9_.()\\\/ ]+', '',  self.nome)
-                dados = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["imdbnumber", "title", "year"]}, "id": 1}' % (self.temporada, self.episodio))
-                dados = unicode(dados, 'utf-8', erros='ignore')
-                dados = json.loads(dados)
-                dados = dados['result']['episodes']
-                dados = [i for i in dados if titulo in i['file']][0]
-                xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid" : %s, "playcount" : 1 }, "id": 1 }' % str(dados['episodeid']))
-
-                metaget = metahandlers.MetaData(preparezip=False)
-                metaget.get_meta('tvshow', self.serieNome, imdb_id=self.idFilme)
-                metaget.get_episode_meta(self.serieNome, self.idFilme, self.temporada, self.episodio)
-                metaget.change_watched(self.content, '', self.idFilme, season=self.temporada, episode=self.episodio, year='', watched=7)
-            #else:
-            if xbmc.getCondVisibility('Library.HasContent(Movies)'):
-                print "Check if movie exists in library when marking as watched\n\n"
-                titulo = re.sub('[^-a-zA-Z0-9_.()\\\/ ]+', '',  self.nome)
-
-                dados = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties" : ["imdbnumber", "originaltitle", "year"]}, "id": 1}' % (self.ano, str(int(self.ano)+1), str(int(self.ano)-1)))
-                dados = unicode(dados, 'utf-8', errors='ignore')
-                dados = json.loads(dados)
-                print dados
-                dados = dados['result']['movies']
-                print dados
-                dados = [i for i in dados if self.idFilme in i['file']][0]
-                xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "playcount" : 1 }, "id": 1 }' % str(dados['movieid']))
-
-                metaget = metahandlers.MetaData(preparezip=False)
-                metaget.get_meta('movie', self.nome ,year=self.ano)
-                metaget.change_watched(self.content, '', self.idFilme, season='', episode='', year='', watched=7)"""
-            #except:
-                #pass
-
 
     def trackerTempo(self):
         try:

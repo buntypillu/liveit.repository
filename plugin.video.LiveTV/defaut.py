@@ -15,7 +15,7 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,threading,xbmcvfs,cookielib,pprint,datetime,thread,time,gzip,glob
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time
 import xml.etree.ElementTree as ET
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 from datetime import date
