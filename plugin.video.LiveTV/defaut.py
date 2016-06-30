@@ -134,7 +134,7 @@ def menu():
 				menus1['senha'] = ""
 				check_login['menus'].append(menus1)
 				menus3['nome'] = "Pesquisa"
-				menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'procurar.png')
+				menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
 				menus3['link'] = __SITEFILMES__
 				menus3['tipo'] = "pesquisa"
 				menus3['senha'] = ""
@@ -155,8 +155,9 @@ def menu():
 		else:
 			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
 			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
-
-		xbmc.executebuiltin("Container.SetViewMode(500)")
+		
+		vista_menu()
+		#xbmc.executebuiltin("Container.SetViewMode(500)")
 
 ###################################################################################
 #                              Login Addon		                                  #
@@ -413,9 +414,9 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			except:
 				pass
 	
-	#vista_menu()
-	estiloSelect = returnestilo(estilo)
-	xbmc.executebuiltin(estiloSelect)	
+	vista_menu()
+	#estiloSelect = returnestilo(estilo)
+	#xbmc.executebuiltin(estiloSelect)	
 
 ###############################################################################################################
 #                                                   Listar Canais                                             #
@@ -1327,7 +1328,10 @@ def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,dat
 		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&lolserv="+sserv+"&loluser="+suser+"&lolpass="+spass
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	
 	liz.setProperty('fanart_image', iconimage)
+	liz.setArt({'fanart': os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')})
+
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
 	return ok
 	
@@ -1454,6 +1458,8 @@ def vista_menu():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
 
 def vista_filmesSeries():
 	opcao = __ADDON__.getSetting('filmesSeriesView')
@@ -1472,12 +1478,17 @@ def vista_temporadas():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
 
 def vista_episodios():
 	opcao = __ADDON__.getSetting('episodiosView')
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
 
 ############################################################################################################
 #                                               GET PARAMS                                                 #
