@@ -17,7 +17,6 @@
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time
 import xml.etree.ElementTree as ET
-from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
@@ -52,9 +51,6 @@ __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 debug = __ADDON__.getSetting('debug')
-xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
-_VERSAO_ = str(xml.addon['version'])
-_NOMEADDON_ = str(xml.addon['name'])
 check_login = {}
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
@@ -76,11 +72,8 @@ def menu():
 		check_login = login()
 
 		database = Database.isExists()
-		#__ALERTA__('Live!t TV', database)
-		
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
-				#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t TV - Sessão: '+check_login['user']['nome']+', Versão do addon: '+_VERSAO_, '8000, _ICON_))
 				menus = {
 					'nome': '',
 					'logo': '',
@@ -368,40 +361,8 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,sserv,su
 		else:
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user,sserv,suser,spass)
 
-def abrir_cookie(url, usser, seenh, serrv, New=False):
-	import mechanize
-	import cookielib
-
-	br = mechanize.Browser()
-	cj = cookielib.LWPCookieJar()
-	br.set_cookiejar(cj)
-	if not New:
-		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"), ignore_discard=False, ignore_expires=False)
-		br.set_handle_equiv(True)
-		br.set_handle_gzip(True)
-		br.set_handle_redirect(True)
-		br.set_handle_referer(True)
-		br.set_handle_robots(False)
-		br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-	else:
-		br.open(serrv + 'admin/')
-		br.select_form(nr=0)
-		br.form['password']=seenh
-		br.form['username']=usser
-		br.submit()
-		cj.save(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"))
-		try:
-			br.open(url,timeout=50000000)
-		except:
-			br.open(url)
-		return br.response().read()
-
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
 	if url != 'url':
-		if nome_nov == 'TVs-Free' or tipo_user == 'Teste':
-			vencimento = abrir_cookie(sservee + 'canais/liberar/',suseree,spassee,sservee,True)
-		
 		page_with_xml = urllib2.urlopen(url).readlines()
 		for line in page_with_xml:
 			objecto = line.decode('latin-1').encode("utf-8")
@@ -454,9 +415,6 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 #                                                   Listar Canais                                             #
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
-	if estilo == 'TesteServer':
-		vencimento = abrir_cookie(sservee + 'canais/liberar/',suseree,spassee,sservee,True)
-	
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -529,13 +487,12 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 						infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
 					
 					if estilo == 'TesteServer':
-						urlteste = rtmp.split('http')
+						urlteste = rtmp.split('TSDOWNLOADER')
 						tttot = len(urlteste)
-						urlcorrecto = ''
 						if tttot == 1:
-							addLink(nomewp,sservee+'canais/loadbalancer?canal_pk='+rtmp+'&server_location=UK&username='+suseree+'&password='+spassee,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
-						else:
 							addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+						else:
+							addLink(nomewp,'plugin://plugin.video.f4mTester/?url='+rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 					else:
 						addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 			except:
@@ -643,15 +600,6 @@ def menuFilmes():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Filmes por Ano', __SITEFILMES__+'kodi_filmes.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Filmes por Genero', __SITEFILMES__+'kodi_filmes.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
-	#if Trakt.loggedIn():
-	#	dp = xbmcgui.DialogProgress()
-	#	dp.create('Live!t-TV Trakt')
-	#	dp.update(0, "A Carregar os Filmes vistos no Trakt")
-	#	filmesTraktVistos()
-
-	#	dp.close()
-
-	#	addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 
 	vista_menu()
 
@@ -661,15 +609,7 @@ def menuSeries():
 	addDir2('', '', '', __FANART__, 0, poster=os.path.join(__ART_FOLDER__,'nada.png'))
 	addDir2('Series por Ano', __SITEFILMES__+'kodi_series.php', 119, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 	addDir2('Series por Genero', __SITEFILMES__+'kodi_series.php', 118, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
-	#if Trakt.loggedIn():
-	#	dp = xbmcgui.DialogProgress()
-	#	dp.create('Live!t-TV Trakt')
-	#	dp.update(50, "A Carregar as Series vistas no Trakt")
-	#	seriesTraktVistos()
 
-	#	dp.close()
-
-	#	addDir('Trakt', __SITEFILMES__, 701, __FANART__, 0, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'trakt.png'))
 	vista_menu()
 
 def removerAcentos(txt, encoding='utf-8'):
