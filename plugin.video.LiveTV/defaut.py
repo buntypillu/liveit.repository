@@ -17,7 +17,7 @@
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time
 import xml.etree.ElementTree as ET
-#from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
+from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
@@ -52,9 +52,9 @@ __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 debug = __ADDON__.getSetting('debug')
-#xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
-#_VERSAO_ = str(xml.addon['version'])
-#_NOMEADDON_ = str(xml.addon['name'])
+xml = BeautifulSOAP(open(__ADDON_FOLDER__+'/addon.xml','r'), convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+_VERSAO_ = str(xml.addon['version'])
+_NOMEADDON_ = str(xml.addon['name'])
 check_login = {}
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
@@ -241,13 +241,13 @@ def login():
 					elif(e.tag == 'logo2'):
 						informacoes['info']['logo2'] = e.text
 					elif(e.tag == 'link2'):
-						informacoes['info']['link2'] = ''
+						informacoes['info']['link2'] = e.text
 					elif(e.tag == 'log'):
 						informacoes['info']['log'] = e.text
 					elif(e.tag == 'user'):
-						informacoes['info']['user'] = ''
+						informacoes['info']['user'] = e.text
 					elif(e.tag == 'password'):
-						informacoes['info']['password'] = ''
+						informacoes['info']['password'] = e.text
 			elif(child.tag == 'menus'):
 				menu = {
 						'nome': '',
@@ -368,8 +368,40 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,sserv,su
 		else:
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user,sserv,suser,spass)
 
+def abrir_cookie(url, usser, seenh, serrv, New=False):
+	import mechanize
+	import cookielib
+
+	br = mechanize.Browser()
+	cj = cookielib.LWPCookieJar()
+	br.set_cookiejar(cj)
+	if not New:
+		cj.load(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"), ignore_discard=False, ignore_expires=False)
+		br.set_handle_equiv(True)
+		br.set_handle_gzip(True)
+		br.set_handle_redirect(True)
+		br.set_handle_referer(True)
+		br.set_handle_robots(False)
+		br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+		br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+	else:
+		br.open(serrv + 'admin/')
+		br.select_form(nr=0)
+		br.form['password']=seenh
+		br.form['username']=usser
+		br.submit()
+		cj.save(os.path.join(xbmc.translatePath("special://temp"),"addon_cookies_liveit"))
+		try:
+			br.open(url,timeout=50000000)
+		except:
+			br.open(url)
+		return br.response().read()
+
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
 	if url != 'url':
+		if nome_nov == 'TVs-Free' or tipo_user == 'Teste':
+			vencimento = abrir_cookie(sservee + 'canais/liberar/',suseree,spassee,sservee,True)
+		
 		page_with_xml = urllib2.urlopen(url).readlines()
 		for line in page_with_xml:
 			objecto = line.decode('latin-1').encode("utf-8")
@@ -385,7 +417,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
 					if nome_nov == 'TVs-Free':
-						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
+						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',sservee,suseree,spassee)
 					elif servidor_user == 'Servidor1':
 						addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 					elif servidor_user == 'Servidor2':
@@ -394,11 +426,11 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 						addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 				elif tipo_user == 'Patrocinador':
 					if nome_nov == 'TVs-Free':
-						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
+						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'','','','')
 				else:
 					if tipo_user == 'Teste':
 						if servidor_user == "Teste":
-							addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
+							addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',sservee,suseree,spassee)
 						else:
 							if servidor_user != '':
 								if servidor_user == 'Servidor1':
@@ -422,6 +454,9 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 #                                                   Listar Canais                                             #
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suseree,spassee):
+	if estilo == 'TesteServer':
+		vencimento = abrir_cookie(sservee + 'canais/liberar/',suseree,spassee,sservee,True)
+	
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
@@ -493,8 +528,16 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 					else:
 						infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
 					
-					#print 'Nome Novo: '+nomewp
-					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+					if estilo == 'TesteServer':
+						urlteste = rtmp.split('http')
+						tttot = len(urlteste)
+						urlcorrecto = ''
+						if tttot == 1:
+							addLink(nomewp,sservee+'canais/loadbalancer?canal_pk='+rtmp+'&server_location=UK&username='+suseree+'&password='+spassee,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+						else:
+							addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+					else:
+						addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 			except:
 				pass
 		
@@ -1442,7 +1485,7 @@ def vista_Canais():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
 	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
 	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
 	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
@@ -1458,7 +1501,7 @@ def vista_menu():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
 	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
 
 def vista_filmesSeries():
@@ -1466,7 +1509,7 @@ def vista_filmesSeries():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
 	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
 	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
 	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
@@ -1478,14 +1521,14 @@ def vista_temporadas():
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
 
 def vista_episodios():
 	opcao = __ADDON__.getSetting('episodiosView')
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
 	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
 	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(501)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
 	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
 	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
 	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
