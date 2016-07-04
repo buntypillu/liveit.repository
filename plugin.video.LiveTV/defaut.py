@@ -498,9 +498,11 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			except:
 				pass
 		
-		vista_Canais()
-		#estiloSelect = returnestilo(estilo)
-		#xbmc.executebuiltin(estiloSelect)
+		if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV':
+			estiloSelect = returnestilo(estilo)
+			xbmc.executebuiltin(estiloSelect)
+		else:
+			vista_Canais()
 
 ###############################################################################################################
 #                                                   EPG                                                     #
