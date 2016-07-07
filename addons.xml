@@ -49,7 +49,33 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="5.8.6">
+<addon
+  id="plugin.video.LiveitWeb"
+  version="1.0.0"
+  name="Live!t TV Web"
+  provider-name="Live!t TV Web">
+  <requires>
+   <import addon="xbmc.python" version="2.14.0"/>
+   <import addon="script.module.simplejson" />
+   <import addon="script.module.six" />
+   <import addon="script.module.requests" />
+   <import addon="script.module.livestreamer" />
+   <import addon="script.module.pydevd" version="4.4.0" optional="true"/>
+  </requires>
+  <extension
+    point="xbmc.python.pluginsource"
+    library="default.py">
+   <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</summary>
+    <description>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</description>
+    <license>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</license>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="5.8.7">
   <requires>
     <import addon="xbmc.python" version="2.14.0"/>
 	<import addon="script.module.urlresolver" version="1.0.0"/>
