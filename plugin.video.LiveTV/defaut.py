@@ -438,28 +438,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			params = objecto.split(refres)	
 			try:
 				nomee = params[0]
-				if tipo == 'ProgramasTV':
-					urlchama = params[2].split(';;;')
-					total2 = len(urlchama)
-					urlcorrecto = ''
-					if total2 == 1:
-						urlcorrecto = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
-					else:
-						net = Net()
-						net.set_cookies(__COOKIE_FILE__)
-						dados = {'url': urlchama[1], 'canal': urlchama[0]}
-						codigo_fonte = net.http_POST(__SITE__+'searchurl.php',form_data=dados,headers=__HEADERS__).content
-						elems = ET.fromstring(codigo_fonte)
-						for child in elems:
-							if(child.tag == 'info'):
-								for d in child:
-									if(d.tag == 'url'):
-										urlcorrecto = d.text
-					
-					rtmp = urlcorrecto;
-				else:
-					rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
-				
+				rtmp = params[2].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
 				img = params[1].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http')
 				grup = params[3]
 				id_it = params[4].rstrip()
@@ -1353,11 +1332,17 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 	cm=[]
 	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie' and tipo != 'Adulto':
 		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+	
 	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	
+	if tipo == 'ProgramasTV':
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	else:
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
 def abrir_url(url,pesquisa=False):
@@ -1381,6 +1366,31 @@ def addLink2(name,url,iconimage):
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
+
+def play_mult_canal(arg, icon, nome):
+	urlchama = arg.split(';;;')
+	total2 = len(urlchama)
+	urlcorrecto = ''
+	if total2 == 1:
+		urlcorrecto = arg.replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
+	else:
+		net = Net()
+		net.set_cookies(__COOKIE_FILE__)
+		dados = {'url': urlchama[1], 'canal': urlchama[0]}
+		codigo_fonte = net.http_POST(__SITE__+'searchurl.php',form_data=dados,headers=__HEADERS__).content
+		elems = ET.fromstring(codigo_fonte)
+		for child in elems:
+			if(child.tag == 'info'):
+				for d in child:
+					if(d.tag == 'url'):
+						urlcorrecto = d.text
+	
+	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+	playlist.clear()
+	listitem = xbmcgui.ListItem(nome, thumbnailImage=iconimage)
+	listitem.setInfo('video', {'Title': nome})
+	playlist.add(url=urlcorrecto, listitem=listitem, index=1)
+	xbmc.Player().play(playlist)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
@@ -1636,6 +1646,7 @@ elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: menuSeries()
 elif mode==21: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
+elif mode==105: play_mult_canal(url, iconimage, name)
 elif mode==110: minhaConta2()
 elif mode==111: getList(url, pagina)
 elif mode==112: getSeries(url, pagina)
