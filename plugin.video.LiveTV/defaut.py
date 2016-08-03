@@ -1004,18 +1004,19 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 							urlchama = g.text.split(';')
 							urlnoo = ''
 							try:
-								urlnoo = urlchama[2]
 								if(servuss == 'Servidor1'):
 									urlnoo = urlchama[0]
 								elif(servuss == 'Servidor2'):
 									urlnoo = urlchama[1]
 								elif(servuss == 'Servidor3'):
 									urlnoo = urlchama[2]
+								elif(servuss == 'Servidor4'):
+									urlnoo = urlchama[3]
 								
 								if(urlnoo == 'nada'):
 									adiciona = False
 								else:
-									canal['link'] = informa['servidor']['serv']+'/live/utilizadorliveit/senhaliveit/'+urlnoo
+									canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
 							except:
 								canal['link'] = g.text
 						elif(g.tag == 'Grupo'):
