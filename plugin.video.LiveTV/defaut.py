@@ -381,6 +381,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 				urlllserv1 = params[4]
 				urlllserv2 = params[5]
 				urlllserv3 = params[6]
+				urlllserv4 = params[7]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
 					if nome_nov == 'TVs-Free':
@@ -389,8 +390,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 						addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 					elif servidor_user == 'Servidor2':
 						addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
-					else:
+					elif servidor_user == 'Servidor3':
 						addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
+					else:
+						addDir(nomee,urlllserv4,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 				elif tipo_user == 'Patrocinador':
 					if nome_nov == 'TVs-Free':
 						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'','','','')
@@ -404,8 +407,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 									addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 								elif servidor_user == 'Servidor2':
 									addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
-								else:
+								elif servidor_user == 'Servidor3':
 									addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
+								else:
+									addDir(nomee,urlllserv4,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 							else:
 								addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'','','','')
 					else:
