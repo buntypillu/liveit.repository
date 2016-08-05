@@ -599,7 +599,21 @@ class ThreadWithReturnValue(Thread):
 
 ############################################################################################################
 #                                               Addon Filmes e Series                                      #
-############################################################################################################ 
+############################################################################################################
+def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,sserv,suser,spass):
+	#addDir('Series Live!t',url,None,1,'Miniatura',iconimage,tipo,tipo_user,servidor_user,'',sserv,suser,spass)
+	#addDir('Series Web','-',None,22,estilo,iconimage,'','','','','','','')
+	#estiloSelect = returnestilo(estilo)
+	#xbmc.executebuiltin(estiloSelect)
+	menuSeries()
+
+def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,sserv,suser,spass):
+	#addDir('Filmes Live!t',url,None,1,estilo,iconimage,tipo,tipo_user,servidor_user,'',sserv,suser,spass)
+	#addDir('Filmes Web','-',None,23,estilo,iconimage,'','','','',sserv,suser,spass)
+	#estiloSelect = returnestilo(estilo)
+	#xbmc.executebuiltin(estiloSelect)
+	menuFilmes()
+
 def menuFilmes():
 	database = Database.isExists()
 	addDir2('Filmes', __SITEFILMES__+'kodi_filmes.php', 111, __FANART__, 1, poster=os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'))
@@ -785,6 +799,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 	legendas = []
 	stuff = []
 	i = 1
+	legendaAux = ''
 	if siteBase == 'serie.php':
 		match = re.compile('<div\s+id="welele"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
 		match += re.compile('<div\s+id="welele2"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
@@ -820,16 +835,25 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			legenda = vidzi.getSubtitle()
 		elif 'uptostream.com' in links[servidor]:
 			stream = URLResolverMedia.UpToStream(links[servidor]).getMediaUrl()
-			legenda = legendaAux
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 		elif 'server.mrpiracy.club' in links[servidor]:
 			stream = links[servidor]
-			legenda = legendaAux
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 		elif 'openload' in links[servidor]:
 			stream = URLResolverMedia.OpenLoad(links[servidor]).getMediaUrl()
 			legenda = URLResolverMedia.OpenLoad(links[servidor]).getSubtitle()
 		elif 'drive.google.com/' in links[servidor]:
 			stream = URLResolverMedia.GoogleVideo(links[servidor]).getMediaUrl()
-			legenda = legendaAux
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 	else:
 		if 'server.mrpiracy.club' in links[0]:
 			stream = links[0]
@@ -949,6 +973,7 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 						
 				vista_filmesSeries()
 			else:
+				__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
 				addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
 				vista_filmesSeries()
 		else:
@@ -994,15 +1019,19 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 						'idnovo': ''
 					}
 					adiciona = True
+					pagante = False
 					for g in child:
 						adiciona = True
 						if(g.tag == 'Nome'):
 							canal['nome'] = g.text
 						elif(g.tag == 'Imagem'):
 							canal['logo'] = g.text
+						elif(g.tag == 'Pagante'):
+							if(g.text == 'true'):
+								pagante = True
 						elif(g.tag == 'Url'):
 							urlchama = g.text.split(';')
-							urlnoo = ''
+							urlnoo = g.text
 							try:
 								if(servuss == 'Servidor1'):
 									urlnoo = urlchama[0]
@@ -1016,7 +1045,10 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 								if(urlnoo == 'nada'):
 									adiciona = False
 								else:
-									canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
+									if pagante:
+										canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
+									else:
+										canal['link'] = urlnoo
 							except:
 								canal['link'] = g.text
 						elif(g.tag == 'Grupo'):
@@ -1043,9 +1075,11 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 				
 				vista_Canais()
 			else:
+				__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
 				addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
 				vista_filmesSeries()
 	else:
+		__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
 		addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
 		vista_filmesSeries()
 
@@ -1649,8 +1683,10 @@ elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servid
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,s_serv,s_user,s_pass)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user,s_serv,s_user,s_pass)
 elif mode==10: minhaConta(str(name),estilo)
-elif mode==20: menuSeries()
-elif mode==21: menuFilmes()
+elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,s_serv,s_user,s_pass)
+elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,s_serv,s_user,s_pass)
+elif mode==22: menuSeries()
+elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
 elif mode==105: play_mult_canal(url, iconimage, name)
 elif mode==110: minhaConta2()
