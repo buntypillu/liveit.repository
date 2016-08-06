@@ -314,11 +314,13 @@ def Menu_inicial(men):
 		senha = menu['senha']
 		if _tipouser == 'Desporto':
 			if nome == 'TVs - Desporto':
-				addDir(nome,link,None,2,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+				addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+			elif(nome == 'Adultos - Desporto'):
+				addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 			elif(tipo == 'estado'):
 				addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 		else:
-			if nome != 'TVs - Desporto':
+			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
 				if tipo == 'Adulto' :
 					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 				elif tipo == 'patrocinadores' or tipo == 'novidades':
@@ -383,7 +385,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 				urlllserv3 = params[6]
 				urlllserv4 = params[7]
 				paramss = estil.split('\n')
-				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante':
+				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante' or tipo_user == 'Desporto':
 					if nome_nov == 'TVs-Free':
 						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',sservee,suseree,spassee)
 					elif servidor_user == 'Servidor1':
@@ -450,9 +452,9 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 				id_p = params[5]
 				srt_f = ''
 				descri = ''
-				if tipo_user == 'Desporto':
+				if grup == nome:
 					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
-						
+					
 					twrv.start()
 					programa = twrv.join() 
 					
@@ -461,44 +463,30 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 					else:
 						nomewp = nomee
 					
-					infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
-					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
-				else:
-					if grup == nome:
-						twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
-						
-						twrv.start()
-						programa = twrv.join() 
-						
-						if programa != '':
-							nomewp = nomee + " | "+ programa
-						else:
-							nomewp = nomee
-						
-						if	tipo == 'Filme' or tipo == 'Serie':
-							srt_f = params[6]
-							ano = params[7]
-							realizador = 'Director: '+params[8]
-							descri = params[9]
-							detalhes1 = grup
-							argumento = 'Live!t-TV'
-							plot = 'Enredo: '+descri
-							detalhes2 = ano
-							imdb = '4510398'
-							votes = '5 estrelas'
-							infoLabels = {'title':nomewp, 'plot':plot, 'writer': argumento, 'director':realizador, 'genre':detalhes1, 'year': detalhes2, 'aired':detalhes2, 'IMDBNumber':imdb, 'votes':votes, "credits": nomewp}
-						else:
-							infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
-						
-						if estilo == 'TesteServer':
-							urlteste = rtmp.split('TSDOWNLOADER')
-							tttot = len(urlteste)
-							if tttot == 1:
-								addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
-							else:
-								addLink(nomewp,'plugin://plugin.video.f4mTester/?url='+rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
-						else:
+					if	tipo == 'Filme' or tipo == 'Serie':
+						srt_f = params[6]
+						ano = params[7]
+						realizador = 'Director: '+params[8]
+						descri = params[9]
+						detalhes1 = grup
+						argumento = 'Live!t-TV'
+						plot = 'Enredo: '+descri
+						detalhes2 = ano
+						imdb = '4510398'
+						votes = '5 estrelas'
+						infoLabels = {'title':nomewp, 'plot':plot, 'writer': argumento, 'director':realizador, 'genre':detalhes1, 'year': detalhes2, 'aired':detalhes2, 'IMDBNumber':imdb, 'votes':votes, "credits": nomewp}
+					else:
+						infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
+					
+					if estilo == 'TesteServer':
+						urlteste = rtmp.split('TSDOWNLOADER')
+						tttot = len(urlteste)
+						if tttot == 1:
 							addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+						else:
+							addLink(nomewp,'plugin://plugin.video.f4mTester/?url='+rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
+					else:
+						addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,total)
 			except:
 				pass
 		
@@ -1370,7 +1358,7 @@ def addFolder(name,url,mode,iconimage,folder):
 def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabelssss,total=1):
 	ok=True
 	cm=[]
-	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie' and tipo != 'Adulto':
+	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie':
 		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	
 	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
