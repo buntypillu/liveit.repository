@@ -55,7 +55,7 @@ check_login = {}
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
-__SITEFILMES__ = 'http://kodi.mrpiracy.club/'
+__SITEFILMES__ = 'http://mrpiracy.top/'
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -796,7 +796,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			links.append(link)
 			if not '.srt' in legenda:
 				legend = legenda+'.srt'
-			legendas.append('http://mrpiracy.club/subs/%s' % legenda)
+			legendas.append('http://mrpiracy.top/subs/%s' % legenda)
 			i = i+1
 
 	else:
@@ -806,7 +806,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			if 'legenda' in idS:
 				if not '.srt' in link:
 					link = link+'.srt'
-				legendaAux = 'http://mrpiracy.club/subs/%s' % link
+				legendaAux = 'http://mrpiracy.top/subs/%s' % link
 				continue
 			if 'videomega' in idS:
 				continue
@@ -827,7 +827,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 				legenda = legendas[0]
 			else:
 				legenda = legendaAux
-		elif 'server.mrpiracy.club' in links[servidor]:
+		elif 'server.mrpiracy.top' in links[servidor]:
 			stream = links[servidor]
 			if legendaAux == '':
 				legenda = legendas[0]
@@ -843,7 +843,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			else:
 				legenda = legendaAux
 	else:
-		if 'server.mrpiracy.club' in links[0]:
+		if 'server.mrpiracy.top' in links[0]:
 			stream = links[0]
 			legenda = legendas[0]
 		elif 'uptostream.com' in links[0]:
@@ -1257,7 +1257,7 @@ def addVideo(name,url,mode,iconimage,tipo,temporada,episodio,infoLabels,poster,s
 	if linkTrailer != "":
 		menu.append(('Ver trailer', 'XBMC.PlayMedia(%s)' % (linkTrailer)))
 
-	menu.append(('Download', 'XBMC.RunPlugin(%s?mode=117&name=%s&url=%s&iconimage=%s&serieNome=%s&temporada=%s&episodio=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(serieNome), str(temporada), str(episodio))))
+	#menu.append(('Download', #'XBMC.RunPlugin(%s?mode=117&name=%s&url=%s&iconimage=%s&serieNome=%s&temporada=%s&episodio=%s)'%(sys.argv[0],urllib.quote_plus(name), #urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(serieNome), str(temporada), str(episodio))))
 	liz.addContextMenuItems(menu, replaceItems=True)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	return ok
@@ -1493,7 +1493,7 @@ def vista_Canais():
 
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir2('Entrar novamente', 'url', None, None, 'Lista Grande', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
+	addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 
 def vista_menu():

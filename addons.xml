@@ -49,33 +49,7 @@
     </extension>
 </addon>
 
-<addon
-  id="plugin.video.LiveitWeb"
-  version="1.0.0"
-  name="Live!t TV Web"
-  provider-name="Live!t TV Web">
-  <requires>
-   <import addon="xbmc.python" version="2.14.0"/>
-   <import addon="script.module.simplejson" />
-   <import addon="script.module.six" />
-   <import addon="script.module.requests" />
-   <import addon="script.module.livestreamer" />
-   <import addon="script.module.pydevd" version="4.4.0" optional="true"/>
-  </requires>
-  <extension
-    point="xbmc.python.pluginsource"
-    library="default.py">
-   <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</summary>
-    <description>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</description>
-    <license>UtilizaÃ§Ã£o Ãºnica e exclusica do addon Live!t-TV</license>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="6.1.5">
+<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="6.1.6">
   <requires>
     <import addon="xbmc.python" version="2.14.0"/>
 	<import addon="script.module.urlresolver" version="1.0.0"/>
@@ -169,35 +143,5 @@ Oorspronkelijk ontwikkeld door Andrew 'drewzh' Higginson (xbmcfilecleaner@drewzh
         <website/>
         <email/>
     </extension>
-</addon>
-
-	<addon id="skin.aeonmq6" version="2.4.0" name="Aeon MQ 6" provider-name="MarcosQui">
-	<requires>
-	<import addon="xbmc.gui" version="5.3.0"/>
-	<import addon="script.aeonmq5.extrapack" version="1.1.0"/>
-	<import addon="script.favourites" version="6.0.1"/>
-	<import addon="script.artwork.downloader" version="12.0.29"/>
-	<import addon="script.randomandlastitems" version="2.2.2"/>
-	<import addon="script.games.rom.collection.browser" version="2.0.17"/>
-	<import addon="script.artistslideshow" version="1.8.2"/>
-	<import addon="script.tv.show.next.aired" version="6.0.13"/>
-	<import addon="service.skin.widgets" version="0.0.29"/>
-	<import addon="service.library.data.provider" version="0.0.4"/>
-	<import addon="script.cu.lrclyrics" version="3.0.6"/>
-	<import addon="script.toolbox" version="1.0.1"/>
-	<import addon="script.globalsearch" version="3.0.4"/>
-	<import addon="script.cinema.experience" version="4.0.10"/>
-	<import addon="script.extendedinfo" version="2.0.3" />
-	</requires>
-	<extension point="xbmc.gui.skin" defaultthemename="Textures.xbt" effectslowdown="0.75" debugging="false">
-	<res width="1280" height="720" aspect="16:9" default="true" folder="720p"/>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-	<summary lang="en">Aeon MQ 6, improved, more light and more powerful than ever.</summary>
-	<summary lang="pt_br">Aeon MQ 6, melhorada, mais leve e mais poderosa do que nunca.</summary>
-	<description lang="en">The traditional Aeon MQ reaches its sixth edition.[CR]Reformulated, very simple to use, with a new code that provides a lightweight and powerful skin.[CR]The Aeon MQ 6 incorporates new features such as REPLACE which takes the main menu's level of customization to something never seen before.[CR]Aeon MQ 6, you've never seen a skin like this.</description>
-	<description lang="pt_br">A tradicional Aeon MQ chega a sua sexta ediÃ§Ã£o.[CR]Aeon MQ 6 conta com todos os recursos presentes na versÃ£o anterior, no entanto, esses recursos foram otimizados afim de proporcionar uma experiÃªncia ainda melhor ao usuÃ¡rio.[CR]Aeon MQ 6, vocÃª nunca viu uma skin assim.</description>
-	<platform>all</platform>
-	</extension>
 </addon>
 </addons>
