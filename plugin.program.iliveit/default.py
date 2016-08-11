@@ -45,7 +45,6 @@ def OPEN_URL(url):
     
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	PURGEPACKAGES()
-	#package = json.loads(OPEN_URL(base_server+'/InstalerPackage?package_pk='+pk))['Packages'][0]
 	path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
 	dp = xbmcgui.DialogProgress()
 	dp.create(name,"Download: " + name,'', url)
@@ -62,7 +61,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	if isaddon != False:
 		addonfolder = xbmc.translatePath(os.path.join('special://home','addons'))
 	else:
-		addonfolder = xbmc.translatePath(os.path.join('special://home','/'))
+		addonfolder = xbmc.translatePath(os.path.join('special://','home'))
 	extract.all(lib,addonfolder,dp)
 	#log_insertion(addonfolder)
 	xbmc.executebuiltin('UnloadSkin()')
