@@ -15,14 +15,17 @@ instalador_nome = "Instalador Live!t"
 base_server = "http://liveitkodi.com"
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 base='liveit'
-ADDON=xbmcaddon.Addon(id='plugin.program.i'+base)
+
 dialog = xbmcgui.Dialog()    
 VERSION = "0.0.9"
-PATH = "i"+base    
 __ALERTA__ = xbmcgui.Dialog().ok
+
+ADDON		   = xbmcaddon.Addon(id='plugin.program.i'+base)
+_BASE_ 		   = xbmc.translatePath(os.path.join('special://','home'))
 HOME           = xbmc.translatePath('special://home/')
 LOG            = xbmc.translatePath('special://logpath/')
 PROFILE        = xbmc.translatePath('special://profile/')
+
 ADDONS         = os.path.join(HOME,     'addons')
 USERDATA       = os.path.join(HOME,     'userdata')
 PACKAGES       = os.path.join(ADDONS,   'packages')
@@ -36,7 +39,10 @@ def log_insertion(string):
 def CATEGORIES():
     packages = json.loads(OPEN_URL(base_server+'/InstalerPackage'))['Packages']
     for package in packages:
-        addDir(package['name'],package['url'],1,package['icon'],package['fanart'],package['description'],package['pk'],package['isaddon'],package['restart'],package['forceRestart'])
+		if package['pk'] == 1:
+			addDir(package['name'],package['url'],1,package['icon'],package['fanart'],package['description'],package['pk'],package['isaddon'],package['restart'],package['forceRestart'])
+		elif(package['pk'] == 3):
+			addDir(package['name'],package['url'],2,package['icon'],package['fanart'],package['description'],package['pk'],package['isaddon'],package['restart'],package['forceRestart'])
     setView('movies', 'MAIN')
         
     
@@ -51,10 +57,9 @@ def OPEN_URL(url):
     
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	#PURGEPACKAGES()
-	#path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
 	dp = xbmcgui.DialogProgress()
 	dp.create(name,"Download: " + name,'', url)
-	lib=os.path.join(PACKAGES, name+'.zip')
+	lib=os.path.join(HOME, name+'.zip')
 	try:
 		os.remove(lib)
 	except:
@@ -63,13 +68,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	addonfolder = '';
 	time.sleep(2)
 	dp.update(0,name, "Extraindo: " + name)
-	
-	if isaddon != False:
-		addonfolder = ADDONS
-	else:
-		addonfolder = USERDATA
-	extract.all(lib,addonfolder,dp)
-	#log_insertion(addonfolder)
+	extract.all(lib,HOME,dp)
 	xbmc.executebuiltin('UnloadSkin()')
 	xbmc.executebuiltin('ReloadSkin()')
 	xbmc.executebuiltin("LoadProfile()")
@@ -81,18 +80,53 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	else:
 		dialog.ok("Concluido", 'Tudo instalado', 'volte ao menu para visualizar o conteudo instalado,', 'em caso de duvida contacte o nosso suporte.')
 	
-	if restart != False:
+	if restart == True:
 		dialog = xbmcgui.Dialog()
 		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'em seguida re-abra o kodi.')
 	
-	if forceRestart != False:
+	if forceRestart == True:
 		dialog = xbmcgui.Dialog()
 		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'jamais saia do kodi manualmente, caso o kodi continue aberto, reinicie sua box ou mate a tarefa do kodi.')
 	
 	killxbmc()
 
+def wizard2(name,url,description,pk,isaddon,restart,forceRestart):
+	#PURGEPACKAGES()
+	dp = xbmcgui.DialogProgress()
+	dp.create(name,"Download: " + name,'', url)
+	lib=os.path.join(PACKAGES, name+'.zip')
+	try:
+		os.remove(lib)
+	except:
+		pass
+	downloader.download(url, lib, dp)
+	time.sleep(2)
+	dp.update(0,name, "Extraindo: " + name)
+	extract.all(lib,ADDONS,dp)
+	xbmc.executebuiltin('UnloadSkin()')
+	xbmc.executebuiltin('ReloadSkin()')
+	xbmc.executebuiltin("LoadProfile()")
+	xbmc.executebuiltin('UpdateLocalAddons')
+	dialog = xbmcgui.Dialog()
+	
+	if platform() == 'android':
+		dialog.ok("Concluido", 'Tudo instalado', 'caso seu kodi trave, reinicie seu dispositivo', 'em caso de duvida contacte o nosso suporte.')
+	else:
+		dialog.ok("Concluido", 'Tudo instalado', 'volte ao menu para visualizar o conteudo instalado,', 'em caso de duvida contacte o nosso suporte.')
+	
+	if restart == True:
+		dialog = xbmcgui.Dialog()
+		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'em seguida re-abra o kodi.')
+	
+	if forceRestart == True:
+		dialog = xbmcgui.Dialog()
+		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'jamais saia do kodi manualmente, caso o kodi continue aberto, reinicie sua box ou mate a tarefa do kodi.')
+	
+	killxbmc()
+
+
 def PURGEPACKAGES():
-	packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
+	packages_cache_path = PACKAGES
 	try:    
 		for root, dirs, files in os.walk(packages_cache_path):
 			file_count = 0
@@ -284,8 +318,7 @@ if mode==None or url==None or len(url)<1:
        
 elif mode==1:
 	wizard(name,url,description,pk,isaddon,restart,forceRestart)
-        
-
-        
+elif mode==2:
+	wizard2(name,url,description,pk,isaddon,restart,forceRestart)
+   
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
-
