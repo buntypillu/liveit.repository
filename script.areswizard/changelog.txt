@@ -1,0 +1,162 @@
+###########
+     v0.0.32:
+###########
+
+
+          fixed repo installs
+
+
+
+###########
+     v0.0.31:
+###########
+
+          [hopefully] fixed issue causing some not to be able to connect to ares server
+
+
+
+###########
+     v0.0.30:
+###########
+
+
+          tweaked keep favourites option, was causing issues with superfavourites
+
+          fixed encoding issue causing script errors for some
+
+          added weekly download statistics, will reset 00:00 every Monday morning
+
+          repaired fresh start routine
+
+          improved error checking\reporting for unzip routines
+          
+
+
+
+###########
+     v0.0.29:
+###########
+
+          increased default timeout to 30 seconds
+
+          fixed problem with build installs
+
+          fixed problem with addon downloads not counting
+
+          fixed problem where selection wasn't registering, causing issues with addon uninstall
+
+
+###########
+     v0.0.28:
+###########
+
+          Re-work of builds section. There are three 'categories'.. Builds hosted by Ares come first, then a list of builds which
+          the authors themselves can maintain\update.. both these sections are capable of build update checking providing the
+          build author has supplied the relevant info.. and then what used to be called 'featured builds' is now named
+          'assorted builds' and can be found at the bottom of the list. (none of the 'assorted builds' will be able to check for updates)
+
+               When compatible, builds will:
+
+                           Show version number on Ares
+                           Automatically check for updates
+
+               Build update checks will default to weekly but can be changed in [addon] settings.
+
+
+
+          added options to keep sources & favorites when installing builds [it's in settings]
+
+
+###########
+     v0.0.27:
+###########
+
+          code cleanup.
+
+          outages on the old server caused ares not to load.. fixed and preventative measures in place.
+
+          tweaked maintenance section, more accurately reports number of files.
+
+          tweaked log file detection, wasn't working for spmc/tvmc and some other kodi forks.
+
+          improved error checking for downloads etc.
+
+
+
+###########
+     v0.0.26:
+###########
+
+
+          finally found a stable way to download from cloudflare protected servers
+
+
+
+###########
+     v0.0.25:
+###########
+
+          fixed adult repos not showing
+
+          tweaked build unzip routine
+
+          re-added blackbox builds
+
+
+
+###########
+     v0.0.24:
+###########
+
+          fixed startup issues effecting small number of users
+
+          fixed adult addons not showing
+
+
+
+###########
+     v0.0.23:
+###########
+
+          fixed issue for tvmc\spmc users
+
+          fixed problem where build list would duplicate
+
+          fixed build stats from scraped wizards
+
+
+
+###########
+     v0.0.22:
+###########
+
+          NEW SERVER!!! Sorry for all the recent problems, Ares is much more popular than I ever thought I would be and outgrew the basic server it was on, I'm glad to say we're back (although we never really went anywhere, lol)  - better than ever and on a much better server!
+
+
+          NEW FEATURE:  Build Repair. When you install a build at the end of the process you will be given a choice to make a backup of key files which make up the visuals of of the build.. then if for some reason the build didn't work the first time or you load kodi one day to find you're back to default confluence skin for some reason then go back into browse builds, select your build and hit repair.. this should work out a lot quicker than doing a reinstall.  The data can only be collected during a full install so the repair option will only enable once you've installed the build [through Ares]
+
+          MAJOR UPDATE: Build section given another major boost via scraping of other wizards [with their consent] now, you have the tradional 'featured' list and you are also able to view entire collections of builds from people by clicking on their name (information is automatically generated from that persons own wizard)
+
+          Layout Change: Repositories can now be found in with the other addons.. this has free'd up a button for the backup options I always had planned to include.. unfortunately the backup page isn't finished yet.. infact I've barely even started..
+
+
+          Ares title height increased to improve balance ;)
+
+          Clause added to download\unzip routines, if download is corrupt or zip fails basic integrity check it is deleted.
+
+          added a bit more error handling on build installs.. it's handy to know what went wrong whenever possible. Continuing after an extraction error should kick in now - thanks to NJM for supplying me with a means to replicate the problem & test solutions ;)
+
+          tweaked maintenance popup, hopefully now won't come up after updates unless maintenance reminders are turned on
+
+          tweaked unzip error handling routine.. wasn't catching some errors.. it should now ;)
+
+          fresh start now available inside browse builds.. saves having to go to two different places.
+
+          tweaked maintenance popup - now automatically closes after 10 seconds every time
+
+          fixed cache tweak routine - upper limit sometimes wasn't applying on PC's\Laptops
+
+          you can now get the size of a build before you start downloading it.. press on the build name and the size label will change after a second or two telling you how big the build (zip) is.
+
+          and thanks to the rescent problems, more code has been added in order to allow Ares to still function should it not be able to get data from the server
+
