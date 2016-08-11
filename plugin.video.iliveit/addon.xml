@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.iliveit" name="Instalador" version="0.0.1" provider-name="Instalador Live!t">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Live!t TV</summary>
+    <description lang="en">Instalado criado para ser mais fácil a todos a instalação do Addon e Repositório Live!t-TV</description>
+	<language>pt</language>
+    <platform>all</platform>
+    <license></license>
+    <forum>http://www.pcteckserv.com/Forum/</forum>
+    <website>https://www.facebook.com/groups/LIVEITTV/</website>
+    <email>liveitkodi@gmail.com</email>
+    <source></source>
+  </extension>
+</addon>
