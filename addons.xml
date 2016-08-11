@@ -34,7 +34,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.program.iliveit" name="Instalador Live!t" provider-name="Live!t TV" version="0.0.3">
+<addon id="plugin.program.iliveit" name="Instalador Live!t" provider-name="Live!t TV" version="0.0.4">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
@@ -43,7 +43,7 @@
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Live!t TV</summary>
-    <description lang="en">Instalado criado para ser mais fÃ¡cil a todos a instalaÃ§Ã£o do Addon e RepositÃ³rio Live!t-TV</description>
+    <description lang="en">Instalado criado para ser mais facil a todos a instalacao do Addon e Repositorio Live!t-TV</description>
 	<language>pt</language>
     <platform>all</platform>
     <license></license>
