@@ -22,7 +22,7 @@ PATH = "i"+base
 __ALERTA__ = xbmcgui.Dialog().ok
 
 def log_insertion(string):
-    path = xbmc.translatePath(os.path.join('special://Kodi/addons','plugin.program.i'+base))
+    path = xbmc.translatePath(os.path.join('special://home/addons','plugin.program.i'+base))
     file_ = path + '/plugin.program.i' +base + '.log'
     with open(file_, "a") as myfile:
         myfile.write(str(string)+'\n')
@@ -46,7 +46,7 @@ def OPEN_URL(url):
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	PURGEPACKAGES()
 	#package = json.loads(OPEN_URL(base_server+'/InstalerPackage?package_pk='+pk))['Packages'][0]
-	path = xbmc.translatePath(os.path.join('special://Kodi/addons','packages'))
+	path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
 	dp = xbmcgui.DialogProgress()
 	dp.create(name,"Download: " + name,'', url)
 	lib=os.path.join(path, name+'.zip')
@@ -60,9 +60,9 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	dp.update(0,name, "Extraindo: " + name)
 	
 	if isaddon != False:
-		addonfolder = xbmc.translatePath(os.path.join('special://Kodi','addons'))
+		addonfolder = xbmc.translatePath(os.path.join('special://home','addons'))
 	else:
-		addonfolder = xbmc.translatePath(os.path.join('special://Kodi','/'))
+		addonfolder = xbmc.translatePath(os.path.join('special://home','/'))
 	extract.all(lib,addonfolder,dp)
 	#log_insertion(addonfolder)
 	xbmc.executebuiltin('UnloadSkin()')
@@ -87,7 +87,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	killxbmc()
 
 def PURGEPACKAGES():
-	packages_cache_path = xbmc.translatePath(os.path.join('special://Kodi/addons/packages', ''))
+	packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
 	try:    
 		for root, dirs, files in os.walk(packages_cache_path):
 			file_count = 0
