@@ -20,6 +20,12 @@ dialog = xbmcgui.Dialog()
 VERSION = "0.0.9"
 PATH = "i"+base    
 __ALERTA__ = xbmcgui.Dialog().ok
+HOME           = xbmc.translatePath('special://home/')
+LOG            = xbmc.translatePath('special://logpath/')
+PROFILE        = xbmc.translatePath('special://profile/')
+ADDONS         = os.path.join(HOME,     'addons')
+USERDATA       = os.path.join(HOME,     'userdata')
+PACKAGES       = os.path.join(ADDONS,   'packages')
 
 def log_insertion(string):
     path = xbmc.translatePath(os.path.join('special://home/addons','plugin.program.i'+base))
@@ -44,11 +50,11 @@ def OPEN_URL(url):
     
     
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
-	PURGEPACKAGES()
-	path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
+	#PURGEPACKAGES()
+	#path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
 	dp = xbmcgui.DialogProgress()
 	dp.create(name,"Download: " + name,'', url)
-	lib=os.path.join(path, name+'.zip')
+	lib=os.path.join(PACKAGES, name+'.zip')
 	try:
 		os.remove(lib)
 	except:
@@ -59,9 +65,9 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	dp.update(0,name, "Extraindo: " + name)
 	
 	if isaddon != False:
-		addonfolder = xbmc.translatePath(os.path.join('special://home','addons'))
+		addonfolder = ADDONS
 	else:
-		addonfolder = xbmc.translatePath(os.path.join('special://','home'))
+		addonfolder = USERDATA
 	extract.all(lib,addonfolder,dp)
 	#log_insertion(addonfolder)
 	xbmc.executebuiltin('UnloadSkin()')
