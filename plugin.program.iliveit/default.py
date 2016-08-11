@@ -17,12 +17,12 @@ USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/
 base='liveit'
 ADDON=xbmcaddon.Addon(id='plugin.program.i'+base)
 dialog = xbmcgui.Dialog()    
-VERSION = "0.0.2"
+VERSION = "0.0.9"
 PATH = "i"+base    
 __ALERTA__ = xbmcgui.Dialog().ok
 
 def log_insertion(string):
-    path = xbmc.translatePath(os.path.join('special://home/addons','plugin.program.i'+base))
+    path = xbmc.translatePath(os.path.join('special://Kodi/addons','plugin.program.i'+base))
     file_ = path + '/plugin.program.i' +base + '.log'
     with open(file_, "a") as myfile:
         myfile.write(str(string)+'\n')
@@ -46,7 +46,7 @@ def OPEN_URL(url):
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	PURGEPACKAGES()
 	#package = json.loads(OPEN_URL(base_server+'/InstalerPackage?package_pk='+pk))['Packages'][0]
-	path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
+	path = xbmc.translatePath(os.path.join('special://Kodi/addons','packages'))
 	dp = xbmcgui.DialogProgress()
 	dp.create(name,"Download: " + name,'', url)
 	lib=os.path.join(path, name+'.zip')
@@ -55,15 +55,16 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	except:
 		pass
 	downloader.download(url, lib, dp)
-	addonfolder = xbmc.translatePath(os.path.join('special://','home'))
+	addonfolder = '';
 	time.sleep(2)
 	dp.update(0,name, "Extraindo: " + name)
 	
 	if isaddon != False:
-		extract.all(lib,addonfolder+'addons',dp)
+		addonfolder = xbmc.translatePath(os.path.join('special://Kodi','addons'))
 	else:
-		extract.all(lib,addonfolder+'/',dp)
-	log_insertion(addonfolder)
+		addonfolder = xbmc.translatePath(os.path.join('special://Kodi','/'))
+	extract.all(lib,addonfolder,dp)
+	#log_insertion(addonfolder)
 	xbmc.executebuiltin('UnloadSkin()')
 	xbmc.executebuiltin('ReloadSkin()')
 	xbmc.executebuiltin("LoadProfile()")
@@ -78,16 +79,15 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	if restart != False:
 		dialog = xbmcgui.Dialog()
 		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'em seguida re-abra o kodi.')
-		xbmc.executebuiltin('Quit')
+	
 	if forceRestart != False:
 		dialog = xbmcgui.Dialog()
 		dialog.ok("Download Concluido", 'Infelizmente a unica forma de persistir o pacote e', 'compelir o fechamento abrupto do kodi,', 'jamais saia do kodi manualmente, caso o kodi continue aberto, reinicie sua box ou mate a tarefa do kodi.')
-		killxbmc()
-		xbmc.executebuiltin('Quit')
-
+	
+	killxbmc()
 
 def PURGEPACKAGES():
-	packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
+	packages_cache_path = xbmc.translatePath(os.path.join('special://Kodi/addons/packages', ''))
 	try:    
 		for root, dirs, files in os.walk(packages_cache_path):
 			file_count = 0
@@ -105,78 +105,83 @@ def PURGEPACKAGES():
 
 		
 def killxbmc():
-    myplatform = platform()
-    print "Plataforma: " + str(myplatform)
-    if myplatform == 'osx': # OSX
-        try: os.system('killall -9 XBMC')
-        except: pass
-        try: os.system('killall -9 Kodi')
-        except: pass
-    elif myplatform == 'linux': #Linux
-        try: os.system('killall XBMC')
-        except: pass
-        try: os.system('killall Kodi')
-        except: pass
-        try: os.system('killall -9 xbmc.bin')
-        except: pass
-        try: os.system('killall -9 kodi.bin')
-        except: pass
-        #dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
-    elif myplatform == 'android': # Android  
-        try: os.system('adb shell am force-stop org.xbmc.kodi')
-        except: pass
-        try: os.system('adb shell am force-stop org.kodi')
-        except: pass
-        try: os.system('adb shell am force-stop org.xbmc.xbmc')
-        except: pass
-        try: os.system('adb shell am force-stop org.xbmc')
-        except: pass
-        try: os.system("ps | grep org.kodi | awk '{print $2}' | xargs kill")
-        except: pass
-        try: os.system("ps | grep org.xbmc.kodi | awk '{print $2}' | xargs kill")
-        except: pass
-        #dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
-    elif myplatform == 'windows': # Windows
-        try:
-            os.system('@ECHO off')
-            os.system('tskill XBMC.exe')
-        except: pass
-        try:
-            os.system('@ECHO off')
-            os.system('tskill Kodi.exe')
-        except: pass
-        try:
-            os.system('@ECHO off')
-            os.system('TASKKILL /im Kodi.exe /f')
-        except: pass
-        try:
-            os.system('@ECHO off')
-            os.system('TASKKILL /im XBMC.exe /f')
-        except: pass
-        #dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
-    else: #ATV
-        try: os.system('killall AppleTV')
-        except: pass
-        try: os.system('sudo initctl stop kodi')
-        except: pass
-        try: os.system('sudo initctl stop xbmc')
-        except: pass
-        #dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')    
+	choice = xbmcgui.Dialog().yesno('Fechar Kodi abruptamente', 'Estas prestes a fechar Kodi', 'Queres continuar?', nolabel='Nao, Cancelar',yeslabel='Sim, Fechar')
+	if choice == 0:
+		return
+	elif choice == 1:
+		pass
+	myplatform = platform()
+	#print "Plataforma: " + str(myplatform)
+	if myplatform == 'osx': # OSX
+		try: os.system('killall -9 XBMC')
+		except: pass
+		try: os.system('killall -9 Kodi')
+		except: pass
+	elif myplatform == 'linux': #Linux
+		try: os.system('killall XBMC')
+		except: pass
+		try: os.system('killall Kodi')
+		except: pass
+		try: os.system('killall -9 xbmc.bin')
+		except: pass
+		try: os.system('killall -9 kodi.bin')
+		except: pass
+		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+	elif myplatform == 'android': # Android  
+		try: os.system('adb shell am force-stop org.xbmc.kodi')
+		except: pass
+		try: os.system('adb shell am force-stop org.kodi')
+		except: pass
+		try: os.system('adb shell am force-stop org.xbmc.xbmc')
+		except: pass
+		try: os.system('adb shell am force-stop org.xbmc')
+		except: pass
+		try: os.system("ps | grep org.kodi | awk '{print $2}' | xargs kill")
+		except: pass
+		try: os.system("ps | grep org.xbmc.kodi | awk '{print $2}' | xargs kill")
+		except: pass
+		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+	elif myplatform == 'windows': # Windows
+		try:
+			os.system('@ECHO off')
+			os.system('tskill XBMC.exe')
+		except: pass
+		try:
+			os.system('@ECHO off')
+			os.system('tskill Kodi.exe')
+		except: pass
+		try:
+			os.system('@ECHO off')
+			os.system('TASKKILL /im Kodi.exe /f')
+		except: pass
+		try:
+			os.system('@ECHO off')
+			os.system('TASKKILL /im XBMC.exe /f')
+		except: pass
+		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+	else: #ATV
+		try: os.system('killall AppleTV')
+		except: pass
+		try: os.system('sudo initctl stop kodi')
+		except: pass
+		try: os.system('sudo initctl stop xbmc')
+		except: pass
+		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')    
 
 
 def platform():
-    if xbmc.getCondVisibility('system.platform.android'):
-        return 'android'
-    elif xbmc.getCondVisibility('system.platform.linux'):
-        return 'linux'
-    elif xbmc.getCondVisibility('system.platform.windows'):
-        return 'windows'
-    elif xbmc.getCondVisibility('system.platform.osx'):
-        return 'osx'
-    elif xbmc.getCondVisibility('system.platform.atv2'):
-        return 'atv2'
-    elif xbmc.getCondVisibility('system.platform.ios'):
-        return 'ios'
+	if xbmc.getCondVisibility('system.platform.android'):
+		return 'android'
+	elif xbmc.getCondVisibility('system.platform.linux'):
+		return 'linux'
+	elif xbmc.getCondVisibility('system.platform.windows'):
+		return 'windows'
+	elif xbmc.getCondVisibility('system.platform.osx'):
+		return 'osx'
+	elif xbmc.getCondVisibility('system.platform.atv2'):
+		return 'atv2'
+	elif xbmc.getCondVisibility('system.platform.ios'):
+		return 'ios'
 
 
 def addDir(name,url,mode,iconimage,fanart,description,pk,isaddon,restart,forceRestart):
