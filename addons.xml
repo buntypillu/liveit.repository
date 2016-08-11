@@ -34,12 +34,12 @@
   </extension>
 </addon>
 
-<addon id="plugin.program.iliveit" name="Instalador Live!t" provider-name="Live!t TV" version="0.0.6">
+<addon id="plugin.program.iliveit" name="Instalador Live!t" provider-name="Live!t TV" version="0.0.7">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>video executable</provides>
+        <provides>program</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Live!t TV</summary>
