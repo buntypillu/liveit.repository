@@ -14,14 +14,14 @@ instalador_nome = "Instalador Live!t"
 base_server = "http://liveitkodi.com"
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
 base='liveit'
-ADDON=xbmcaddon.Addon(id='plugin.video.i'+base)
+ADDON=xbmcaddon.Addon(id='plugin.program.i'+base)
 dialog = xbmcgui.Dialog()    
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 PATH = "i"+base    
 
 def log_insertion(string):
-    path = xbmc.translatePath(os.path.join('special://home/addons','plugin.video.i'+base))
-    file_ = path + '/plugin.video.i' +base + '.log'
+    path = xbmc.translatePath(os.path.join('special://home/addons','plugin.program.i'+base))
+    file_ = path + '/plugin.program.i' +base + '.log'
     with open(file_, "a") as myfile:
         myfile.write(str(string)+'\n')
 
@@ -64,7 +64,7 @@ def allWithProgress(_in, _out, dp):
 
 def CATEGORIES():
     packages = json.loads(OPEN_URL(base_server+'/InstalerPackage'))['Packages']
-    print packages
+    #print packages
     for package in packages:
         addDir(package['name'],package['url'],1,package['icon'],package['fanart'],package['description'],package['pk'])
     setView('movies', 'MAIN')
@@ -80,9 +80,9 @@ def OPEN_URL(url):
     
     
 def wizard(name,url,description,pk):
-    PURGEPACKAGES()
+    #PURGEPACKAGES()
     package = json.loads(OPEN_URL(base_server+'/InstalerPackage?package_pk='+pk))['Packages'][0]
-    path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
+    path = xbmc.translatePath(os.path.join('special://home',''))
     dp = xbmcgui.DialogProgress()
     dp.create(package['name'],"Download: " + package['name'],'', package['url'])
     lib=os.path.join(path, name+'.zip')

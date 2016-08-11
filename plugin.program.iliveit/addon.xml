@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.iliveit" name="Instalador" version="0.0.1" provider-name="Instalador Live!t">
+<addon id="plugin.program.iliveit" name="Instalador Live!t" provider-name="Live!t TV" version="0.0.3">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
   </requires>
