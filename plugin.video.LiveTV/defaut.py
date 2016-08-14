@@ -311,6 +311,7 @@ def Menu_inicial(men,build,tipo):
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
 	if build == True:
+		thread.start_new_thread( obter_ficheiro_epg, () )
 		tipocan = ''
 		urlbuild = ''
 		nomebuild = ''
@@ -322,13 +323,57 @@ def Menu_inicial(men,build,tipo):
 			tipocan = 'Normal'
 			nomebuild = 'Desenhos Animados PT'
 			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Canal'):
+			tipocan = 'Normal'
+			nomebuild = 'Canais PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Documentario'):
+			tipocan = 'Normal'
+			nomebuild = 'Documentários PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Musica'):
+			tipocan = 'Normal'
+			nomebuild = 'Música PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Filme'):
+			tipocan = 'Normal'
+			nomebuild = 'Canais Filmes PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Noticia'):
 			tipocan = 'Normal'
 			nomebuild = 'Notícias PT'
 			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'DE'):
+			tipocan = 'Normal'
+			nomebuild = 'Alemanha'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'FR'):
+			tipocan = 'Normal'
+			nomebuild = 'França'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'UK'):
+			tipocan = 'Normal'
+			nomebuild = 'UK'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'BR'):
+			tipocan = 'Normal'
+			nomebuild = 'Brasil'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'ES'):
+			tipocan = 'Normal'
+			nomebuild = 'Espanha'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'IT'):
+			tipocan = 'Normal'
+			nomebuild = 'Itália'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'USA'):
+			tipocan = 'Normal'
+			nomebuild = 'USA'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Radio'):
 			tipocan = 'Normal'
-			nomebuild = 'Desporto PT'
+			nomebuild = 'Rádio PT'
 			if _servuser == 'Servidor1':
 				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor1.txt"
 			elif(_servuser == 'Servidor2'):
@@ -339,7 +384,7 @@ def Menu_inicial(men,build,tipo):
 				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor4.txt"
 		elif(tipo == 'Adulto'):
 			tipocan = 'Adulto'
-			nomebuild = 'Desporto PT'
+			nomebuild = 'Adultos'
 			if _servuser == 'Servidor1':
 				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor1.txt"
 			elif(_servuser == 'Servidor2'):
