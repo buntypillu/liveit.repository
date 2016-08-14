@@ -132,7 +132,7 @@ def menu():
 				menus3['tipo'] = "pesquisa"
 				menus3['senha'] = ""
 				check_login['menus'].append(menus3)
-				Menu_inicial(check_login)
+				Menu_inicial(check_login,False,'')
 			elif check_login['sucesso']['resultado'] == 'utilizador':
 				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
 				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
@@ -298,55 +298,100 @@ def login2():
 		resultado = True
 		return resultado
 
+def build(tipologia):
+	check_login = login()
+	Menu_inicial(check_login,True,tipologia)
+	
 ###############################################################################################################
 #                                                   Menus                                                     #
 ###############################################################################################################
 
-def Menu_inicial(men):
+def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
-	for menu in men['menus']:
-		nome = menu['nome']
-		logo = menu['logo']
-		link = menu['link']
-		tipo = menu['tipo']
-		senha = menu['senha']
-		if _tipouser == 'Desporto':
-			if nome == 'TVs - Desporto':
-				addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-			elif(nome == 'Adultos - Desporto'):
-				addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-			elif(tipo == 'estado'):
-				addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-		else:
-			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
-				if tipo == 'Adulto' :
+	if build == True:
+		tipocan = ''
+		urlbuild = ''
+		nomebuild = ''
+		if tipo == 'Desporto':
+			tipocan = 'Normal'
+			nomebuild = 'Desporto PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Crianca'):
+			tipocan = 'Normal'
+			nomebuild = 'Desenhos Animados PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Noticia'):
+			tipocan = 'Normal'
+			nomebuild = 'Notícias PT'
+			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
+		elif(tipo == 'Radio'):
+			tipocan = 'Normal'
+			nomebuild = 'Desporto PT'
+			if _servuser == 'Servidor1':
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor1.txt"
+			elif(_servuser == 'Servidor2'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor2.txt"
+			elif(_servuser == 'Servidor3'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor3.txt"
+			elif(_servuser == 'Servidor4'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor4.txt"
+		elif(tipo == 'Adulto'):
+			tipocan = 'Adulto'
+			nomebuild = 'Desporto PT'
+			if _servuser == 'Servidor1':
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor1.txt"
+			elif(_servuser == 'Servidor2'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor2.txt"
+			elif(_servuser == 'Servidor3'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor3.txt"
+			elif(_servuser == 'Servidor4'):
+				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor4.txt"
+		
+		listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'','','','')
+	else:
+		for menu in men['menus']:
+			nome = menu['nome']
+			logo = menu['logo']
+			link = menu['link']
+			tipo = menu['tipo']
+			senha = menu['senha']
+			if _tipouser == 'Desporto':
+				if nome == 'TVs - Desporto':
+					addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+				elif(nome == 'Adultos - Desporto'):
 					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-				elif tipo == 'patrocinadores' or tipo == 'novidades':
-					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-				elif(tipo == 'Filme'):
-					addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-				elif(tipo == 'Serie'):
-					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 				elif(tipo == 'estado'):
 					addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-				elif(tipo == 'pesquisa'):
-					if _tipouser != 'Teste':
-						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'','','','')
-				else:
-					if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
-						if nome == 'TVs':
-							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-							addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+			else:
+				if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
+					if tipo == 'Adulto' :
+						addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+					elif tipo == 'patrocinadores' or tipo == 'novidades':
+						addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+					elif(tipo == 'Filme'):
+						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+					elif(tipo == 'Serie'):
+						addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+					elif(tipo == 'estado'):
+						addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+					elif(tipo == 'pesquisa'):
+						if _tipouser != 'Teste':
+							addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'','','','')
+					else:
+						if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
+							if nome == 'TVs':
+								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+								addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
+							else:
+								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
 						else:
 							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-					else:
-						addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',men['info']['log'],men['info']['user'],men['info']['password'])
-	
-	#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
-	thread.start_new_thread( obter_ficheiro_epg, () )
-	xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
+		
+		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
+		thread.start_new_thread( obter_ficheiro_epg, () )
+		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
 	#check_version()
 ###############################################################################################################
 #                                                   Listar Grupos                                             #
@@ -1576,6 +1621,7 @@ pagina=None
 temporada=None
 episodio=None
 serieNome=None
+buildtipo=None
 
 try:
         url=urllib.unquote_plus(params["url"])
@@ -1659,6 +1705,9 @@ try: iconimage=urllib.unquote_plus(params["iconimage"])
 except: pass
 try : serieNome=urllib.unquote_plus(params["serieNome"])
 except: pass
+try : buildtipo=urllib.unquote_plus(params["buildtipo"])
+except: pass
+
 
 ###############################################################################################################
 #                                                   MODOS                                                     #
@@ -1689,5 +1738,6 @@ elif mode==119: getYears(url)
 elif mode==120: pesquisa(url,tipo_user,tipologia,servidor_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
+elif mode==3000: build(buildtipo)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
