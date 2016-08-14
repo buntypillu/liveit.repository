@@ -298,7 +298,7 @@ def login2():
 		resultado = True
 		return resultado
 
-def build(tipologia):
+def buildLiveit(tipologia):
 	check_login = login()
 	Menu_inicial(check_login,True,tipologia)
 	
@@ -315,84 +315,80 @@ def Menu_inicial(men,build,tipo):
 		tipocan = ''
 		urlbuild = ''
 		nomebuild = ''
+		if tipo == 'Desporto' or tipo == 'Crianca' or tipo == 'Canal' or tipo == 'Documentario' or tipo == 'Musica' or tipo == 'Filme' or tipo == 'Noticia' or tipo == 'DE' or tipo == 'FR' or tipo == 'UK' or tipo == 'BR' or tipo == 'ES' or tipo == 'IT' or tipo == 'USA':
+			if _servuser == 'Servidor1':
+				urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor1.txt"
+			elif(_servuser == 'Servidor2'):
+				urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor2.txt"
+			elif(_servuser == 'Servidor3'):
+				urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor3.txt"
+			elif(_servuser == 'Servidor4'):
+				urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor4.txt"
+		
 		if tipo == 'Desporto':
 			tipocan = 'Normal'
 			nomebuild = 'Desporto PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Crianca'):
 			tipocan = 'Normal'
 			nomebuild = 'Desenhos Animados PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Canal'):
 			tipocan = 'Normal'
 			nomebuild = 'Canais PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Documentario'):
 			tipocan = 'Normal'
 			nomebuild = 'Documentários PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Musica'):
 			tipocan = 'Normal'
 			nomebuild = 'Música PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Filme'):
 			tipocan = 'Normal'
 			nomebuild = 'Canais Filmes PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Noticia'):
 			tipocan = 'Normal'
 			nomebuild = 'Notícias PT'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'DE'):
 			tipocan = 'Normal'
 			nomebuild = 'Alemanha'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'FR'):
 			tipocan = 'Normal'
 			nomebuild = 'França'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'UK'):
 			tipocan = 'Normal'
 			nomebuild = 'UK'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'BR'):
 			tipocan = 'Normal'
 			nomebuild = 'Brasil'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'ES'):
 			tipocan = 'Normal'
 			nomebuild = 'Espanha'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'IT'):
 			tipocan = 'Normal'
 			nomebuild = 'Itália'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'USA'):
 			tipocan = 'Normal'
 			nomebuild = 'USA'
-			urlbuild = __SITEAddon__+"Addon/Ficheiros/canaisaddon.txt"
 		elif(tipo == 'Radio'):
 			tipocan = 'Normal'
-			nomebuild = 'Rádio PT'
+			nomebuild = 'Radios PT'
 			if _servuser == 'Servidor1':
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor1.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor1.txt"
 			elif(_servuser == 'Servidor2'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor2.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor2.txt"
 			elif(_servuser == 'Servidor3'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor3.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor3.txt"
 			elif(_servuser == 'Servidor4'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/radiosaddonservidor4.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor4.txt"
 		elif(tipo == 'Adulto'):
 			tipocan = 'Adulto'
 			nomebuild = 'Adultos'
 			if _servuser == 'Servidor1':
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor1.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor1.txt"
 			elif(_servuser == 'Servidor2'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor2.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor2.txt"
 			elif(_servuser == 'Servidor3'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor3.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor3.txt"
 			elif(_servuser == 'Servidor4'):
-				urlbuild = __SITEAddon__+"Addon/Ficheiros/adultosaddonservidor4.txt"
+				urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4.txt"
 		
 		listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'','','','')
 	else:
@@ -1644,6 +1640,7 @@ def get_params():
 
 params=get_params()
 url=None
+buildtipo=None
 name=None
 mode=None
 iconimage=None
@@ -1666,72 +1663,40 @@ pagina=None
 temporada=None
 episodio=None
 serieNome=None
-buildtipo=None
 
-try:
-        url=urllib.unquote_plus(params["url"])
-except:
-        pass
-try:
-        name=urllib.unquote_plus(params["name"])
-except:
-        pass
-try:
-        estilo=urllib.unquote_plus(params["estilo"])
-except:
-        pass
-try:
-        mode=int(params["mode"])
-except:
-        pass
-try:        
-        iconimage=urllib.unquote_plus(params["iconimage"])
-except:
-        pass
-try:        
-        senha=urllib.unquote_plus(params["senha"])
-except:
-        pass
-try:
-		idCanal=urllib.unquote_plus(params["idCanal"])
-except:
-		pass
-try:
-		idffCanal=params["idffCanal"]
-except:
-		pass
-try:
-		srtfilm=urllib.unquote_plus(params["srtfilm"])
-except:
-		pass
-try:
-		tipologia=urllib.unquote_plus(params["tipologia"])
-except:
-		pass
-try:
-        descricao=urllib.unquote_plus(params["descricao"])
-except:
-        pass
-try:
-		tipo_user=urllib.unquote_plus(params["tipo_user"])
-except:
-		pass
-try:
-		servidor_user=urllib.unquote_plus(params["servidor_user"])
-except:
-		pass
-try:
-		s_serv=urllib.unquote_plus(params["lolserv"])
-except:
-		pass
-try:
-		s_user=urllib.unquote_plus(params["loluser"])
-except:
-		pass
-try:
-		s_pass=urllib.unquote_plus(params["lolpass"])
-except:
-		pass
+
+try: url=urllib.unquote_plus(params["url"])
+except: pass
+try: name=urllib.unquote_plus(params["name"])
+except: pass
+try: estilo=urllib.unquote_plus(params["estilo"])
+except: pass
+try: mode=int(params["mode"])
+except: pass
+try: iconimage=urllib.unquote_plus(params["iconimage"])
+except: pass
+try: senha=urllib.unquote_plus(params["senha"])
+except: pass
+try: idCanal=urllib.unquote_plus(params["idCanal"])
+except: pass
+try: idffCanal=params["idffCanal"]
+except: pass
+try: srtfilm=urllib.unquote_plus(params["srtfilm"])
+except: pass
+try: tipologia=urllib.unquote_plus(params["tipologia"])
+except: pass
+try: descricao=urllib.unquote_plus(params["descricao"])
+except: pass
+try: tipo_user=urllib.unquote_plus(params["tipo_user"])
+except: pass
+try: servidor_user=urllib.unquote_plus(params["servidor_user"])
+except: pass
+try: s_serv=urllib.unquote_plus(params["lolserv"])
+except: pass
+try: s_user=urllib.unquote_plus(params["loluser"])
+except: pass
+try: s_pass=urllib.unquote_plus(params["lolpass"])
+except: pass
 try: link=urllib.unquote_plus(params["link"])
 except: pass
 try: legenda=urllib.unquote_plus(params["legenda"])
@@ -1763,6 +1728,7 @@ if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,s_serv,s_user,s_pass)
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,s_serv,s_user,s_pass)
+elif mode==4: buildLiveit(buildtipo)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user,s_serv,s_user,s_pass)
 elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,s_serv,s_user,s_pass)
@@ -1783,6 +1749,5 @@ elif mode==119: getYears(url)
 elif mode==120: pesquisa(url,tipo_user,tipologia,servidor_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
-elif mode==3000: build(buildtipo)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
