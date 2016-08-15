@@ -310,7 +310,14 @@ def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
+	_senhaadultos = ''
 	if build == True:
+		for menu in men['menus']:
+			tipott = menu['tipo']
+			senha = menu['senha']
+			if tipott == 'Adulto' :
+				_senhaadultos = menu['senha']
+		
 		thread.start_new_thread( obter_ficheiro_epg, () )
 		tipocan = ''
 		urlbuild = ''
@@ -390,7 +397,15 @@ def Menu_inicial(men,build,tipo):
 			elif(_servuser == 'Servidor4'):
 				urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4.txt"
 		
-		listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'','','','')
+		if(tipo == 'Adulto'):
+			if(__ADDON__.getSetting("login_adultos") == ''):
+				__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
+			elif(__ADDON__.getSetting("login_adultos") != _senhaadultos):
+				__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
+			else:
+				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'','','','')
+		else:
+			listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'','','','')
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -506,9 +521,12 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			except:
 				pass
 	
-	vista_menu()
-	#estiloSelect = returnestilo(estilo)
-	#xbmc.executebuiltin(estiloSelect)	
+	if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV' or nome == 'Eventos Diários':
+			estiloSelect = returnestilo(estilo)
+			xbmc.executebuiltin(estiloSelect)
+	else:
+		vista_Canais()	
+
 
 ###############################################################################################################
 #                                                   Listar Canais                                             #
