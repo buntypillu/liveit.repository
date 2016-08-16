@@ -521,11 +521,14 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			except:
 				pass
 	
-	if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV' or nome == 'Eventos Diários':
-			estiloSelect = returnestilo(estilo)
-			xbmc.executebuiltin(estiloSelect)
+	if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV' or nome_nov == 'Eventos Diários':
+		estiloSelect = returnestilo(estilo)
+		xbmc.executebuiltin(estiloSelect)
 	else:
-		vista_Canais()	
+		if tipo == 'Filme' or tipo == 'Serie':
+			vista_filmesSeries()
+		else:
+			vista_Canais()	
 
 
 ###############################################################################################################
@@ -598,7 +601,10 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,sservee,suser
 			estiloSelect = returnestilo(estilo)
 			xbmc.executebuiltin(estiloSelect)
 		else:
-			vista_Canais()
+			if tipo == 'Filme' or tipo == 'Serie':
+				vista_filmesSeries()
+			else:
+				vista_Canais()
 
 ###############################################################################################################
 #                                                   EPG                                                     #
