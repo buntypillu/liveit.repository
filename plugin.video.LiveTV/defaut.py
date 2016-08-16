@@ -199,6 +199,7 @@ def login():
 		net = Net()
 		net.set_cookies(__COOKIE_FILE__)
 		dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
+		
 		codigo_fonte = net.http_POST(__SITE__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 		elems = ET.fromstring(codigo_fonte)
 		for child in elems:
@@ -297,6 +298,11 @@ def login2():
 		net.save_cookies(__COOKIE_FILE__)
 		resultado = True
 		return resultado
+
+def minhaContabuild():
+	check_login = login()
+	data_user = check_login['datafim']['data']
+	addDir(data_user, 'url', None, None, 'Lista', __SITEAddon__+"Imagens/estadomembro.png",'','','','','','','')
 
 def buildLiveit(tipologia):
 	check_login = login()
@@ -1606,6 +1612,10 @@ def abrirDefinincoes():
 	addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 
+def abrirDefinincoesMesmo():
+	__ADDON__.openSettings()
+	xbmc.executebuiltin("Container.SetViewMode(51)")
+
 def vista_menu():
 	opcao = __ADDON__.getSetting('menuView')
 	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
@@ -1773,5 +1783,7 @@ elif mode==119: getYears(url)
 elif mode==120: pesquisa(url,tipo_user,tipologia,servidor_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
+elif mode==3000: abrirDefinincoesMesmo()
+elif mode==4000: minhaContabuild()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
