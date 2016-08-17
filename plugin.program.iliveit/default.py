@@ -1,3 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin,os,sys
 import shutil
 import urllib2,urllib
@@ -9,15 +26,25 @@ import plugintools
 import zipfile
 import ntpath
 import json
+import xml.etree.ElementTree as ET
+from t0mm0.common.net import Net
 
+__ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
+__ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
+__ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
+__ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
+__FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
+_ICON_ = __ADDON_FOLDER__ + '/icon.png'
+__SKIN__ = 'v2'
 
 instalador_nome = "Instalador Live!t"
 base_server = "http://liveitkodi.com"
-USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.program.iliveit/').decode('utf-8'), 'cookie.iliveittv')
+__HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 base='liveit'
 
 dialog = xbmcgui.Dialog()    
-VERSION = "0.0.9"
+VERSION = "1.1.2"
 __ALERTA__ = xbmcgui.Dialog().ok
 
 ADDON		   = xbmcaddon.Addon(id='plugin.program.i'+base)
@@ -36,6 +63,51 @@ def log_insertion(string):
     with open(file_, "a") as myfile:
         myfile.write(str(string)+'\n')
 
+def loginAgora():
+	tecladous = xbmc.Keyboard('', 'Insira o seu Utilizador.')
+	tecladous.doModal()
+	
+	if tecladous.isConfirmed():
+		tecladopa = xbmc.Keyboard('', 'Insira a sua Senha.')
+		tecladopa.doModal()
+		if tecladopa.isConfirmed():
+			utiliza = tecladous.getText()
+			senhas = tecladopa.getText()
+			net = Net()
+			net.set_cookies(__COOKIE_FILE__)
+			dados = {'username': utiliza, 'password': senhas}
+			
+			codigo_fonte = net.http_POST(base_server+'/PHP/LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
+			elems = ET.fromstring(codigo_fonte)
+			
+			servid = ''
+			nomeus = ''
+			tipous = ''
+			for child in elems:
+				if(child.tag == 'user'):
+					for d in child:
+						if(d.tag == 'Nome'):
+							nomeus = d.text
+						elif(d.tag == 'Tipo'):
+							tipous = d.text
+						elif(d.tag == 'Servidor'):
+							servid = d.text
+			
+			if servid == '':
+				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+			elif servid == 'Teste':
+				__ALERTA__('Live!t TV', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
+			else:
+				xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+nomeus, 8000, _ICON_))
+				CATEGORIES()
+		else:
+			__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador e Senha por favor.')
+			addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+	else:
+		__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador por favor.')
+		addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+
 def CATEGORIES():
     packages = json.loads(OPEN_URL(base_server+'/InstalerPackage'))['Packages']
     for package in packages:
@@ -43,7 +115,7 @@ def CATEGORIES():
 			addDir(package['name'],package['url'],1,package['icon'],package['fanart'],package['description'],package['pk'],package['isaddon'],package['restart'],package['forceRestart'])
 		elif(package['pk'] == 3):
 			addDir(package['name'],package['url'],2,package['icon'],package['fanart'],package['description'],package['pk'],package['isaddon'],package['restart'],package['forceRestart'])
-    setView('movies', 'MAIN')
+    xbmc.executebuiltin("Container.SetViewMode(50)")
         
     
 def OPEN_URL(url):
@@ -165,7 +237,7 @@ def killxbmc():
 		except: pass
 		try: os.system('killall -9 kodi.bin')
 		except: pass
-		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+		dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
 	elif myplatform == 'android': # Android  
 		try: os.system('adb shell am force-stop org.xbmc.kodi')
 		except: pass
@@ -179,7 +251,7 @@ def killxbmc():
 		except: pass
 		try: os.system("ps | grep org.xbmc.kodi | awk '{print $2}' | xargs kill")
 		except: pass
-		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+		dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
 	elif myplatform == 'windows': # Windows
 		try:
 			os.system('@ECHO off')
@@ -197,7 +269,7 @@ def killxbmc():
 			os.system('@ECHO off')
 			os.system('TASKKILL /im XBMC.exe /f')
 		except: pass
-		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
+		dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')
 	else: #ATV
 		try: os.system('killall AppleTV')
 		except: pass
@@ -205,9 +277,8 @@ def killxbmc():
 		except: pass
 		try: os.system('sudo initctl stop xbmc')
 		except: pass
-		#dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')    
-
-
+		dialog.ok("[COLOR=red][B]Cuidado  !!![/COLOR][/B]", "Se esta vendo esta mensagem o fechamento do kodi", "foi mal sucedido, por favor mate o kodi ou reinicie sua box",'')		
+	
 def platform():
 	if xbmc.getCondVisibility('system.platform.android'):
 		return 'android'
@@ -305,20 +376,15 @@ try:
         forceRestart=params["forceRestart"]
 except:
         pass
-
-def setView(content, viewType):
-    if content:
-        xbmcplugin.setContent(int(sys.argv[1]), content)
-    if ADDON.getSetting('auto-view')=='true':
-        xbmc.executebuiltin("Container.SetViewMode(%s)" % ADDON.getSetting(viewType) )
-        
-        
+    
 if mode==None or url==None or len(url)<1:
-	CATEGORIES()
-       
+	loginAgora()
+
 elif mode==1:
 	wizard(name,url,description,pk,isaddon,restart,forceRestart)
 elif mode==2:
 	wizard2(name,url,description,pk,isaddon,restart,forceRestart)
+elif mode==3:
+	loginAgora()
    
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
