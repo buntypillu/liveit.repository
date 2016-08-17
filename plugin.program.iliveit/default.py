@@ -32,13 +32,12 @@ from t0mm0.common.net import Net
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
-__ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
 __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
-_ICON_ = __ADDON_FOLDER__ + '/icon.png'
+base_server = "http://liveitkodi.com"
+_ICON_ = base_server + '/Logos/liveitaddon.png'
 __SKIN__ = 'v2'
 
 instalador_nome = "Instalador Live!t"
-base_server = "http://liveitkodi.com"
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.program.iliveit/').decode('utf-8'), 'cookie.iliveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 base='liveit'
@@ -95,7 +94,7 @@ def loginAgora():
 			
 			if servid == '':
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
-				addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+				addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
 			elif servid == 'Teste':
 				__ALERTA__('Live!t TV', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
 			else:
@@ -103,10 +102,10 @@ def loginAgora():
 				CATEGORIES()
 		else:
 			__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador e Senha por favor.')
-			addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+			addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
 	else:
 		__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador por favor.')
-		addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+		addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
 
 def CATEGORIES():
     packages = json.loads(OPEN_URL(base_server+'/InstalerPackage'))['Packages']
