@@ -33,6 +33,7 @@ from unicodedata import normalize
 
 global g_timer
 
+AddonTitle = "Live!t TV"
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
@@ -317,7 +318,214 @@ def minhaContabuild():
 def buildLiveit(tipologia):
 	check_login = login()
 	Menu_inicial(check_login,True,tipologia)
-	
+
+################################
+###       Clear Cache        ###
+################################
+
+def CLEARCACHE():
+    xbmc_cache_path = os.path.join(xbmc.translatePath('special://home'), 'cache')
+    if os.path.exists(xbmc_cache_path)==True:    
+        for root, dirs, files in os.walk(xbmc_cache_path):
+            file_count = 0
+            file_count += len(files)
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar Cache no XBMC.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        try:
+                            os.unlink(os.path.join(root, f))
+                        except:
+                            pass
+                    for d in dirs:
+                        try:
+                            shutil.rmtree(os.path.join(root, d))
+                        except:
+                            pass
+                        
+            else:
+                pass
+    if xbmc.getCondVisibility('system.platform.ATV2'):
+        atv2_cache_a = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'Other')
+        
+        for root, dirs, files in os.walk(atv2_cache_a):
+            file_count = 0
+            file_count += len(files)
+        
+            if file_count > 0:
+
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Outros'", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+        atv2_cache_b = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'LocalAndRental')
+        
+        for root, dirs, files in os.walk(atv2_cache_b):
+            file_count = 0
+            file_count += len(files)
+        
+            if file_count > 0:
+
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Local'", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+              # Set path to Cydia Archives cache files
+                             
+
+    # Set path to What th Furk cache files
+    wtf_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.whatthefurk/cache'), '')
+    if os.path.exists(wtf_cache_path)==True:    
+        for root, dirs, files in os.walk(wtf_cache_path):
+            file_count = 0
+            file_count += len(files)
+        
+        # Count files and give option to delete
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar a cache WTF.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+                
+                # Set path to 4oD cache files
+    channel4_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.4od/cache'), '')
+    if os.path.exists(channel4_cache_path)==True:    
+        for root, dirs, files in os.walk(channel4_cache_path):
+            file_count = 0
+            file_count += len(files)
+        
+        # Count files and give option to delete
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar ficheiros 4oD em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+                
+                # Set path to BBC iPlayer cache files
+    iplayer_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.iplayer/iplayer_http_cache'), '')
+    if os.path.exists(iplayer_cache_path)==True:    
+        for root, dirs, files in os.walk(iplayer_cache_path):
+            file_count = 0
+            file_count += len(files)
+        
+        # Count files and give option to delete
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar ficheiros BBC iPlayer em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+                
+                
+                # Set path to Simple Downloader cache files
+    downloader_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/script.module.simple.downloader'), '')
+    if os.path.exists(downloader_cache_path)==True:    
+        for root, dirs, files in os.walk(downloader_cache_path):
+            file_count = 0
+            file_count += len(files)
+        
+        # Count files and give option to delete
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar ficheiros Simple Downloader em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+    
+    itv_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.itv/Images'), '')
+    if os.path.exists(itv_cache_path)==True:    
+        for root, dirs, files in os.walk(itv_cache_path):
+            file_count = 0
+            file_count += len(files)
+			
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Apagar items em cache", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+                
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                        
+            else:
+                pass
+    dialog = xbmcgui.Dialog()
+    dialog.ok(AddonTitle, "       Cache apagada com sucesso!")
+
+
+################################
+###     Purge Packages       ###
+################################
+
+def PURGEPACKAGES():
+    packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
+    try:    
+        for root, dirs, files in os.walk(packages_cache_path):
+            file_count = 0
+            file_count += len(files)
+            
+            if file_count > 0:
+    
+                dialog = xbmcgui.Dialog()
+                if dialog.yesno("Excluir informação em Cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros?"):
+                            
+                    for f in files:
+                        os.unlink(os.path.join(root, f))
+                    for d in dirs:
+                        shutil.rmtree(os.path.join(root, d))
+                    dialog = xbmcgui.Dialog()
+                    dialog.ok(AddonTitle, "       Kodi limpo com sucesso.")
+                else:
+                        pass
+            else:
+                dialog = xbmcgui.Dialog()
+                dialog.ok(AddonTitle, "       Não foram encontrados ficheiros a apagar.")
+    except: 
+        dialog = xbmcgui.Dialog()
+        dialog.ok(AddonTitle, "Erro ao tentar apagar ficheiros em cache.")
+
+
 ###############################################################################################################
 #                                                   Menus                                                     #
 ###############################################################################################################
@@ -1821,5 +2029,7 @@ elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==3000: abrirDefinincoesMesmo()
 elif mode==4000: minhaContabuild()
+elif mode==5000: CLEARCACHE()
+elif mode==6000: PURGEPACKAGES()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
