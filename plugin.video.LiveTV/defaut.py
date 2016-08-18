@@ -308,8 +308,11 @@ def login2():
 
 def minhaContabuild():
 	check_login = login()
-	data_user = check_login['datafim']['data']
-	addDir(data_user, 'url', None, None, 'Lista', __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	if check_login['datafim']['data'] == '':
+		abrirDefinincoesMesmo()
+	else:
+		data_user = check_login['datafim']['data']
+		addDir(data_user, 'url', None, None, 'Lista', __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 
 def buildLiveit(tipologia):
 	check_login = login()
@@ -469,7 +472,7 @@ def Menu_inicial(men,build,tipo):
 						addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
 					elif(tipo == 'pesquisa'):
 						if _tipouser != 'Teste':
-							addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'','','','')
+							addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
 					else:
 						if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 							if nome == 'TVs':
