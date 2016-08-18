@@ -385,5 +385,7 @@ elif mode==2:
 	wizard2(name,url,description,pk,isaddon,restart,forceRestart)
 elif mode==3:
 	loginAgora()
+elif mode==4:
+	CATEGORIES()
    
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

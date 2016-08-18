@@ -435,7 +435,11 @@ def Menu_inicial(men,build,tipo):
 			else:
 				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart)
 		else:
-			listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart)
+			if urlbuild == '':
+				__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
+				abrirDefinincoesMesmo()
+			else:
+				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
