@@ -92,16 +92,6 @@ def convTimestamp(params, src):
     else:
         newfrmt = params.strip("'")
         return dt.convTimestamp(src, str(newfrmt))
-    
-def convDateUtil(params, src):
-    if params.find("','") != -1:
-        paramArr = __parseParams(params)
-        newfrmt = paramArr[0]
-        timezone = paramArr[1]
-        return dt.convDateUtil(src, str(newfrmt), timezone)
-    else:
-        newfrmt = params.strip("'")
-        return dt.convDateUtil(src, str(newfrmt))
 
 
 def offset(params, src):
@@ -204,52 +194,28 @@ def resolve(src):
     try:
         parsed_link = urlparse.urlsplit(src)
         tmp_host = parsed_link.netloc.split(':')
-        if 'streamlive.to' in tmp_host[0]:
-            servers = [#'80.82.78.4',
+        if tmp_host[0] == 'watch4.streamlive.to':
+            servers = ['80.82.78.4',
                        #'93.174.93.230',
-                       #'95.211.210.69',
-                       #'95.211.196.5',
+                       '95.211.210.69',
+                       '95.211.196.5',
                        '184.173.85.91',
-                       #'85.17.31.102',
-                       #'169.54.85.69',
-                       '62.210.139.136']
+                       '85.17.31.102']
+                       #'169.54.85.69']
+            import random
+            tmp_host[0] = random.choice(servers)
+        elif tmp_host[0] == 'watch3.streamlive.to':
+            servers = ['184.173.85.91',
+                       '85.17.31.102',
+                       '169.54.85.69']
             import random
             tmp_host[0] = random.choice(servers)
         elif tmp_host[0] == 'xlive.sportstream365.com':
-            servers = [ "185.56.139.162",
-                        "93.189.57.254",
-                        "93.189.62.10",
-                        "185.49.70.58",
-                        "46.28.205.96",
-                        "178.17.168.90",
-                        "185.28.190.69",
-                        "85.114.135.215",
-                        "94.242.254.211"]
-            import random
-            tmp_host[0] = random.choice(servers)
-        elif tmp_host[0] == 'live.pub.stream':
-            servers = [ "195.154.169.244",
-                        "195.154.185.109",
-                        "195.154.179.159",
-                        "195.154.167.95",
-                        "62.210.203.163",
-                        "195.154.168.230",
-                        "62.210.203.170",
-                        "62.210.203.167",
-                        "195.154.173.124",
-                        "195.154.172.90",
-                        "195.154.179.167",
-                        "195.154.177.110",
-                        "195.154.179.174",
-                        "195.154.168.218",
-                        "195.154.185.113",
-                        "195.154.187.46",
-                        "195.154.168.233",
-                        "195.154.187.23",
-                        "195.154.168.222",
-                        "195.154.169.233",
-                        "195.154.169.234",
-                        "195.154.182.101"]
+            servers = ['185.28.190.158',
+                       '178.175.132.210',
+                       '178.17.168.90',
+                       '185.56.137.178',
+                       '94.242.254.72']
             import random
             tmp_host[0] = random.choice(servers)
         else:

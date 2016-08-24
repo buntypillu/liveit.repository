@@ -547,9 +547,6 @@ class Parser(object):
 
             elif command == 'convTimestamp':
                 src = cc.convTimestamp(params, src)
-                
-            elif command == 'convDateUtil':
-                src = cc.convDateUtil(params, src)
 
             elif command == 'select':
                 src = cc.select(params, src)
@@ -648,13 +645,7 @@ class Parser(object):
                 
             elif command == 'cjsAesDec':
                 src = crypt.cjsAesDec(src,item.infos[params])
-
-            elif command == 'drenchDec':
-                src = crypt.drenchDec(src,item.infos[params])
-                
-            elif command == 'onetv':
-                src = crypt.onetv(src)
-
+            
             elif command == 'getCookies':
                 src = cc.getCookies(params, src)
 
