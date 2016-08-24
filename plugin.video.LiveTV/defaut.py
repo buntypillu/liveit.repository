@@ -325,7 +325,7 @@ def buildLiveit(tipologia):
 		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
-		check_login = login()	
+		check_login = login()
 		if check_login['user']['nome'] != '':
 			if check_login['sucesso']['resultado'] == 'yes':
 				Menu_inicial(check_login,True,tipologia)
@@ -829,7 +829,6 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adultos=False):
 	if url != 'nada':
-		clearCacheNow()	
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
 		codigo = f.read()
@@ -894,40 +893,6 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adulto
 				vista_filmesSeries()
 			else:
 				vista_Canais()
-
-def clearCacheNow():
-	pluginDataDir = xbmc.translatePath(__ADDON__.getAddonInfo('profile')).decode('utf-8')
-	cacheDir = os.path.join(pluginDataDir, 'cache')
-	if not os.path.exists(cacheDir):
-		os.mkdir(cacheDir, 0777)
-	else:
-		size, within_limit = fu.checkQuota(cacheDir)
-		if not within_limit:
-			fu.clearDirectory(cacheDir)
-
-def playVideo(nome,url,icon):
-	listitem = xbmcgui.ListItem(nome, thumbnailImage=icon)
-	listitem.setInfo('video', {'title': nome})
-	url = urllib.unquote_plus(url)
-	xbmc.Player().play(url, listitem)
-
-def abrirfree(name,url,iconimage,fanart,idCanal,id_p,infoLabelssss):
-	ok=True
-	cm=[]
-	
-	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
-	
-	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-	liz.setProperty('fanart_image', fanart)
-	liz.setArt({'fanart': fanart})
-	liz.setInfo( type="Video", infoLabels=infoLabelssss)
-	liz.addContextMenuItems(cm, replaceItems=False)
-	
-	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=6&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
-	
-	return ok
-
 
 ###############################################################################################################
 #                                                   EPG                                                     #
@@ -2092,14 +2057,11 @@ except: pass
 #                                                   MODOS                                                     #
 ###############################################################################################################
 
-if mode==None or url==None or len(url)<1:
-	menu()
-	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+if mode==None or url==None or len(url)<1: menu()
 elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,fanart)
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,fanart)
 elif mode==4: buildLiveit(buildtipo)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user,fanart)
-elif mode==6: playVideo(str(name),str(url),iconimage)
 elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
@@ -2125,4 +2087,4 @@ elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
 
 
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
