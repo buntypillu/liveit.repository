@@ -6,14 +6,14 @@ from utils.xbmcUtils import getKeyboard
 #------------------------------------------------------------------------------
 import xbmc, xbmcaddon
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.SportsDevil')
-__icon__ = xbmcaddon.Addon(id='plugin.video.SportsDevil').getAddonInfo('icon')
+__settings__ = xbmcaddon.Addon(id='plugin.video.LiveTV')
+__icon__ = xbmcaddon.Addon(id='plugin.video.LiveTV').getAddonInfo('icon')
 translate = __settings__.getLocalizedString
 enable_debug = True
 language = xbmc.getLanguage
 
 def log(msg, level=xbmc.LOGDEBUG):
-    plugin = "SportsDevil"
+    plugin = "Live!t-TV"
     msg = msg.encode('utf-8')
 
     xbmc.log("[%s] %s" % (plugin, msg.__str__()), level)

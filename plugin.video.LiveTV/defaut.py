@@ -17,6 +17,7 @@
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time
 import xml.etree.ElementTree as ET
+import fileUtils as fu
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
@@ -151,8 +152,8 @@ def menu():
 			else:
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','','','','')
-			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','','','','')
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 		
 		vista_menu()
 		#xbmc.executebuiltin("Container.SetViewMode(500)")
@@ -828,6 +829,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adultos=False):
 	if url != 'nada':
+		clearCacheNow()	
 		page_with_xml = urllib2.urlopen(url).readlines()
 		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
 		codigo = f.read()
@@ -852,6 +854,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adulto
 				srt_f = ''
 				descri = ''
 				_fanart = ''
+				
 				if grup == nome:
 					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
 					
@@ -878,15 +881,8 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adulto
 					else:
 						infoLabels = {"title": nomewp, "genre": tipo, "credits": nomewp}
 					
-					if estilo == 'TesteServer':
-						urlteste = rtmp.split('TSDOWNLOADER')
-						tttot = len(urlteste)
-						if tttot == 1:
-							addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,fanart,adultos,total)
-						else:
-							addLink(nomewp,'plugin://plugin.video.f4mTester/?url='+rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,fanart,adultos,total)
-					else:
-						addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,fanart,adultos,total)
+					
+					addLink(nomewp,rtmp,img,id_it,srt_f,descri,tipo,tipo_user,id_p,infoLabels,fanart,adultos,total)	
 			except:
 				pass
 		
@@ -898,6 +894,40 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,adulto
 				vista_filmesSeries()
 			else:
 				vista_Canais()
+
+def clearCacheNow():
+	pluginDataDir = xbmc.translatePath(__ADDON__.getAddonInfo('profile')).decode('utf-8')
+	cacheDir = os.path.join(pluginDataDir, 'cache')
+	if not os.path.exists(cacheDir):
+		os.mkdir(cacheDir, 0777)
+	else:
+		size, within_limit = fu.checkQuota(cacheDir)
+		if not within_limit:
+			fu.clearDirectory(cacheDir)
+
+def playVideo(nome,url,icon):
+	listitem = xbmcgui.ListItem(nome, thumbnailImage=icon)
+	listitem.setInfo('video', {'title': nome})
+	url = urllib.unquote_plus(url)
+	xbmc.Player().play(url, listitem)
+
+def abrirfree(name,url,iconimage,fanart,idCanal,id_p,infoLabelssss):
+	ok=True
+	cm=[]
+	
+	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+	
+	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+	liz.setProperty('fanart_image', fanart)
+	liz.setArt({'fanart': fanart})
+	liz.setInfo( type="Video", infoLabels=infoLabelssss)
+	liz.addContextMenuItems(cm, replaceItems=False)
+	
+	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=6&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	
+	return ok
+
 
 ###############################################################################################################
 #                                                   EPG                                                     #
@@ -1760,9 +1790,18 @@ def addFolder(name,url,mode,iconimage,folder):
 def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabelssss,fanart,adultos=False,total=1):
 	ok=True
 	cm=[]
+	urlpass = ''
+	free = False
+	urlteet = url.split('http://LiveFree=')
+	totalurl = len(urlteet)
+	if totalurl > 1:
+		urlpass = urlteet[1]
+		free = True
+	else:
+		urlpass = url
 	
 	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie':
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(urlpass), urllib.quote_plus(iconimage), idCanal, id_p)))
 	
 	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
@@ -1771,10 +1810,15 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 	liz.addContextMenuItems(cm, replaceItems=False)
 	
 	if tipo == 'ProgramasTV':
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(urlpass) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	else:
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+		if free == True:
+			u = sys.argv[0] + "?url=" + urllib.quote_plus(urlpass) + "&mode=6&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+			ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+		else:
+			ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=urlpass,listitem=liz)
+	
 	return ok
 
 def abrir_url(url,pesquisa=False):
@@ -2055,6 +2099,7 @@ elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servid
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,fanart)
 elif mode==4: buildLiveit(buildtipo)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user,fanart)
+elif mode==6: playVideo(str(name),str(url),iconimage)
 elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
@@ -2078,5 +2123,6 @@ elif mode==3000: abrirDefinincoesMesmo()
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
+
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
