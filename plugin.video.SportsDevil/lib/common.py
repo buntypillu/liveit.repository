@@ -1,19 +1,21 @@
+# -*- coding: utf-8 -*-
+
 import os
-from utils.xbmcUtils import getKeyboard
+
 
 #------------------------------------------------------------------------------
 # xbmc related
 #------------------------------------------------------------------------------
 import xbmc, xbmcaddon
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.LiveTV')
-__icon__ = xbmcaddon.Addon(id='plugin.video.LiveTV').getAddonInfo('icon')
+__settings__ = xbmcaddon.Addon(id='plugin.video.SportsDevil')
+__icon__ = xbmcaddon.Addon(id='plugin.video.SportsDevil').getAddonInfo('icon')
 translate = __settings__.getLocalizedString
 enable_debug = True
 language = xbmc.getLanguage
 
 def log(msg, level=xbmc.LOGDEBUG):
-    plugin = "Live!t-TV"
+    plugin = "SportsDevil"
     msg = msg.encode('utf-8')
 
     xbmc.log("[%s] %s" % (plugin, msg.__str__()), level)
@@ -78,6 +80,8 @@ import cookielib
 def getHTML(url, form_data='', referer='', xml=False, mobile=False, ignoreCache=False, demystify=False):
     if url == 'http://www.streamlive.to':
             url = xbmc.translatePath(os.path.join(Paths.imgDir, 'live.xml'))
+    if url == 'http://www.tvone1.tv':
+            url = xbmc.translatePath(os.path.join(Paths.imgDir, 'tvone.xml'))
             
     cookiePath = xbmc.translatePath(os.path.join(Paths.cacheDir, 'cookies.lwp'))
     request = CachedWebRequest(cookiePath, Paths.cacheDir)

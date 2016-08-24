@@ -36,7 +36,7 @@ from addonInstaller import install
 from utils.beta.t0mm0.common.addon import Addon
 
 #from cacheManager import CacheManager
-__ALERTA__ = xbmcgui.Dialog().ok
+
 
 class Mode:
     UPDATE = 0
@@ -498,6 +498,8 @@ class Main:
         common.log(paramstring)
         
         try:
+            
+            # if addon is started
             listItemPath = xbmcUtils.getListItemPath()
             if not listItemPath.startswith(self.base):
                 if not('mode=' in paramstring and not 'mode=1&' in paramstring):   
@@ -527,7 +529,6 @@ class Main:
                             if autoplayEnabled:
                                 videos = self.currentlist.getVideos()
                                 if len(videos) == 1:
-									__ALERTA__('Live!t-TV', 'Url: '+videos[0])
                                     self.playVideo(videos[0], True)
                                     
 
@@ -557,7 +558,6 @@ class Main:
                     self.executeItem(item)
 
                 elif mode == Mode.PLAY:
-					__ALERTA__('Live!t-TV', 'Url 2: '+item)
                     self.playVideo(item)
                 
                 elif mode == Mode.WEBDRIVER:
