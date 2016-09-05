@@ -558,6 +558,7 @@ def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
+	
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
 	if build == True:
@@ -565,6 +566,7 @@ def Menu_inicial(men,build,tipo):
 		tipocan = ''
 		urlbuild = ''
 		nomebuild = ''
+		senhaadu = men['user']['senhaadulto']
 		if tipo == 'Desporto' or tipo == 'Crianca' or tipo == 'Canal' or tipo == 'Documentario' or tipo == 'Musica' or tipo == 'Filme' or tipo == 'Noticia' or tipo == 'DE' or tipo == 'FR' or tipo == 'UK' or tipo == 'BR' or tipo == 'ES' or tipo == 'IT' or tipo == 'USA':
 			if _servuser == 'Servidor1':
 				if _tipouser == 'Desporto':
@@ -681,17 +683,12 @@ def Menu_inicial(men,build,tipo):
 					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4.txt"
 		
 		if(tipo == 'Adulto'):
-			tecladous = xbmc.Keyboard('', 'Insira a sua senha Adultos.')
-			tecladous.doModal()
-			if tecladous.isConfirmed():
-				senhaddutl = tecladous.getText()
-				if(__ADDON__.getSetting("login_adultos") == ''):
-					__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
-				elif(senhaddutl != _senhaadultos):
-					__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
-				else:
-					__ALERTA__('Live!t TV', 'Após ver este conteúdo vá ao menu Definições e ao submenu Limpar Cache para não gravar a senha adultos inserida. Precaução para as crianças.')
-					listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,True)
+			if(__ADDON__.getSetting("login_adultos") == ''):
+				__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos. No subMenu Credênciais que está no menu Utilizador.')
+			elif(__ADDON__.getSetting("login_adultos") != senhaadu):
+				__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
+			else:
+				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,True)
 		else:
 			if (_tipouser == 'Desporto' and tipo == 'Radio'):
 				__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
@@ -1759,35 +1756,22 @@ def addFolder(name,url,mode,iconimage,folder):
 def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabelssss,fanart,adultos=False,total=1):
 	ok=True
 	cm=[]
-	urlpass = ''
-	free = False
-	urlteet = url.split('http://LiveFree=')
-	totalurl = len(urlteet)
-	if totalurl > 1:
-		urlpass = urlteet[1]
-		free = True
-	else:
-		urlpass = url
 	
 	if tipo != 'Praia' and tipo != 'ProgramasTV' and tipo != 'Filme' and tipo != 'Serie':
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(urlpass), urllib.quote_plus(iconimage), idCanal, id_p)))
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	
-	liz=xbmcgui.ListItem(label=str(name), iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
 	liz.setArt({'fanart': fanart})
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
-	
+	liz.setProperty('IsPlayable', 'true')
 	if tipo == 'ProgramasTV':
-		u = sys.argv[0] + "?url=" + urllib.quote_plus(urlpass) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	else:
-		if free == True:
-			u = sys.argv[0] + "?url=" + urllib.quote_plus(urlpass) + "&mode=6&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
-			ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
-		else:
-			ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=urlpass,listitem=liz)
+		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	return ok
 
 def abrir_url(url,pesquisa=False):
@@ -1806,10 +1790,14 @@ def abrir_url(url,pesquisa=False):
 
 def addLink2(name,url,iconimage):
 	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	liz.setArt({'fanart': iconimage})
+	liz.setInfo( type="Video", infoLabels={ "Title": name })
+	liz.setProperty('IsPlayable', 'true')
+	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	#ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
 def play_mult_canal(arg, icon, nome):
@@ -1836,6 +1824,11 @@ def play_mult_canal(arg, icon, nome):
 	listitem.setInfo('video', {'Title': nome})
 	playlist.add(url=urlcorrecto, listitem=listitem, index=1)
 	xbmc.Player().play(playlist)
+	
+def play_canal(arg, icon, nome):
+	listitem = xbmcgui.ListItem(path=arg, thumbnailImage=icon)
+	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
@@ -2073,6 +2066,7 @@ elif mode==22: menuSeries()
 elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
 elif mode==105: play_mult_canal(url, iconimage, name)
+elif mode==106: play_canal(url, iconimage, name)
 elif mode==110: minhaConta2()
 elif mode==111: getList(url, pagina)
 elif mode==112: getSeries(url, pagina)
