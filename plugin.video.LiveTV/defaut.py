@@ -58,6 +58,7 @@ __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
 __SITEFILMES__ = 'http://mrpiracy.top/'
+g_ignoreSetResolved=['plugin.video.dramasonline','plugin.video.f4mTester','plugin.video.shahidmbcnet','plugin.video.SportsDevil','plugin.stream.vaughnlive.tv','plugin.video.ZemTV-shani']
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -1765,10 +1766,10 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 	liz.setArt({'fanart': fanart})
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
-	if tipo == 'ProgramasTV':
+	if tipo == 'ProgramasTV' || tipo == 'Praia' || tipo == 'Filme' || tipo == 'Serie':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	else:
-		liz.setProperty('IsPlayable', 'true')
+		liz.setProperty("IsPlayable", "true")
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
@@ -1826,9 +1827,24 @@ def play_mult_canal(arg, icon, nome):
 	xbmc.Player().play(playlist)
 
 def play_canal(arg, icon, nome):
-	listitem = xbmcgui.ListItem(path=arg, thumbnailImage=icon)
-	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
-	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+	playF4mLink(arg,nome,None,True,'Live!t-TV','TSDOWNLOADER',True,'',icon)
+	#listitem = xbmcgui.ListItem(path=arg, thumbnailImage=icon)
+	#listitem.setInfo(type="Video", infoLabels={ "Title": nome })
+	#xbmc.executebuiltin('XBMC.RunPlugin('+arg+')')
+	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+	
+def playF4mLink(url,name,proxy=None,use_proxy_for_chunks=False,auth_string=None,streamtype='HDS',setResolved=False,swf="",iconImage=None):
+	from F4mProxy import f4mProxyHelper
+	player=f4mProxyHelper()
+	if setResolved:
+		urltoplay,item=player.playF4mLink(url, name, proxy, use_proxy_for_chunks,0,False,auth_string,streamtype,setResolved,swf,iconImage)
+		item.setProperty("IsPlayable", "true")
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+	else:
+		xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
+		player.playF4mLink(url, name, proxy, use_proxy_for_chunks,0,False,auth_string,streamtype,setResolved,swf,iconImage)
+	
+	return 
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
