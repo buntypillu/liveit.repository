@@ -339,7 +339,7 @@ class f4mProxy():
         global PORT_NUMBER
         global HOST_NAME
         global g_stopEvent
-        print 'port',port,'HOST_NAME',HOST_NAME
+        #print 'port',port,'HOST_NAME',HOST_NAME
         g_stopEvent = stopEvent
         socket.setdefaulttimeout(10)
         server_class = ThreadedHTTPServer
@@ -347,7 +347,7 @@ class f4mProxy():
         MyHandler.protocol_version = "HTTP/1.1"
         httpd = server_class((HOST_NAME, port), MyHandler)
         
-        print "XBMCLocalProxy Starts - %s:%s" % (HOST_NAME, port)
+        #print "XBMCLocalProxy Starts - %s:%s" % (HOST_NAME, port)
         while(True and not stopEvent.isSet()):
             httpd.handle_request()
         httpd.server_close()
@@ -363,7 +363,7 @@ class f4mProxyHelper():
 
     def playF4mLink(self,url,name,proxy=None,use_proxy_for_chunks=False, maxbitrate=0, simpleDownloader=False, auth=None, streamtype='HDS',setResolved=False,swf=None, iconImage=None):
         try:
-            print "URL: " + url
+            #print "URL: " + url
             stopPlaying=threading.Event()
             progress = xbmcgui.DialogProgress()
             import checkbad
@@ -408,13 +408,13 @@ class f4mProxyHelper():
                 #    firstTime=False
             stopPlaying.isSet()
 
-            print 'Job done'
+            #print 'Job done'
             return played
         except: return False
 
         
     def start_proxy(self,url,name,proxy=None,use_proxy_for_chunks=False, maxbitrate=0,simpleDownloader=False,auth=None,streamtype='HDS',swf=None):
-        print "URL: " + url
+        #print "URL: " + url
         stopPlaying=threading.Event()
         f4m_proxy=f4mProxy()
         stopPlaying.clear()
@@ -431,20 +431,20 @@ class MyPlayer (xbmc.Player):
         xbmc.Player.__init__(self)
 
     def play(self, url, listitem):
-        print 'Now im playing... %s' % url
+        #print 'Now im playing... %s' % url
         self.stopPlaying.clear()
         xbmc.Player( ).play(url, listitem)
         
     def onPlayBackEnded( self ):
         # Will be called when xbmc stops playing a file
-        print "seting event in onPlayBackEnded " 
+        #print "seting event in onPlayBackEnded " 
         self.stopPlaying.set();
-        print "stop Event is SET" 
+        #print "stop Event is SET" 
     def onPlayBackStopped( self ):
         # Will be called when user stops xbmc playing a file
-        print "seting event in onPlayBackStopped " 
+        #print "seting event in onPlayBackStopped " 
         self.stopPlaying.set();
-        print "stop Event is SET" 
+        #print "stop Event is SET" 
 
 
             
