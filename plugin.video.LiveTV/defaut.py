@@ -588,6 +588,11 @@ def Menu_inicial(men,build,tipo):
 					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor4.txt"
 				else:
 					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor4.txt"
+			elif(_servuser == 'Servidor5'):
+				if _tipouser == 'Desporto':
+					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor5.txt"
+				else:
+					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor5.txt"
 		
 		if tipo == 'Desporto':
 			tipocan = 'Normal'
@@ -657,6 +662,8 @@ def Menu_inicial(men,build,tipo):
 				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor3.txt"
 			elif(_servuser == 'Servidor4'):
 				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor4.txt"
+			elif(_servuser == 'Servidor5'):
+				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor5.txt"
 		elif(tipo == 'Adulto'):
 			tipocan = 'Adulto'
 			nomebuild = 'Adultos'
@@ -681,6 +688,11 @@ def Menu_inicial(men,build,tipo):
 					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4desp.txt"
 				else:
 					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4.txt"
+			elif(_servuser == 'Servidor5'):
+				if _tipouser == 'Desporto':
+					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5desp.txt"
+				else:
+					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5.txt"
 		
 		if(tipo == 'Adulto'):
 			if(__ADDON__.getSetting("login_adultos") == ''):
@@ -779,6 +791,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 				urlllserv2 = params[5]
 				urlllserv3 = params[6]
 				urlllserv4 = params[7]
+				urlllserv5 = params[8]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante' or tipo_user == 'Desporto':
 					if nome_nov == 'TVs-Free':
@@ -789,8 +802,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 						addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
 					elif servidor_user == 'Servidor3':
 						addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
-					else:
+					elif servidor_user == 'Servidor4':
 						addDir(nomee,urlllserv4,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
+					else:
+						addDir(nomee,urlllserv5,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
 				elif tipo_user == 'Patrocinador':
 					if nome_nov == 'TVs-Free':
 						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',fanart)
@@ -806,8 +821,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 									addDir(nomee,urlllserv2,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 								elif servidor_user == 'Servidor3':
 									addDir(nomee,urlllserv3,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
-								else:
+								elif servidor_user == 'Servidor4':
 									addDir(nomee,urlllserv4,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
+								else:
+									addDir(nomee,urlllserv5,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 							else:
 								addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 					else:
@@ -1430,6 +1447,8 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 									urlnoo = urlchama[2]
 								elif(servuss == 'Servidor4'):
 									urlnoo = urlchama[3]
+								elif(servuss == 'Servidor5'):
+									urlnoo = urlchama[4]
 								
 								if(urlnoo == 'nada'):
 									adiciona = False
