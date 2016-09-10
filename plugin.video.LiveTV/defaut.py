@@ -912,7 +912,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 			else:
 				vista_Canais()
 		
-		#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+		#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 
 ###############################################################################################################
 #                                                   EPG                                                     #
@@ -1788,13 +1788,23 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
 	
+	canaisproprios = False
+	
 	urlverifica = url.split('.ts')
 	totalver = len(urlverifica)
+	if totalver != 1:
+		canaisproprios = True;
+	
+	if canaisproprios == False:
+		urlverifica2 = url.split('.m3u8')
+		totalver2 = len(urlverifica2)
+		if totalver2 != 1:
+			canaisproprios = True;
 	
 	if tipo == 'ProgramasTV' or tipo == 'Praia' or tipo == 'Filme' or tipo == 'Serie':
 		u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	else:
-		if totalver == 1:
+		if canaisproprios == False:
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 		else:
 			liz.setProperty("IsPlayable", "true")
@@ -1866,7 +1876,7 @@ def playF4mLink(url,name,proxy=None,use_proxy_for_chunks=False,auth_string=None,
 	player=F4mProxy.f4mProxyHelper()
 	if setResolved:
 		urltoplay,item=player.playF4mLink(url, name, proxy, use_proxy_for_chunks,0,False,auth_string,streamtype,setResolved,swf,iconImage)
-		item.setProperty("IsPlayable", "true")
+		#item.setProperty("IsPlayable", "true")
 		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 	else:
 		xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
