@@ -16,11 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2
+import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math
 from t0mm0.common.net import Net
 from bs4 import BeautifulSoup
 import jsunpacker
-import AADecoder
+from AADecoder import AADecoder
+from JJDecoder import JJDecoder
+from png import Reader as PNGReader
+from HTMLParser import HTMLParser
 
 class GoogleVideo():
 	def __init__(self, url):
@@ -71,7 +74,7 @@ class GoogleVideo():
 				videos.append(streamUrl)
 			i+=1
 		qualidade = xbmcgui.Dialog().select('Escolha a qualidade', qualidades)
-		return videos[qualidade]
+		return videos[qualidade], qualidades[qualidade].split('p ')[-1]
 
 
 class UpToStream():
@@ -81,7 +84,10 @@ class UpToStream():
 		self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'utf-8;q=0.7,*;q=0.7'}
 
 	def getId(self):
-		return re.compile('http\:\/\/uptostream\.com\/(.+)').findall(self.url)[0]
+		if 'iframe' in self.url:
+			return re.compile('http\:\/\/uptostream\.com\/iframe\/(.+)').findall(self.url)[0]
+		else:
+			return re.compile('http\:\/\/uptostream\.com\/(.+)').findall(self.url)[0]
 
 	def getMediaUrl(self):
 		sourceCode = self.net.http_GET(self.url, headers=self.headers).content
@@ -108,12 +114,68 @@ class OpenLoad():
 		self.messageOk = xbmcgui.Dialog().ok
 		self.site = 'https://openload.co'
 		#self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'utf-8;q=0.7,*;q=0.7'}
-		self.headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-       'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-       'Accept-Encoding': 'none',
-       'Accept-Language': 'en-US,en;q=0.8',
-       'Connection': 'keep-alive'}
+		self.headers = {
+			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:39.0) Gecko/20100101 Firefox/39.0',
+			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+			'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+			'Accept-Encoding': 'none',
+			'Accept-Language': 'en-US,en;q=0.8',
+			'Referer': url}
+
+	def parserOPENLOADIO(self, url):
+		try:
+			req = urllib2.Request(url, headers=self.headers)
+			response = urllib2.urlopen(req)
+			html = response.read()
+			response.close()
+			try:
+				html = html.encode('utf-8')
+			except:
+				pass
+
+			match = re.search('hiddenurl">(.+?)<\/span>', html, re.IGNORECASE)
+			hiddenurl = HTMLParser().unescape(match.group(1))
+			decodes = []
+			for match in re.finditer('<script[^>]*>(.*?)</script>', html, re.DOTALL):
+				encoded = match.group(1)
+				match = re.search("(ﾟωﾟﾉ.*?('_');)", encoded, re.DOTALL)
+				if match:
+					decodes.append(AADecoder(match.group(1)).decode())
+				match = re.search('(.=~\[\].*\(\);)', encoded, re.DOTALL)
+				if match:
+					decodes.append(JJDecoder(match.group(1)).decode())
+			magic_number = 0
+			if not decodes:
+				raise ResolverError('No Encoded Section Found. Deleted?')
+			for decode in decodes:
+				match = re.search('charCodeAt\(\d+\)\s*\+\s*(\d+)\)', decode, re.DOTALL | re.I)
+				if match:
+					magic_number = match.group(1)
+				else:
+					magic_number = 3
+			s = []
+			for idx, i in enumerate(hiddenurl):
+				j = ord(i)
+				if (j >= 33 & j <= 126):
+					j = 33 + ((j + 14) % 94)
+				if idx == len(hiddenurl) - 1:
+					j += int(magic_number)
+				s.append(chr(j))
+			res = ''.join(s)
+			videoUrl = 'https://openload.co/stream/{0}?mime=true'.format(res)
+			dtext = videoUrl.replace('https', 'http')
+			headers = {'User-Agent': self.headers['User-Agent']}
+			req = urllib2.Request(dtext, None, headers)
+			res = urllib2.urlopen(req)
+			videourl = res.geturl()
+			res.close()
+			if 'pigeons.mp4' in videourl.lower():
+				raise ResolverError('Openload.co resolve failed')
+			return videourl
+		except Exception as e:
+			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
+		except ResolverError:
+			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
 
 	def getId(self):
 		#return self.url.split('/')[-1]
@@ -238,7 +300,7 @@ class OpenLoad():
 
 		#videoUrl = self.decodeOpenLoad(str(content.encode('utf-8')))
 
-		headers1 = {
+		"""headers1 = {
 		        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
 		       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 		       'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
@@ -253,11 +315,11 @@ class OpenLoad():
 		response.close()
 
 		aastring = re.compile("<script[^>]+>(ﾟωﾟﾉ[^<]+)<", re.DOTALL | re.IGNORECASE).findall(sHtmlContent)
-		hahadec = self.decodeOpenLoad(aastring[0])
+		hahadec = self.decodeOpenLoad(aastring[0]
 		haha = re.compile(r"welikekodi_ya_rly = Math.round([^;]+);", re.DOTALL | re.IGNORECASE).findall(hahadec)[0]
-		haha = eval("int" + haha)
+		haha = eval("int" + haha)"""
 
-		videoUrl = self.decodeOpenLoad(aastring[haha])
+		videoUrl = self.parserOPENLOADIO(self.url)
 
 
 		#print videoUrl
@@ -305,12 +367,12 @@ class OpenLoad():
 
 			else:
 
-				self.messageOk('Live!t-TV', "TICKET: "+jsonResult['msg'])
+				self.messageOk('MrPiracy.xyz', "TICKET: "+jsonResult['msg'])
 				return False
 		except:
 			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
 
-	def getCaptcha(self, image):
+	def a(self, image):
 		try:
 			image = xbmcgui.ControlImage(450, 0, 300, 130, image)
 			dialog = xbmcgui.WindowDialog()
@@ -367,7 +429,7 @@ class VideoMega():
 		if match:
 			return match.group(1) + '|User-Agent=%s' % (self.headers)
 		else:
-			self.messageOk('Live!t-TV', 'Video nao encontrado.')
+			self.messageOk('MrPiracy.xyz', 'Video nao encontrado.')
 
 class Vidzi():
 	def __init__(self, url):

@@ -1260,7 +1260,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			stream = URLResolverMedia.OpenLoad(links[servidor]).getMediaUrl()
 			legenda = URLResolverMedia.OpenLoad(links[servidor]).getSubtitle()
 		elif 'drive.google.com/' in links[servidor]:
-			stream = URLResolverMedia.GoogleVideo(links[servidor]).getMediaUrl()
+			stream, ext_g = URLResolverMedia.GoogleVideo(links[servidor]).getMediaUrl()
 			if legendaAux == '':
 				legenda = legendas[0]
 			else:
@@ -1268,13 +1268,22 @@ def getStreamLegenda(siteBase, codigo_fonte):
 	else:
 		if 'server.mrpiracy.top' in links[0]:
 			stream = links[0]
-			legenda = legendas[0]
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 		elif 'uptostream.com' in links[0]:
 			stream = URLResolverMedia.UpToStream(links[0]).getMediaUrl()
-			legenda = legendas[0]
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 		elif 'drive.google.com/' in links[0]:
-			stream = URLResolverMedia.GoogleVideo(links[0]).getMediaUrl()
-			legenda = legendas[0]
+			stream, ext_g = URLResolverMedia.GoogleVideo(links[0]).getMediaUrl()
+			if legendaAux == '':
+				legenda = legendas[0]
+			else:
+				legenda = legendaAux
 		elif 'openload' in links[0]:
 			stream = URLResolverMedia.OpenLoad(links[0]).getMediaUrl()
 			legenda = URLResolverMedia.OpenLoad(links[0]).getSubtitle()
