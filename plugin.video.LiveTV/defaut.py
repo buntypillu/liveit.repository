@@ -1049,6 +1049,8 @@ def getList(url, pagina):
 		url = __SITEFILMES__+'kodi_filmes.php'
 	elif 'kodi_series.php' in url:
 		url = __SITEFILMES__+'kodi_series.php'
+	elif 'kodi_animes.php' in url:
+		url = __SITEFILMES__+'kodi_animes.php'
 	
 	net = Net()
 	net.set_cookies(__COOKIE_FILE__)
@@ -1061,7 +1063,9 @@ def getList(url, pagina):
 			tipo = 'kodi_filmes'
 		elif 'kodi_series.php' in url:
 			tipo = 'kodi_series'
-
+		elif 'kodi_animes.php' in url:
+			tipo = 'kodi_animes'
+		
 		anoLink = ''
 		if 'ano' in url:
 			try:
@@ -1076,6 +1080,8 @@ def getList(url, pagina):
 		if tipo == 'kodi_filmes':
 			match = re.compile('<div\s+class="movie-info">\s+<a\s+href="(.+?)"\s+class="movie-name">.+?<\/a>\s+<d.+?><\/div>\s+<d.+?>\s+<d.+?>\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
 		elif tipo == 'kodi_series':
+			match = re.compile('<div\s+class="movie-info">\s+<a\s+href="(.+?)"\s+class="movie-name">.+?<\/a>\s+<d.+?><\/div>\s+<d.+?>\s+<d.+?>\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
+		elif tipo == 'kodi_animes':
 			match = re.compile('<div\s+class="movie-info">\s+<a\s+href="(.+?)"\s+class="movie-name">.+?<\/a>\s+<d.+?><\/div>\s+<d.+?>\s+<d.+?>\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
 		database = Database.isExists()
 		if tipo == 'kodi_filmes':
@@ -1215,11 +1221,13 @@ def getStreamLegenda(siteBase, codigo_fonte):
 		match = re.compile('<div\s+id="welele"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
 		match += re.compile('<div\s+id="welele2"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
 		for link, legenda in match:
+			if not link.startswith('http'):
+				continue
 			titulos.append('Servidor #%s' % i)
 			links.append(link)
 			if not '.srt' in legenda:
 				legend = legenda+'.srt'
-			legendas.append('http://mrpiracy.top/subs/%s' % legenda)
+			legendas.append('http://mrpiracy.win/subs/%s' % legenda)
 			i = i+1
 
 	else:
@@ -1229,9 +1237,9 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			if 'legenda' in idS:
 				if not '.srt' in link:
 					link = link+'.srt'
-				legendaAux = 'http://mrpiracy.top/subs/%s' % link
+				legendaAux = 'http://mrpiracy.win/subs/%s' % link
 				continue
-			if 'videomega' in idS:
+			if 'videomega' in idS and 'videomega' in link:
 				continue
 
 			titulos.append('Servidor #%s' % i)
@@ -1250,7 +1258,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 				legenda = legendas[0]
 			else:
 				legenda = legendaAux
-		elif 'server.mrpiracy.top' in links[servidor]:
+		elif 'server.mrpiracy.win' in links[servidor]:
 			stream = links[servidor]
 			if legendaAux == '':
 				legenda = legendas[0]
@@ -1266,7 +1274,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			else:
 				legenda = legendaAux
 	else:
-		if 'server.mrpiracy.top' in links[0]:
+		if 'server.mrpiracy.win' in links[0]:
 			stream = links[0]
 			if legendaAux == '':
 				legenda = legendas[0]
@@ -1297,7 +1305,7 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 	net.set_cookies(__COOKIE_FILE__)
 	
 	dialog = xbmcgui.Dialog()
-	server = dialog.select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Canais', 'Praias', 'Rádios'])
+	server = dialog.select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Canais', 'Praias', 'Rádios', 'Animes'])
 	
 	if server == 0:
 		site = urlpa+'kodi_procurarf.php'
@@ -1305,6 +1313,8 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 		site = urlpa+'kodi_procurars.php'
 	elif server == 2 or  server == 3 or server == 4:
 		site = __SITE__+'search.php'
+	elif server == 5:
+		site = urlpa+'kodi_procuraranime.php'
 	
 	teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
 	teclado.doModal()
@@ -1828,7 +1838,6 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 		if canaisproprios == False:
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 		else:
-			liz.setProperty("IsPlayable", "true")
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
@@ -1886,24 +1895,13 @@ def play_mult_canal(arg, icon, nome):
 	xbmc.Player().play(playlist)
 
 def play_canal(arg, icon, nome):
-	playF4mLink(arg,nome,None,True,'Live!t-TV','TSDOWNLOADER',True,'',icon)
-	#listitem = xbmcgui.ListItem(path=arg, thumbnailImage=icon)
-	#listitem.setInfo(type="Video", infoLabels={ "Title": nome })
-	#xbmc.executebuiltin('XBMC.RunPlugin('+arg+')')
-	#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
-	
-def playF4mLink(url,name,proxy=None,use_proxy_for_chunks=False,auth_string=None,streamtype='HDS',setResolved=False,swf="",iconImage=None):
-	from resources.lib import F4mProxy
-	player=F4mProxy.f4mProxyHelper()
-	if setResolved:
-		urltoplay,item=player.playF4mLink(url, name, proxy, use_proxy_for_chunks,0,False,auth_string,streamtype,setResolved,swf,iconImage)
-		#item.setProperty("IsPlayable", "true")
-		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-	else:
-		xbmcplugin.endOfDirectory(int(sys.argv[1]), cacheToDisc=False)
-		player.playF4mLink(url, name, proxy, use_proxy_for_chunks,0,False,auth_string,streamtype,setResolved,swf,iconImage)
-	
-	return 
+	from resources.lib import CustomPlayer
+	player = CustomPlayer.MyXBMCPlayer()
+	listitem = xbmcgui.ListItem( label = str(nome), iconImage = icon, thumbnailImage = icon, path=arg )
+	player.play( arg,listitem)
+	xbmc.sleep(1000)
+	while player.is_active:
+		xbmc.sleep(200)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
