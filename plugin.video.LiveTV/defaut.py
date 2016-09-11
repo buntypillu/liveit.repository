@@ -57,7 +57,7 @@ check_login = {}
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
-__SITEFILMES__ = 'http://mrpiracy.top/'
+__SITEFILMES__ = 'http://mrpiracy.win/'
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -562,12 +562,12 @@ def Menu_inicial(men,build,tipo):
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
 	if build == True:
-		thread.start_new_thread( obter_ficheiro_epg, () )
 		tipocan = ''
 		urlbuild = ''
 		nomebuild = ''
 		senhaadu = men['user']['senhaadulto']
 		if tipo == 'Desporto' or tipo == 'Crianca' or tipo == 'Canal' or tipo == 'Documentario' or tipo == 'Musica' or tipo == 'Filme' or tipo == 'Noticia' or tipo == 'DE' or tipo == 'FR' or tipo == 'UK' or tipo == 'BR' or tipo == 'ES' or tipo == 'IT' or tipo == 'USA':
+			thread.start_new_thread( obter_ficheiro_epg, () )
 			if _servuser == 'Servidor1':
 				if _tipouser == 'Desporto':
 					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor1.txt"
@@ -1045,6 +1045,11 @@ def getList(url, pagina):
 	tipo = ''
 	categoria = ''
 	naovai = False
+	if 'kodi_filmes.php' in url:
+		url = __SITEFILMES__+'kodi_filmes.php'
+	elif 'kodi_series.php' in url:
+		url = __SITEFILMES__+'kodi_series.php'
+	
 	net = Net()
 	net.set_cookies(__COOKIE_FILE__)
 	try:
@@ -1635,7 +1640,14 @@ def addVideo(name,url,mode,iconimage,tipo,temporada,episodio,infoLabels,poster,s
 		name = name.encode('utf-8')
 	except:
 		name = name
-
+	
+	try:
+		serieNome = serieNome.encode('utf-8')
+	except:
+		serieNome = serieNome
+	else:
+		pass
+	
 	if tipo == 'filme':
 		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 		#visto = checkVisto(url)
