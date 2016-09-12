@@ -561,7 +561,14 @@ def Menu_inicial(men,build,tipo):
 	
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
-	if build == True:
+	
+	passanovo = True
+	if _tipouser == 'Teste' and _servuser == 'Teste':
+		passanovo = False
+	
+	if build == True and passanovo == False:
+		__ALERTA__('Live!t TV', 'É um utilizador Free logo não tem acesso á nossa build a funcionar.')
+	elif(build == True):
 		tipocan = ''
 		urlbuild = ''
 		nomebuild = ''
@@ -700,7 +707,10 @@ def Menu_inicial(men,build,tipo):
 			elif(__ADDON__.getSetting("login_adultos") != senhaadu):
 				__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 			else:
-				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
+				if _tipouser == 'Teste' and _servuser == 'Teste':
+					__ALERTA__('Live!t TV', 'É um utilizador Teste logo não tem acesso a esta Secção.')
+				else:
+					listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
 		else:
 			if (_tipouser == 'Desporto' and tipo == 'Radio'):
 				__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
