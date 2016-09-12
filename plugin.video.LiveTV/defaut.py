@@ -1921,9 +1921,9 @@ def play_canal(arg, icon, nome):
 	player = CustomPlayer.MyXBMCPlayer()
 	listitem = xbmcgui.ListItem( label = str(nome), iconImage = icon, thumbnailImage = icon, path=arg )
 	player.play( arg,listitem)
-	xbmc.sleep(1000)
+	xbmc.sleep(200)
 	while player.is_active:
-		xbmc.sleep(200)
+		xbmc.sleep(50)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
