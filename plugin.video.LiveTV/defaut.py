@@ -731,6 +731,8 @@ def Menu_inicial(men,build,tipo):
 						addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 					elif tipo == 'patrocinadores' or tipo == 'novidades':
 						addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+					elif(tipo == 'Anime'):
+						addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 					elif(tipo == 'Filme'):
 						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 					elif(tipo == 'Serie'):
@@ -1019,6 +1021,16 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 	#estiloSelect = returnestilo(estilo)
 	#xbmc.executebuiltin(estiloSelect)
 	menuFilmes(iconimage,fanart)
+
+def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
+	#addDir('Filmes Live!t',url,None,1,estilo,iconimage,tipo,tipo_user,servidor_user,'',sserv,suser,spass)
+	#addDir('Filmes Web','-',None,23,estilo,iconimage,'','','','',sserv,suser,spass)
+	#estiloSelect = returnestilo(estilo)
+	#xbmc.executebuiltin(estiloSelect)
+	menuAnimes(iconimage,fanart)
+
+def menuAnimes(iconimage,fanart):
+	getList(__SITEFILMES__+'kodi_animes.php', 1)
 
 def menuFilmes(iconimage,fanart):
 	database = Database.isExists()
@@ -1337,7 +1349,7 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 		else:
 			dados = {'searchBox': strPesquisa}
 		
-		if server == 0 or server == 1:
+		if server == 0 or server == 1 or server == 5:
 			check_login = login2()
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
@@ -2139,6 +2151,7 @@ elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_us
 elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
+elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==22: menuSeries()
 elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
