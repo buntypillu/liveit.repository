@@ -6,20 +6,12 @@ class MyXBMCPlayer(xbmc.Player):
     def __init__( self, *args, **kwargs ):
         self.is_active = True
         self.urlplayed = False
+        self.tempo = 0
+        self.tempoTotal = 0
         self.pdialogue=None
-        print "#XBMCPlayer#"
-    
-    #def play(self, url, listitem):
-    #   print 'Now im playing... %s' % url
-    #    self.is_active = False
-    #    self.urlplayed = False
-    #    xbmc.Player().play(url, listitem)
-
-	#def setdialogue( self, pdialogue ):
-	#	self.pdialogue=pdialogue
+        self.content = 'movie'
 		
     def onPlayBackStarted( self ):
-        print "#Playback Started#"
         try:
             print "#Im playing :: " 
         except:
@@ -29,10 +21,9 @@ class MyXBMCPlayer(xbmc.Player):
         self.urlplayed = True
             
     def onPlayBackEnded( self ):
-        print "#Playback Ended#"
-        self.is_active = False
+        self.onPlayBackStopped()
         
     def onPlayBackStopped( self ):
-        print "## Playback Stopped ##"
+        self.playing = False
         self.is_active = False
 

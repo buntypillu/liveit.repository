@@ -329,20 +329,27 @@ def buildLiveit(tipologia):
 		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
-		check_login = login()
-		if check_login['user']['nome'] != '':
-			if check_login['sucesso']['resultado'] == 'yes':
-				Menu_inicial(check_login,True,tipologia)
-			elif check_login['sucesso']['resultado'] == 'utilizador':
-				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
-			elif check_login['sucesso']['resultado'] == 'senha':
-				__ALERTA__('Live!t TV', 'Senha incorreta.')
-			elif check_login['sucesso']['resultado'] == 'ativo':
-				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com')
+		if(tipologia == 'FilmesLive'):
+			getList(__SITEFILMES__+'kodi_filmes.php', 1)
+		elif(tipologia == 'SeriesLive'):
+			getList(__SITEFILMES__+'kodi_series.php', 1)
+		elif(tipologia == 'AnimesLive'):
+			getList(__SITEFILMES__+'kodi_animes.php', 1)
+		else:
+			check_login = login()
+			if check_login['user']['nome'] != '':
+				if check_login['sucesso']['resultado'] == 'yes':
+					Menu_inicial(check_login,True,tipologia)
+				elif check_login['sucesso']['resultado'] == 'utilizador':
+					__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+				elif check_login['sucesso']['resultado'] == 'senha':
+					__ALERTA__('Live!t TV', 'Senha incorreta.')
+				elif check_login['sucesso']['resultado'] == 'ativo':
+					__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com')
+				else:
+					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 			else:
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
-		else:
-			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 
 ################################
 ###       Clear Cache        ###
@@ -715,7 +722,7 @@ def Menu_inicial(men,build,tipo):
 			if (_tipouser == 'Desporto' and tipo == 'Radio'):
 				__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
 			else:
-				if urlbuild == '':
+				if(urlbuild == ''):
 					__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
 					abrirDefinincoesMesmo()
 				else:
@@ -1066,14 +1073,7 @@ def removerAcentos(txt, encoding='utf-8'):
 def getList(url, pagina):
 	tipo = ''
 	categoria = ''
-	naovai = False
-	if 'kodi_filmes.php' in url:
-		url = __SITEFILMES__+'kodi_filmes.php'
-	elif 'kodi_series.php' in url:
-		url = __SITEFILMES__+'kodi_series.php'
-	elif 'kodi_animes.php' in url:
-		url = __SITEFILMES__+'kodi_animes.php'
-	
+	naovai = False	
 	net = Net()
 	net.set_cookies(__COOKIE_FILE__)
 	try:
@@ -1231,6 +1231,7 @@ def getEpisodes(url):
 def getStreamLegenda(siteBase, codigo_fonte):
 	stream = ''
 	legenda = ''
+	ext_g = ''
 	net = Net()
 	servidor = ''
 	titulos = []
@@ -1242,6 +1243,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 	if siteBase == 'serie.php':
 		match = re.compile('<div\s+id="welele"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
 		match += re.compile('<div\s+id="welele2"\s+link="(.+?)"\s+legenda="(.+?)">').findall(codigo_fonte)
+		
 		for link, legenda in match:
 			if not link.startswith('http'):
 				continue
@@ -1254,7 +1256,6 @@ def getStreamLegenda(siteBase, codigo_fonte):
 
 	else:
 		match = re.compile('<div\s+id="(.+?)"\s+link="(.+?)">').findall(codigo_fonte)
-		legendaAux = ''
 		for idS, link in match:
 			if 'legenda' in idS:
 				if not '.srt' in link:
@@ -1270,50 +1271,51 @@ def getStreamLegenda(siteBase, codigo_fonte):
 
 	if len(titulos) > 1:
 		servidor = xbmcgui.Dialog().select('Escolha o servidor', titulos)
+		
 		if 'vidzi' in links[servidor]:
 			vidzi = URLResolverMedia.Vidzi(links[servidor])
 			stream = vidzi.getMediaUrl()
 			legenda = vidzi.getSubtitle()
 		elif 'uptostream.com' in links[servidor]:
 			stream = URLResolverMedia.UpToStream(links[servidor]).getMediaUrl()
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 		elif 'server.mrpiracy.win' in links[servidor]:
 			stream = links[servidor]
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 		elif 'openload' in links[servidor]:
 			stream = URLResolverMedia.OpenLoad(links[servidor]).getMediaUrl()
 			legenda = URLResolverMedia.OpenLoad(links[servidor]).getSubtitle()
 		elif 'drive.google.com/' in links[servidor]:
 			stream, ext_g = URLResolverMedia.GoogleVideo(links[servidor]).getMediaUrl()
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 	else:
 		if 'server.mrpiracy.win' in links[0]:
 			stream = links[0]
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 		elif 'uptostream.com' in links[0]:
 			stream = URLResolverMedia.UpToStream(links[0]).getMediaUrl()
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 		elif 'drive.google.com/' in links[0]:
 			stream, ext_g = URLResolverMedia.GoogleVideo(links[0]).getMediaUrl()
-			if legendaAux == '':
-				legenda = legendas[0]
-			else:
+			if legendaAux != '':
 				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 		elif 'openload' in links[0]:
 			stream = URLResolverMedia.OpenLoad(links[0]).getMediaUrl()
 			legenda = URLResolverMedia.OpenLoad(links[0]).getSubtitle()
@@ -1921,9 +1923,9 @@ def play_canal(arg, icon, nome):
 	player = CustomPlayer.MyXBMCPlayer()
 	listitem = xbmcgui.ListItem( label = str(nome), iconImage = icon, thumbnailImage = icon, path=arg )
 	player.play( arg,listitem)
-	xbmc.sleep(200)
+	xbmc.sleep(300)
 	while player.is_active:
-		xbmc.sleep(50)
+		xbmc.sleep(100)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels

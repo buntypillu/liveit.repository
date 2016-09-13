@@ -16,7 +16,7 @@ import Trakt
 import Database
 from t0mm0.common.net import Net
 
-__SITE__ = 'http://kodi.mrpiracy.win/'
+__SITE__ = 'http://mrpiracy.win/'
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 

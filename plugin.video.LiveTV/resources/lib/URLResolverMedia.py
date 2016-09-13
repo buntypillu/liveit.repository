@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math
+import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math, string
 from t0mm0.common.net import Net
 from bs4 import BeautifulSoup
 import jsunpacker
@@ -36,7 +36,10 @@ class GoogleVideo():
 		return urlparse.urlparse(self.url).path.split("/")[-2]
 
 	def getMediaUrl(self):
-		sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+		try:
+			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+		except:
+			sourceCode = self.net.http_GET(self.url, headers=self.headers).content
 		formatos = {
 		'5': {'ext': 'flv'},
 		'6': {'ext': 'flv'},
@@ -132,7 +135,7 @@ class OpenLoad():
 				html = html.encode('utf-8')
 			except:
 				pass
-
+			html = self.unpack(html)
 			match = re.search('hiddenurl">(.+?)<\/span>', html, re.IGNORECASE)
 			hiddenurl = HTMLParser().unescape(match.group(1))
 			decodes = []
@@ -287,7 +290,29 @@ class OpenLoad():
 
 	    return videourl
 
+	def caesar_shift(self, s, shift=13):
+	    s2 = ''
+	    for c in s:
+	        if c.isalpha():
+	            limit = 90 if c <= 'Z' else 122
+	            new_code = ord(c) + shift
+	            if new_code > limit:
+	                new_code -= 26
+	            s2 += chr(new_code)
+	        else:
+	            s2 += c
+	    return s2
 
+	def unpack(self, html):
+	    strings = re.findall('{\s*var\s+a\s*=\s*"([^"]+)', html)
+	    shifts = re.findall('\)\);}\((\d+)\)', html)
+	    for s, shift in zip(strings, shifts):
+	        s = self.caesar_shift(s, int(shift))
+	        s = urllib.unquote(s)
+	        for i, replace in enumerate(['j', '_', '__', '___']):
+	            s = s.replace(str(i), replace)
+	        html += '<script>%s</script>' % (s)
+	    return html
 
 	def decode(self, encoded):
 	    for octc in (c for c in re.findall(r'\\(\d{2,3})', encoded)):
@@ -367,7 +392,7 @@ class OpenLoad():
 
 			else:
 
-				self.messageOk('MrPiracy.xyz', "TICKET: "+jsonResult['msg'])
+				self.messageOk('Live!t-TV', "TICKET: "+jsonResult['msg'])
 				return False
 		except:
 			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
@@ -391,6 +416,28 @@ class OpenLoad():
 					return result
 			else:
 				self.messageOk('Live!t-TV', 'Erro no Captcha')
+		finally:
+			dialog.close()
+	
+	def getCaptcha(self, image):
+		try:
+			image = xbmcgui.ControlImage(450, 0, 300, 130, image)
+			dialog = xbmcgui.WindowDialog()
+			dialog.addControl(image)
+			dialog.show()
+			xbmc.sleep(3000)
+
+			letters = xbmc.Keyboard('', 'Escreva as letras na imagem', False)
+			letters.doModal()
+
+			if(letters.isConfirmed()):
+				result = letters.getText()
+				if result == '':
+					self.messageOk('MrPiracy.win', 'Tens de colocar o texto da imagem para aceder ao video.')
+				else:
+					return result
+			else:
+				self.messageOk('MrPiracy.win', 'Erro no Captcha')
 		finally:
 			dialog.close()
 
