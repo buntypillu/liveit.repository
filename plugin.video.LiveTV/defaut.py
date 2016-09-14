@@ -1862,13 +1862,13 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 		if canaisproprios == False:
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 		else:
+			liz.setProperty('IsPlayable', 'true')
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	return ok
 
 def abrir_url(url,pesquisa=False):
-
 	header = {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3','Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8','Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Connection': 'keep-alive'}
 
 	if pesquisa:
@@ -1919,13 +1919,10 @@ def play_mult_canal(arg, icon, nome):
 	xbmc.Player().play(playlist)
 
 def play_canal(arg, icon, nome):
-	from resources.lib import CustomPlayer
-	player = CustomPlayer.MyXBMCPlayer()
 	listitem = xbmcgui.ListItem( label = str(nome), iconImage = icon, thumbnailImage = icon, path=arg )
-	player.play( arg,listitem)
-	xbmc.sleep(300)
-	while player.is_active:
-		xbmc.sleep(100)
+	listitem.setProperty('fanart_image', icon)
+	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels
