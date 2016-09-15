@@ -1921,6 +1921,8 @@ def play_mult_canal(arg, icon, nome):
 def play_canal(arg, icon, nome):
 	listitem = xbmcgui.ListItem( label = str(nome), iconImage = icon, thumbnailImage = icon, path=arg )
 	listitem.setProperty('fanart_image', icon)
+	listitem.setArt({'fanart': icon})
+	listitem.setProperty('mimetype', 'video/x-msvideo')
 	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
