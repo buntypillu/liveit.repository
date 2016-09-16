@@ -707,6 +707,16 @@ def Menu_inicial(men,build,tipo):
 					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5desp.txt"
 				else:
 					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5.txt"
+		elif(tipo == 'Novidades'):
+			tipocan = 'novidades'
+			nomebuild = 'Novidades'
+			_fanart = __SITEAddon__+"Imagens/novidadestv.png"
+			urlbuild = __SITEAddon__+"Ficheiros/novidades.txt"
+		elif(tipo == 'Patrocinadores'):
+			tipocan = 'patrocinadores'
+			nomebuild = 'Patrocinadores'
+			_fanart = __SITEAddon__+"Imagens/participa.jpg"
+			urlbuild = __SITEAddon__+"Ficheiros/patrocinadores.txt"
 		
 		if(tipo == 'Adulto'):
 			if(__ADDON__.getSetting("login_adultos") == ''):
@@ -726,7 +736,10 @@ def Menu_inicial(men,build,tipo):
 					__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
 					abrirDefinincoesMesmo()
 				else:
-					listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
+					if(tipo == 'Novidades' or tipo == 'Patrocinadores'):
+						listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
+					else:
+						listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -930,8 +943,8 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 				vista_filmesSeries()
 			else:
 				vista_Canais()
-		
-		#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	
+	#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 
 ###############################################################################################################
 #                                                   EPG                                                     #
