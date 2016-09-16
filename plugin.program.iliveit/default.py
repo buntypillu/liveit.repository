@@ -388,4 +388,4 @@ elif mode==3:
 elif mode==4:
 	CATEGORIES()
    
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
