@@ -1949,12 +1949,29 @@ def play_canal(arg, icon, nome):
 	listitem.setProperty('mimetype', 'video/x-msvideo')
 	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
 	if 'acestream://' in arg:
-		ip_adress = __ADDON__.getSetting('ip_addr')
-		proxy_port = __ADDON__.getSetting('aceporta')
+		from resources.lib.acecore import TSengine as tsengine
+		xbmc.executebuiltin('Action(Stop)')
+		lock_file = xbmc.translatePath('special://temp/'+ 'ts.lock')
+		if xbmcvfs.exists(lock_file):
+			xbmcvfs.delete(lock_file)
+		aceport=62062
 		chid=arg.replace('acestream://','').replace('ts://','')
-		strm = "http://" + ip_adress + ":" + proxy_port + "/pid/" + chid + "/stream.mp4"
-		#__ALERTA__('Live!t TV', 'Url: '+strm)
-		xbmc.Player().play(strm,listitem)
+		TSPlayer = tsengine()
+		out = None
+		if chid.find('http://') == -1 and chid.find('.torrent') == -1:
+			out = TSPlayer.load_torrent(chid,'PID',port=aceport)
+		elif chid.find('http://') == -1 and chid.find('.torrent') != -1:
+			out = TSPlayer.load_torrent(chid,'TORRENT',port=aceport)
+		else:
+			out = TSPlayer.load_torrent(chid,'TORRENT',port=aceport)
+		if out == 'Ok':
+			TSPlayer.play_url_ind(0,nome + ' (' + chid + ')',icon,icon)
+			TSPlayer.end()
+			return
+		else:    
+			__ALERTA__('Live!t TV', 'Erro ao abrir o canal Acestream. ')
+			TSPlayer.end()
+			return	
 	else:
 		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
