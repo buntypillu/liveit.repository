@@ -880,9 +880,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo,adultos=False):
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
-		f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
-		codigo = f.read()
-		f.close()
+		if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
+			f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
+			codigo = f.read()
+			f.close()
 		ts = time.time()
 		st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
 		if tipo == 'Filme' or tipo == 'Serie':
@@ -905,10 +906,12 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 				_fanart = ''
 				
 				if grup == nome:
-					twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
-					
-					twrv.start()
-					programa = twrv.join() 
+					programa = ''
+					if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
+						if id_it != '':
+							twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
+							twrv.start()
+							programa = twrv.join()
 					
 					if programa != '':
 						nomewp = nomee + " | "+ programa
