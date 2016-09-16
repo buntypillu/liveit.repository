@@ -129,7 +129,7 @@ def OPEN_URL(url):
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	#PURGEPACKAGES()
 	dp = xbmcgui.DialogProgress()
-	dp.create(name,"Download: " + name,'', url)
+	dp.create(name,"Download: " + name,'')
 	lib=os.path.join(HOME, name+'.zip')
 	try:
 		os.remove(lib)
@@ -164,7 +164,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 def wizard2(name,url,description,pk,isaddon,restart,forceRestart):
 	#PURGEPACKAGES()
 	dp = xbmcgui.DialogProgress()
-	dp.create(name,"Download: " + name,'', url)
+	dp.create(name,"Download: " + name,'')
 	lib=os.path.join(PACKAGES, name+'.zip')
 	try:
 		os.remove(lib)
