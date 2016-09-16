@@ -1808,7 +1808,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	if stream == False:
 		__ALERTA__('Live!t-TV', 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
 	else:
-		__ALERTA__('Live!t TV', 'Stream: '+stream)
+		#__ALERTA__('Live!t TV', 'Stream: '+stream)
 		player_mr = Player.Player(url=url, idFilme=idIMDb, pastaData=pastaData, temporada=temporada, episodio=episodio, nome=name, ano=ano, logo=os.path.join(__ADDON_FOLDER__,'icon.png'), serieNome=serieNome)
 
 		mensagemprogresso.close()
@@ -1866,6 +1866,9 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 	totalver = len(urlverifica)
 	if totalver != 1:
 		canaisproprios = True;
+		
+	if 'acestream://' in url:
+		canaisproprios = True;
 	
 	if canaisproprios == False:
 		urlverifica2 = url.split('.m3u8')
@@ -1879,7 +1882,11 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 		if canaisproprios == False:
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=105&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 		else:
-			liz.setProperty('IsPlayable', 'true')
+			if 'acestream://' in url:
+				reizinho = ''
+			else:
+				liz.setProperty('IsPlayable', 'true')
+			
 			u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
 	
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
@@ -1941,7 +1948,15 @@ def play_canal(arg, icon, nome):
 	listitem.setArt({'fanart': icon})
 	listitem.setProperty('mimetype', 'video/x-msvideo')
 	listitem.setInfo(type="Video", infoLabels={ "Title": nome })
-	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+	if 'acestream://' in arg:
+		ip_adress = __ADDON__.getSetting('ip_addr')
+		proxy_port = __ADDON__.getSetting('aceporta')
+		chid=arg.replace('acestream://','').replace('ts://','')
+		strm = "http://" + ip_adress + ":" + proxy_port + "/pid/" + chid + "/stream.mp4"
+		#__ALERTA__('Live!t TV', 'Url: '+strm)
+		xbmc.Player().play(strm,listitem)
+	else:
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None):
 	if infoLabels: infoLabelsAux = infoLabels

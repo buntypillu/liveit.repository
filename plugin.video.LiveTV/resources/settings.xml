@@ -7,7 +7,9 @@
 	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/>
 	  <setting id="email" type="text" default="liveitkodi@gmail.com" enable="false" visible="false"/>
       <setting id="password" type="text" default="livekodi" option="hidden" enable="false" visible="false"/>
-	  <setting label="Buffering" type="text" id="bbcBitRateMax" default="800" values="800|1500|2200|3700"/>
+	  <setting label="Buffering" type="text" id="bbcBitRateMax" default="800" values="800|1500|2200|3700" visible="false"/>
+	  <setting id="ip_addr" type="text" label="30156" default="127.0.0.1" visible="false"/>
+	  <setting id="aceporta" type="text" label="30157" default="62062" visible="false"/>
    </category>
 	<category label="Vistas">
       <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura|Miniatura (Titan Skin)" default="0"/>
