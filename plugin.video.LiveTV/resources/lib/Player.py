@@ -19,7 +19,7 @@ from t0mm0.common.net import Net
 __SITE__ = 'http://mrpiracy.win/'
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
-
+__ALERTA__ = xbmcgui.Dialog().ok
 
 #enen92 class (RatoTv) adapted for MrPiracy.xyz addon
 
@@ -80,17 +80,20 @@ class Player(xbmc.Player):
         #print 'player Stop'
         self.playing = False
         tempo = int(self.tempo)
+        #__ALERTA__('Live!t TV', 'Tempo: '+str(self.tempo))
+        #__ALERTA__('Live!t TV', 'Tempo Total: '+str(self.tempoTotal))
         #print 'self.time/self.totalTime='+str(self.tempo/self.tempoTotal)
-        if (self.tempo/self.tempoTotal > 0.90):
-
-            self.adicionarVistoBiblioteca()
-            self.adicionarVistoSite()
-
-            try:
-                xbmcvfs.delete(self.pastaVideo)
-            except:
-                print "Não apagou"
-                pass
+		#if(self.tempo != 0 and self.tempo != 0)
+        #if (self.tempo/self.tempoTotal > 0.90):
+        #
+         #   self.adicionarVistoBiblioteca()
+         #   self.adicionarVistoSite()
+        #
+          #  try:
+         #       xbmcvfs.delete(self.pastaVideo)
+         #   except:
+          #      print "Não apagou"
+          #      pass
 
     def adicionarVistoSite(self):
 
@@ -157,4 +160,5 @@ class Player(xbmc.Player):
             f.close()
         except:
             traceback.print_exc()
+            #__ALERTA__('Live!t TV', 'Erro de servidor tente outro.')
             print "Não gravou o conteudo em %s" % self.pastaVideo

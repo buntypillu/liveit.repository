@@ -1805,6 +1805,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	if stream == False:
 		__ALERTA__('Live!t-TV', 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
 	else:
+		__ALERTA__('Live!t TV', 'Stream: '+stream)
 		player_mr = Player.Player(url=url, idFilme=idIMDb, pastaData=pastaData, temporada=temporada, episodio=episodio, nome=name, ano=ano, logo=os.path.join(__ADDON_FOLDER__,'icon.png'), serieNome=serieNome)
 
 		mensagemprogresso.close()
@@ -1813,7 +1814,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 
 		while player_mr.playing:
 			xbmc.sleep(5000)
-			player_mr.trackerTempo()
+			#player_mr.trackerTempo()
 
 ###################################################################################
 #                               FUNCOES JA FEITAS                                 #
