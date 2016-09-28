@@ -38,7 +38,6 @@ AddonTitle = "Live!t TV"
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
-__CWD__ = xbmc.translatePath( __ADDON__.getAddonInfo('path') ).decode("utf-8")
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
 __SETTING__	= xbmcaddon.Addon().getSetting
 __ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
@@ -47,12 +46,11 @@ _ICON_ = __ADDON_FOLDER__ + '/icon.png'
 __SKIN__ = 'v2'
 __SITE__ = 'http://liveitkodi.com/PHP/'
 __SITEAddon__ = 'http://liveitkodi.com/Addon/'
-__EPG__ = 'http://liveitkodi.com/epg.xml'
+__EPG__ = __ADDON__.getSetting("lista_epg")
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
 __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-debug = __ADDON__.getSetting('debug')
 check_login = {}
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
@@ -62,10 +60,6 @@ __SITEFILMES__ = 'http://mrpiracy.win/'
 ###################################################################################
 #                              Iniciar Addon		                                  #
 ###################################################################################
-def addon_log(string):
-	if debug == 'true':
-		xbmc.log("[addon.live!t-tv-%s]: %s" %(__ADDONVERSION__, string))
-
 def menu():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
 		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
@@ -880,10 +874,14 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo,adultos=False):
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
+		passaepg = True
 		if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
-			urlqqq = urllib.urlopen(__EPG__)
-			codigo = urlqqq.read()
-			urlqqq.close
+			if(__EPG__ != ''):
+				urlqqq = urllib.urlopen(__EPG__)
+				codigo = urlqqq.read()
+				urlqqq.close
+			else:
+				passaepg = False
 	
 		ts = time.time()
 		st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
@@ -910,9 +908,10 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 					programa = ''
 					if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
 						if id_it != '':
-							twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
-							twrv.start()
-							programa = twrv.join()
+							if passaepg:
+								twrv = ThreadWithReturnValue(target=getProgramacaoDiaria, args=(id_it, st,codigo))
+								twrv.start()
+								programa = twrv.join()
 					
 					if programa != '':
 						nomewp = nomee + " | "+ programa
