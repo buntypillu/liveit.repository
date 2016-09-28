@@ -47,8 +47,8 @@ _ICON_ = __ADDON_FOLDER__ + '/icon.png'
 __SKIN__ = 'v2'
 __SITE__ = 'http://liveitkodi.com/PHP/'
 __SITEAddon__ = 'http://liveitkodi.com/Addon/'
-__EPG__ = 'http://liveitkodi.com/epg.gz'
-__FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epglive')
+__EPG__ = 'http://liveitkodi.com/epg.xml'
+__FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
 __ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
@@ -881,9 +881,10 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 	if url != 'nada':
 		page_with_xml = urllib2.urlopen(url).readlines()
 		if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
-			f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
-			codigo = f.read()
-			f.close()
+			urlqqq = urllib.urlopen(__EPG__)
+			codigo = urlqqq.read()
+			urlqqq.close
+	
 		ts = time.time()
 		st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d%H%M%S'))
 		if tipo == 'Filme' or tipo == 'Serie':
@@ -956,22 +957,15 @@ def obter_ficheiro_epg():
 	if not xbmcvfs.exists(__FOLDER_EPG__):
 		xbmcvfs.mkdirs(__FOLDER_EPG__)
 
-	urllib.urlretrieve(__EPG__, os.path.join(__FOLDER_EPG__, 'epg.gz'))		
-
-	for gzip_path in glob.glob(__FOLDER_EPG__ + "/*.gz"):
-		inf = gzip.open(gzip_path, 'rb')
-		s = inf.read()
-		inf.close()
-
-		gzip_fname = os.path.basename(gzip_path)
-		fname = gzip_fname[:-3]
-		uncompressed_path = os.path.join(__FOLDER_EPG__, fname)
-
-		open(uncompressed_path, 'w').write(s)
-
+	uncompressed_path = os.path.join(__FOLDER_EPG__, 'epg.xml')
+	url = urllib.urlopen(__EPG__)
+	codigo = url.read()
+	url.close
+	
+	open(uncompressed_path, 'w').write(codigo)
 
 def getProgramacaoDiaria(idCanal, diahora, codigo):
-	source = re.compile('<programme channel="'+idCanal+'" start="(.+?) \+0100" stop="(.+?) \+0100">\s+<title lang="pt">(.+?)<\/title>').findall(codigo)
+	source = re.compile('<programme start="(.+?) \+0100" stop="(.+?) \+0100" channel="'+idCanal+'">\s+<title lang="pt">(.+?)<\/title>').findall(codigo)
 
 	programa = ''
 
@@ -981,20 +975,19 @@ def getProgramacaoDiaria(idCanal, diahora, codigo):
 			programa = programa1
 	return programa
 
-			
+
 def programacao_canal(idCanal):
-
-	f = open(os.path.join(__FOLDER_EPG__, 'epg'), mode="r")
-	codigo = f.read()
-	f.close()
-
+	url = urllib.urlopen(__EPG__)
+	codigo = url.read()
+	url.close
+	
 	ts = time.time()
 	st = int(datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d'))
 
 	diahora = int(str(st)+'060000')
 	diaamanha = int(str(st+1)+'060000')
 
-	source = re.compile('<programme channel="'+idCanal+'" start="(.+?) \+0100" stop="(.+?) \+0100">\s+<title lang="pt">(.+?)<\/title>').findall(codigo)
+	source = re.compile('<programme start="(.+?) \+0100" stop="(.+?) \+0100" channel="'+idCanal+'">\s+<title lang="pt">(.+?)<\/title>').findall(codigo)
 
 	programa = ''
 
