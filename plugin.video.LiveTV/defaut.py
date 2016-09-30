@@ -145,7 +145,7 @@ def menu():
 				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				vista_menu()
 			elif check_login['sucesso']['resultado'] == 'ativo':
-				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email registoliveit@pcteckserv.com.')
+				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
 				vista_menu()
 			else:
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
@@ -317,6 +317,20 @@ def minhaContabuild():
 		else:
 			data_user = check_login['datafim']['data']
 			addDir(data_user, 'url', None, None, 'Lista', __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+
+def loginPesquisa():
+	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
+		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		abrirDefinincoesMesmo()
+	else:
+		check_login = login()
+		if check_login['datafim']['data'] == '':
+			abrirDefinincoesMesmo()
+		else:
+			_tipouser = check_login['user']['tipo']
+			_servuser = check_login['user']['servidor']
+			_nomeuser = check_login['user']['nome']
+			pesquisa('',_tipouser,_tipouser,_servuser)
 
 def buildLiveit(tipologia):
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
@@ -1340,13 +1354,13 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 	server = dialog.select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Canais', 'Praias', 'Rádios', 'Animes'])
 	
 	if server == 0:
-		site = urlpa+'kodi_procurarf.php'
+		site = __SITEFILMES__+'kodi_procurarf.php'
 	elif server == 1:
-		site = urlpa+'kodi_procurars.php'
+		site = __SITEFILMES__+'kodi_procurars.php'
 	elif server == 2 or  server == 3 or server == 4:
 		site = __SITE__+'search.php'
 	elif server == 5:
-		site = urlpa+'kodi_procuraranime.php'
+		site = __SITEFILMES__+'kodi_procuraranime.php'
 	
 	teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
 	teclado.doModal()
@@ -1364,184 +1378,195 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 			else:
 				tabela = 'programas_kodi'
 			
-			dados = {'searchBox': strPesquisa, 'tabela': tabela}
-			codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content
+			if strPesquisa == '':
+				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
+				addDir2('Alterar Pesquisa', 'url', 7000, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+			else:
+				dados = {'searchBox': strPesquisa, 'tabela': tabela}
+				codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content.decode('latin-1').encode("utf-8")
 		else:
-			dados = {'searchBox': strPesquisa}
+			if strPesquisa == '':
+				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
+				addDir2('Alterar Pesquisa', 'url', 7000, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+			else:
+				dados = {'searchBox': strPesquisa}
 		
-		if server == 0 or server == 1 or server == 5:
-			check_login = login2()
-			net = Net()
-			net.set_cookies(__COOKIE_FILE__)
-			codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content.encode('utf8')
-			match = re.compile('<div\s+class="movie-info".+>\s+<a\s+href="(.+?)".+class="movie-name">.+?<\/a>\s+<d.+\s+<d.+\s+<d.+\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
-			if match != []:
-				for link, cat in match:
-					if server == 0:
-						idIMDB = re.compile('imdb=(.+)').findall(link)[0]
-						if not idIMDB.startswith('tt'):
-							continue
-						
-						idIMDB = re.compile('imdb=(tt[0-9]{7})').findall(link)[0]
-						dados = Database.selectFilmeDB(idIMDB)
-						if dados is None:
-							infoFilme = json.loads(Trakt.getFilme(idIMDB, cat.decode('utf8')))
-							poster = infoFilme["poster"]
-							fanart = infoFilme["fanart"]
-							nomeOriginal = infoFilme["nome"]
-							ano = infoFilme["ano"]
-							infoLabels = {'Title': infoFilme["nome"], 'Year': infoFilme["ano"], 'Genre': cat.decode('utf8'), 'Plot': infoFilme["plot"], 'Code': idIMDB}
-						else:
-							infoLabels = {'Title': dados[1], 'Year': dados[8], 'Genre': dados[3], 'Plot': dados[2], 'Code': dados[0] }
-							poster = dados[6]
-							fanart = dados[5]
-							nomeOriginal = dados[1]
-							ano = dados[8]
+		if strPesquisa != '':
+			if server == 0 or server == 1 or server == 5:
+				check_login = login2()
+				net = Net()
+				net.set_cookies(__COOKIE_FILE__)
+				codigo_fonte = net.http_POST(site, form_data=dados, headers=__HEADERS__).content.encode('utf8')
+				match = re.compile('<div\s+class="movie-info".+>\s+<a\s+href="(.+?)".+class="movie-name">.+?<\/a>\s+<d.+\s+<d.+\s+<d.+\s+<span\s+class="genre">(.+?)<\/span>').findall(codigo_fonte)
+				if match != []:
+					addDir2('Alterar Pesquisa', 'url', 7000, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+					for link, cat in match:
+						if server == 0:
+							idIMDB = re.compile('imdb=(.+)').findall(link)[0]
+							if not idIMDB.startswith('tt'):
+								continue
+							
+							idIMDB = re.compile('imdb=(tt[0-9]{7})').findall(link)[0]
+							dados = Database.selectFilmeDB(idIMDB)
+							if dados is None:
+								infoFilme = json.loads(Trakt.getFilme(idIMDB, cat.decode('utf8')))
+								poster = infoFilme["poster"]
+								fanart = infoFilme["fanart"]
+								nomeOriginal = infoFilme["nome"]
+								ano = infoFilme["ano"]
+								infoLabels = {'Title': infoFilme["nome"], 'Year': infoFilme["ano"], 'Genre': cat.decode('utf8'), 'Plot': infoFilme["plot"], 'Code': idIMDB}
+							else:
+								infoLabels = {'Title': dados[1], 'Year': dados[8], 'Genre': dados[3], 'Plot': dados[2], 'Code': dados[0] }
+								poster = dados[6]
+								fanart = dados[5]
+								nomeOriginal = dados[1]
+								ano = dados[8]
 
-						try:
-							nomeOriginal = unicode(nomeOriginal, 'utf-8')
-						except:
-							nomeOriginal = nomeOriginal
-						
-						addVideo(nomeOriginal+' ('+ano+')', __SITEFILMES__+"kodi_"+link, 113, fanart, 'filme', 0, 0, infoLabels, poster)
-					else:
-						idIMDB = re.compile('imdb=(.+)').findall(link)[0]
-						if not idIMDB.startswith('tt'):
-							continue
-						
-						idIMDB = re.compile('imdb=(tt[0-9]{7})').findall(link)[0]
-						
-						dados = Database.selectSerieDB(idIMDB)
-						if dados is None:
-							infoSerie = json.loads(Trakt.getSerie(idIMDB, cat.decode('utf8')))
-							poster = infoSerie["poster"]
-							fanart = infoSerie["fanart"]
-							nomeOriginal = infoSerie["nome"]
-							ano = infoSerie["ano"]
-							infoLabels = {"Title": infoSerie["nome"], 'Aired':infoSerie['aired'], 'Plot':infoSerie['plot'], 'Year':infoSerie['ano'], 'Genre':infoSerie['categoria'], 'Code': infoSerie["imdb"]}
-						else:
-							infoLabels = {"Title": dados[0], 'Aired':dados[8], 'Plot':dados[1], 'Genre':dados[5], 'Code':dados[2], 'Year': dados[9]}
-							poster = dados[7]
-							fanart = dados[6]
-							nomeOriginal = dados[0]
-							ano = dados[9]
-
-						try:
-							nomeOriginal = unicode(nomeOriginal, 'utf-8')
-						except:
-							nomeOriginal = nomeOriginal
-						
-						addDir2(nomeOriginal, __SITEFILMES__+"kodi_"+link, 114, fanart, pagina, 'serie', infoLabels, poster)
-						
-				vista_filmesSeries()
-			else:
-				__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
-				addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-				vista_filmesSeries()
-		else:
-			informa = {
-				'servidor' : {
-					'nome': '',
-					'serv': ''
-				},
-				'servidores': [],
-				'canais': []
-			}
-			sucesso = 'no'
-			elems = ET.fromstring(codigo_fonte)
-			
-			for childee in elems:
-				if(childee.tag == 'servidores'):
-					servidor = {
-						'nome': '',
-						'link': ''
-					}
-					for gg in childee:	
-						if(gg.tag == 'Nome'):
-							servidor['nome'] = gg.text	
-						elif(gg.tag == 'Servidor'):
-							servidor['link'] = gg.text		
-						informa['servidores'].append(servidor)
-					
-			for servvvv in informa['servidores']:
-				if(servvvv['nome'] == servuss):
-					informa['servidor']['nome'] = servvvv['nome']
-					informa['servidor']['serv'] = servvvv['link']			
-			
-			for child in elems:
-				if(child.tag == 'sucesso'):
-					sucesso = child.text
-				elif(child.tag == 'canais'):
-					canal = {
-						'nome': '',
-						'logo': '',
-						'link': '',
-						'grupo': '',
-						'nomeid': '',
-						'idnovo': ''
-					}
-					adiciona = True
-					pagante = False
-					for g in child:
-						adiciona = True
-						if(g.tag == 'Nome'):
-							canal['nome'] = g.text
-						elif(g.tag == 'Imagem'):
-							canal['logo'] = g.text
-						elif(g.tag == 'Pagante'):
-							if(g.text == 'true'):
-								pagante = True
-						elif(g.tag == 'Url'):
-							urlchama = g.text.split(';')
-							urlnoo = g.text
 							try:
-								if(servuss == 'Servidor1'):
-									urlnoo = urlchama[0]
-								elif(servuss == 'Servidor2'):
-									urlnoo = urlchama[1]
-								elif(servuss == 'Servidor3'):
-									urlnoo = urlchama[2]
-								elif(servuss == 'Servidor4'):
-									urlnoo = urlchama[3]
-								elif(servuss == 'Servidor5'):
-									urlnoo = urlchama[4]
-								
-								if(urlnoo == 'nada'):
-									adiciona = False
-								else:
-									if pagante:
-										canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
-									else:
-										canal['link'] = urlnoo
+								nomeOriginal = unicode(nomeOriginal, 'utf-8')
 							except:
-								canal['link'] = g.text
-						elif(g.tag == 'Grupo'):
-							canal['grupo'] = g.text
-						elif(g.tag == 'NomeID'):
-							canal['nomeid'] = g.text
-						elif(g.tag == 'ID'):
-							canal['idnovo'] = g.text
-					if adiciona:
-						informa['canais'].append(canal)
+								nomeOriginal = nomeOriginal
+							
+							addVideo(nomeOriginal+' ('+ano+')', __SITEFILMES__+"kodi_"+link, 113, fanart, 'filme', 0, 0, infoLabels, poster)
+						else:
+							idIMDB = re.compile('imdb=(.+)').findall(link)[0]
+							if not idIMDB.startswith('tt'):
+								continue
+							
+							idIMDB = re.compile('imdb=(tt[0-9]{7})').findall(link)[0]
+							
+							dados = Database.selectSerieDB(idIMDB)
+							if dados is None:
+								infoSerie = json.loads(Trakt.getSerie(idIMDB, cat.decode('utf8')))
+								poster = infoSerie["poster"]
+								fanart = infoSerie["fanart"]
+								nomeOriginal = infoSerie["nome"]
+								ano = infoSerie["ano"]
+								infoLabels = {"Title": infoSerie["nome"], 'Aired':infoSerie['aired'], 'Plot':infoSerie['plot'], 'Year':infoSerie['ano'], 'Genre':infoSerie['categoria'], 'Code': infoSerie["imdb"]}
+							else:
+								infoLabels = {"Title": dados[0], 'Aired':dados[8], 'Plot':dados[1], 'Genre':dados[5], 'Code':dados[2], 'Year': dados[9]}
+								poster = dados[7]
+								fanart = dados[6]
+								nomeOriginal = dados[0]
+								ano = dados[9]
 
-			if sucesso == 'yes':
-				for cann in informa['canais']:
-					nomee = cann['nome']
-					img = cann['logo']
-					rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
-					grup = cann['grupo']
-					id_it = cann['nomeid']
-					id_p = cann['idnovo']
-					srt_f = ''
-					descri = ''
-					
-					addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
-				
-				vista_Canais()
+							try:
+								nomeOriginal = unicode(nomeOriginal, 'utf-8')
+							except:
+								nomeOriginal = nomeOriginal
+							
+							addDir2(nomeOriginal, __SITEFILMES__+"kodi_"+link, 114, fanart, pagina, 'serie', infoLabels, poster)
+							
+					vista_filmesSeries()
+				else:
+					__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
+					addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+					vista_filmesSeries()
 			else:
-				__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
-				addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-				vista_filmesSeries()
+				informa = {
+					'servidor' : {
+						'nome': '',
+						'serv': ''
+					},
+					'servidores': [],
+					'canais': []
+				}
+				sucesso = 'no'
+				elems = ET.fromstring(codigo_fonte)
+				
+				for childee in elems:
+					if(childee.tag == 'servidores'):
+						servidor = {
+							'nome': '',
+							'link': ''
+						}
+						for gg in childee:	
+							if(gg.tag == 'Nome'):
+								servidor['nome'] = gg.text	
+							elif(gg.tag == 'Servidor'):
+								servidor['link'] = gg.text		
+							informa['servidores'].append(servidor)
+					
+				for servvvv in informa['servidores']:
+					if(servvvv['nome'] == servuss):
+						informa['servidor']['nome'] = servvvv['nome']
+						informa['servidor']['serv'] = servvvv['link']			
+				
+				for child in elems:
+					if(child.tag == 'sucesso'):
+						sucesso = child.text
+					elif(child.tag == 'canais'):
+						canal = {
+							'nome': '',
+							'logo': '',
+							'link': '',
+							'grupo': '',
+							'nomeid': '',
+							'idnovo': ''
+						}
+						adiciona = True
+						pagante = False
+						for g in child:
+							adiciona = True
+							if(g.tag == 'Nome'):
+								canal['nome'] = g.text
+							elif(g.tag == 'Imagem'):
+								canal['logo'] = g.text
+							elif(g.tag == 'Pagante'):
+								if(g.text == 'true'):
+									pagante = True
+							elif(g.tag == 'Url'):
+								urlchama = g.text.split(';')
+								urlnoo = g.text
+								try:
+									if(servuss == 'Servidor1'):
+										urlnoo = urlchama[0]
+									elif(servuss == 'Servidor2'):
+										urlnoo = urlchama[1]
+									elif(servuss == 'Servidor3'):
+										urlnoo = urlchama[2]
+									elif(servuss == 'Servidor4'):
+										urlnoo = urlchama[3]
+									elif(servuss == 'Servidor5'):
+										urlnoo = urlchama[4]
+									
+									if(urlnoo == 'nada'):
+										adiciona = False
+									else:
+										if pagante:
+											canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
+										else:
+											canal['link'] = urlnoo
+								except:
+									canal['link'] = g.text
+							elif(g.tag == 'Grupo'):
+								canal['grupo'] = g.text
+							elif(g.tag == 'NomeID'):
+								canal['nomeid'] = g.text
+							elif(g.tag == 'ID'):
+								canal['idnovo'] = g.text
+						if adiciona:
+							informa['canais'].append(canal)
+
+				if sucesso == 'yes':
+					addDir2('Alterar Pesquisa', 'url', 7000, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+					for cann in informa['canais']:
+						nomee = cann['nome']
+						img = cann['logo']
+						rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
+						grup = cann['grupo']
+						id_it = cann['nomeid']
+						id_p = cann['idnovo']
+						srt_f = ''
+						descri = ''
+						
+						addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
+					
+					vista_Canais()
+				else:
+					__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
+					addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+					vista_filmesSeries()
 	else:
 		__ALERTA__('Live!t-TV', 'Filme não encontrado. Por favor procure no addon Exodus. Se ainda não o tem instalado instale apartir da nossa Fonte o repositório e depois o addon.')
 		addDir2('Voltar', 'url', None, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
@@ -1904,9 +1929,8 @@ def addLink2(name,url,iconimage):
 	liz.setArt({'fanart': iconimage})
 	liz.setInfo( type="Video", infoLabels={ "Title": name })
 	liz.setProperty('IsPlayable', 'true')
-	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=106&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+	u = sys.argv[0] + "?url=" + url + "&mode=106&name=" + name + "&iconimage=" + iconimage
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
-	#ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
 def play_mult_canal(arg, icon, nome):
@@ -2225,5 +2249,10 @@ elif mode==3000: abrirDefinincoesMesmo()
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
+elif mode==7000: loginPesquisa()
 
-xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+if mode==None or url==None or len(url)<1:
+	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+else:
+	if mode !=7000 and  mode !=120: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	else: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
