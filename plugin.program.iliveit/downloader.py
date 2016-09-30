@@ -1,6 +1,8 @@
 import xbmcgui
 import urllib
 
+__ALERTA__ = xbmcgui.Dialog().ok
+
 def download(url, dest, dp = None):
     if not dp:
         dp = xbmcgui.DialogProgress()
@@ -15,6 +17,6 @@ def _pbhook(numblocks, blocksize, filesize, url, dp):
     except:
         percent = 100
         dp.update(percent)
-    if dp.iscanceled(): 
-        raise Exception("Canceled")
+    if dp.iscanceled():
+        __ALERTA__('Live!t TV', 'Cancelou a acao. Tente mais tarde.')
         dp.close()

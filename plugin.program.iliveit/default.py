@@ -36,7 +36,6 @@ __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
 base_server = "http://liveitkodi.com"
 _ICON_ = base_server + '/Logos/liveitaddon.png'
 __SKIN__ = 'v2'
-
 instalador_nome = "Instalador Live!t"
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.program.iliveit/').decode('utf-8'), 'cookie.iliveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
@@ -62,28 +61,30 @@ def log_insertion(string):
     with open(file_, "a") as myfile:
         myfile.write(str(string)+'\n')
 
+def abrirDefinincoesMesmo():
+	__ADDON__.openSettings()
+	xbmc.executebuiltin("Container.SetViewMode(51")
+
 def loginAgora():
-	tecladous = xbmc.Keyboard('', 'Insira o seu Utilizador.')
-	tecladous.doModal()
-	
-	if tecladous.isConfirmed():
-		tecladopa = xbmc.Keyboard('', 'Insira a sua Senha.')
-		tecladopa.doModal()
-		if tecladopa.isConfirmed():
-			utiliza = tecladous.getText()
-			senhas = tecladopa.getText()
+	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
+		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		abrirDefinincoesMesmo()
+	else:
+		try:
 			net = Net()
 			net.set_cookies(__COOKIE_FILE__)
-			dados = {'username': utiliza, 'password': senhas}
-			
+			dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 			codigo_fonte = net.http_POST(base_server+'/PHP/LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 			elems = ET.fromstring(codigo_fonte)
 			
 			servid = ''
 			nomeus = ''
 			tipous = ''
+			sucesso = ''
 			for child in elems:
-				if(child.tag == 'user'):
+				if(child.tag == 'sucesso'):
+					sucesso = child.text
+				elif(child.tag == 'user'):
 					for d in child:
 						if(d.tag == 'Nome'):
 							nomeus = d.text
@@ -92,20 +93,39 @@ def loginAgora():
 						elif(d.tag == 'Servidor'):
 							servid = d.text
 			
-			if servid == '':
-				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
-				addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
-			elif servid == 'Teste':
-				__ALERTA__('Live!t TV', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
+			if sucesso == 'utilizador':
+				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+				__ADDON__.openSettings()
+				addDir2('Entrar novamente', 'url', None, None, 'Miniatura', base_server+'/Addon/Imagens/retroceder.png','','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+				xbmc.executebuiltin("Container.SetViewMode(50)")
+			elif sucesso == 'senha':
+				__ALERTA__('Live!t TV', 'Senha incorreta.')
+				__ADDON__.openSettings()
+				addDir2('Entrar novamente', 'url', None, None, 'Miniatura', base_server+'/Addon/Imagens/retroceder.png','','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+				xbmc.executebuiltin("Container.SetViewMode(50)")
+			elif sucesso == 'ativo':
+				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
+				xbmc.executebuiltin("Container.SetViewMode(50)")
+			elif sucesso == 'yes':
+				if servid == '':
+					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente mais tarde.')
+				elif servid == 'Teste':
+					__ALERTA__('Live!t TV', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
+				else:
+					xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+nomeus, 8000, _ICON_))
+					CATEGORIES()
 			else:
-				xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+nomeus, 8000, _ICON_))
-				CATEGORIES()
-		else:
-			__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador e Senha por favor.')
-			addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
-	else:
-		__ALERTA__('Live!t-TV', 'Faça voltar e insira o seu Utilizador por favor.')
-		addDir('Tentar Novamente','url',3,base_server+"/Addon/Imagens/retroceder.png",base_server+"/Addon/Imagens/retroceder.png",'','','','','')
+				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+		except:
+			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+
+def addDir2(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,data_user,fanart,pasta=True,total=1):
+	ok=True
+	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	liz.setProperty('fanart_image', fanart)
+	liz.setArt({'fanart': fanart})
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
+	return ok
 
 def CATEGORIES():
     packages = json.loads(OPEN_URL(base_server+'/InstalerPackage'))['Packages']
@@ -376,16 +396,10 @@ try:
 except:
         pass
     
-if mode==None or url==None or len(url)<1:
-	loginAgora()
-
-elif mode==1:
-	wizard(name,url,description,pk,isaddon,restart,forceRestart)
-elif mode==2:
-	wizard2(name,url,description,pk,isaddon,restart,forceRestart)
-elif mode==3:
-	loginAgora()
-elif mode==4:
-	CATEGORIES()
+if mode==None or url==None or len(url)<1: loginAgora()
+elif mode==1: wizard(name,url,description,pk,isaddon,restart,forceRestart)
+elif mode==2: wizard2(name,url,description,pk,isaddon,restart,forceRestart)
+elif mode==3: loginAgora()
+elif mode==4: CATEGORIES()
    
 xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
