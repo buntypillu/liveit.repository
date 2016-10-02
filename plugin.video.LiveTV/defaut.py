@@ -844,7 +844,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 				urlllserv3 = params[6]
 				urlllserv4 = params[7]
 				urlllserv5 = params[8]
-				urlllserv6 = params[8]
+				urlllserv6 = params[9]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante' or tipo_user == 'Desporto':
 					if nome_nov == 'TVs-Free':
