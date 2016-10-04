@@ -747,7 +747,9 @@ def Menu_inicial(men,build,tipo):
 				if _tipouser == 'Teste' and _servuser == 'Teste':
 					__ALERTA__('Live!t TV', 'É um utilizador Teste logo não tem acesso a esta Secção.')
 				else:
+					addDir2('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
 					listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
+					xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 		else:
 			if (_tipouser == 'Desporto' and tipo == 'Radio'):
 				__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
@@ -759,7 +761,9 @@ def Menu_inicial(men,build,tipo):
 					if(tipo == 'Novidades' or tipo == 'Patrocinadores'):
 						listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
 					else:
+						addDir2('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
 						listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
+						xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -2037,8 +2041,9 @@ def addDir2(name,url,mode,iconimage,pagina,tipo=None,infoLabels=None,poster=None
 		fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 	else:
-		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
-
+		if name != 'Refresh':
+			xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
+	
 	liz=xbmcgui.ListItem(name, iconImage=posterAux, thumbnailImage=posterAux)
 	liz.setProperty('fanart_image', iconimage)
 	liz.setInfo( type="Video", infoLabels=infoLabelsAux )
@@ -2269,6 +2274,7 @@ elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
 elif mode==7000: loginPesquisa()
+elif mode==8000: buildLiveit(url)
 
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
