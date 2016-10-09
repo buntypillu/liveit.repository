@@ -1311,7 +1311,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			links.append(link)
 			if not '.srt' in legenda:
 				legend = legenda+'.srt'
-			legendas.append('http://mrpiracy.win/subs/%s' % legenda)
+			legendas.append(__SITEFILMES__+'subs/%s' % legenda)
 			i = i+1
 
 	else:
@@ -1320,7 +1320,7 @@ def getStreamLegenda(siteBase, codigo_fonte):
 			if 'legenda' in idS:
 				if not '.srt' in link:
 					link = link+'.srt'
-				legendaAux = 'http://mrpiracy.win/subs/%s' % link
+				legendaAux = __SITEFILMES__+'subs/%s' % link
 				continue
 			if 'videomega' in idS and 'videomega' in link:
 				continue
@@ -1613,69 +1613,79 @@ def pesquisa(urlpa,tipp_uss,tipooo,servuss):
 		vista_filmesSeries()
 
 def download(url,name, temporada,episodio,serieNome):
-
-    legendasOn = False
-    isFilme = False
-
-    if 'serie.php' in url:
-        siteBase = 'serie.php'
-        isFilme = False
-    elif 'filme.php' in url:
-        siteBase = 'filme.php'
-        isFilme = True
-
-    net = Net()
-    net.set_cookies(__COOKIE_FILE__)
-    codigo_fonte = net.http_GET(url, headers=__HEADERS__).content
-
-    match = re.compile('<a id="(.+?)" class="btn(.+?)?" onclick=".+?"><img src="(.+?)"><\/a>').findall(codigo_fonte)
-
-    if isFilme:
-        linkOpenload = re.compile('<iframe id="reprodutor" src="(.+?)" scrolling="no"').findall(codigo_fonte)[0]
-    else:
-        linkOpenload = re.compile('<iframe src="(.+?)" scrolling="no"').findall(codigo_fonte)[0]
-
-    idOpenLoad = URLResolverMedia.OpenLoad(linkOpenload).getId()
-
-    legenda = URLResolverMedia.OpenLoad(linkOpenload).getSubtitle()
-    stream = URLResolverMedia.OpenLoad('https://openload.co/f/'+idOpenLoad+'/').getDownloadUrl()
-
-    folder = xbmc.translatePath(__ADDON__.getSetting('pastaDownloads'))
-
-    if temporada and episodio:
-        if not xbmcvfs.exists(os.path.join(folder,'series')):
-            xbmcvfs.mkdirs(os.path.join(folder,'series'))
-        if not xbmcvfs.exists(os.path.join(folder,'series',serieNome)):
-            xbmcvfs.mkdirs(os.path.join(folder,'series',serieNome))
-        if not xbmcvfs.exists(os.path.join(folder,'series',serieNome,"Temporada "+str(temporada))):
-            xbmcvfs.mkdirs(os.path.join(folder,'series',serieNome,"Temporada "+str(temporada)))
-
-        folder = os.path.join(folder,'series',serieNome,"Temporada "+str(temporada))
-        name = "e"+str(episodio)+" - "+clean(name.split('|')[-1])
-    else:
-        if not xbmcvfs.exists(os.path.join(folder,'filmes')):
-            xbmcvfs.mkdirs(os.path.join(folder,'filmes'))
-        folder = os.path.join(folder,'filmes')
-
-    streamAux = clean(stream.split('/')[-1])
-    extensaoStream = clean(streamAux.split('.')[-1])
-
-    if '?mim' in extensaoStream:
-        extensaoStream = re.compile('(.+?)\?mime=').findall(extensaoStream)[0]
-
-    nomeStream = name+'.'+extensaoStream
-
-    if '.vtt' in legenda:
-        legendaAux = clean(legenda.split('/')[-1])
-        extensaoLegenda = clean(legendaAux.split('.')[1])
-        nomeLegenda = name+'.'+extensaoLegenda
-        legendasOn = True
-
-
-    Downloader.Downloader().download(os.path.join(folder.decode("utf-8"),nomeStream), stream, name)
-
-    if legendasOn:
-        download_legendas(legenda, os.path.join(folder,nomeLegenda))
+	folder = xbmc.translatePath(__ADDON__.getSetting('pastaDownloads'))
+	if(folder == 'Escolha a pasta para Download'):
+		__ALERTA__('Live!t TV', 'Seleccione uma pasta primeiro no submenu Credênciais ou nas Configurações do Addon.')
+	else:
+		legendasOn = False
+		isFilme = False
+		
+		if 'serie.php' in url:
+			siteBase = 'serie.php'
+			isFilme = False
+		elif 'filme.php' in url:
+			siteBase = 'filme.php'
+			isFilme = True
+		
+		net = Net()
+		net.set_cookies(__COOKIE_FILE__)
+		codigo_fonte = net.http_GET(url, headers=__HEADERS__).content
+		
+		stream = ''
+		legenda = ''
+		servidor = ''
+		ext_g = ''
+		titulos = []
+		links = []
+		legendas = []
+		stuff = []
+		i = 1
+		legendaAux = ''
+		
+		try: stream, legenda = getStreamLegenda(siteBase, codigo_fonte)
+		except: stream = False
+		
+		if stream == False:
+			__ALERTA__('Live!t-TV', 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
+		else:
+			if temporada and episodio:
+				if not xbmcvfs.exists(os.path.join(folder,'series')):
+					xbmcvfs.mkdirs(os.path.join(folder,'series'))
+				if not xbmcvfs.exists(os.path.join(folder,'series',serieNome)):
+					xbmcvfs.mkdirs(os.path.join(folder,'series',serieNome))
+				if not xbmcvfs.exists(os.path.join(folder,'series',serieNome,"Temporada "+str(temporada))):
+					xbmcvfs.mkdirs(os.path.join(folder,'series',serieNome,"Temporada "+str(temporada)))
+				
+				folder = os.path.join(folder,'series',serieNome,"Temporada "+str(temporada))
+				name = "e"+str(episodio)+" - "+clean(name.split('|')[-1])
+			else:
+				if not xbmcvfs.exists(os.path.join(folder,'filmes')):
+					xbmcvfs.mkdirs(os.path.join(folder,'filmes'))
+				folder = os.path.join(folder,'filmes')
+			
+			if stream != None:
+				streamAux = clean(stream.split('/')[-1])
+				extensaoStream = clean(streamAux.split('.')[-1])
+			
+				if '?mim' in extensaoStream:
+					extensaoStream = re.compile('(.+?)\?mime=').findall(extensaoStream)[0]
+				
+				if ext_g != '':
+					extensaoStream = ext_g
+				
+				nomeStream = name+'.'+extensaoStream
+				
+				if '.vtt' in legenda:
+					legendaAux = clean(legenda.split('/')[-1])
+					extensaoLegenda = clean(legendaAux.split('.')[1])
+					nomeLegenda = name+'.'+extensaoLegenda
+					legendasOn = True
+				
+				
+				Downloader.Downloader().download(os.path.join(folder.decode("utf-8"),nomeStream), stream, name)
+				
+				if legendasOn:
+					download_legendas(legenda, os.path.join(folder,nomeLegenda))
 
 def download_legendas(url,path):
     contents = abrir_url(url)
@@ -1804,8 +1814,8 @@ def addVideo(name,url,mode,iconimage,tipo,temporada,episodio,infoLabels,poster,s
 
 	if linkTrailer != "":
 		menu.append(('Ver trailer', 'XBMC.PlayMedia(%s)' % (linkTrailer)))
-
-	#menu.append(('Download', #'XBMC.RunPlugin(%s?mode=117&name=%s&url=%s&iconimage=%s&serieNome=%s&temporada=%s&episodio=%s)'%(sys.argv[0],urllib.quote_plus(name), #urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(serieNome), str(temporada), str(episodio))))
+	
+	menu.append(('Download', 'XBMC.RunPlugin(%s?mode=117&name=%s&url=%s&iconimage=%s&serieNome=%s&temporada=%s&episodio=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), urllib.quote_plus(serieNome), str(temporada), str(episodio))))
 	liz.addContextMenuItems(menu, replaceItems=True)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
 	return ok

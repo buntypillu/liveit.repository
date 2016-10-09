@@ -149,7 +149,7 @@ def OPEN_URL(url):
 def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	#PURGEPACKAGES()
 	dp = xbmcgui.DialogProgress()
-	dp.create(name,"Download: " + name,'')
+	dp.create(name,"A fazer download: " + name,'')
 	lib=os.path.join(HOME, name+'.zip')
 	try:
 		os.remove(lib)
@@ -158,7 +158,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 	downloader.download(url, lib, dp)
 	addonfolder = '';
 	time.sleep(2)
-	dp.update(0,name, "Extraindo: " + name)
+	dp.update(0,name, "A extrair: " + name)
 	extract.all(lib,HOME,dp)
 	xbmc.executebuiltin('UnloadSkin()')
 	xbmc.executebuiltin('ReloadSkin()')
@@ -184,7 +184,7 @@ def wizard(name,url,description,pk,isaddon,restart,forceRestart):
 def wizard2(name,url,description,pk,isaddon,restart,forceRestart):
 	#PURGEPACKAGES()
 	dp = xbmcgui.DialogProgress()
-	dp.create(name,"Download: " + name,'')
+	dp.create(name,"A fazer download: " + name,'')
 	lib=os.path.join(PACKAGES, name+'.zip')
 	try:
 		os.remove(lib)
@@ -192,7 +192,7 @@ def wizard2(name,url,description,pk,isaddon,restart,forceRestart):
 		pass
 	downloader.download(url, lib, dp)
 	time.sleep(2)
-	dp.update(0,name, "Extraindo: " + name)
+	dp.update(0,name, "A extrair: " + name)
 	extract.all(lib,ADDONS,dp)
 	xbmc.executebuiltin('UnloadSkin()')
 	xbmc.executebuiltin('ReloadSkin()')
@@ -241,7 +241,6 @@ def killxbmc():
 	elif choice == 1:
 		pass
 	myplatform = platform()
-	#print "Plataforma: " + str(myplatform)
 	if myplatform == 'osx': # OSX
 		try: os.system('killall -9 XBMC')
 		except: pass

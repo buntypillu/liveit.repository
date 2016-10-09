@@ -13,6 +13,10 @@
 	  <setting id="ip_addr" type="text" label="30156" default="127.0.0.1" visible="false"/>
 	  <setting id="aceporta" type="text" label="30157" default="62062" visible="false"/>
    </category>
+   <category label="Download">
+    	<setting label="Pasta para download:" type="lsep" />
+    	<setting label="" type="folder" id="pastaDownloads" source="auto" option="writeable" default="Escolha a pasta para Download" enable="!eq(-2,false)"/>
+    </category>
 	<category label="Vistas">
       <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura|Miniatura (Titan Skin)" default="0"/>
 	  <setting id="canaisView" type="enum" label="Vista de Canais" values="Lista|Lista Grande|Miniatura|Miniatura (Titan Skin)" default="2"/>
