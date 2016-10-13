@@ -1357,6 +1357,12 @@ def getStreamLegenda(siteBase, codigo_fonte):
 				legenda = legendaAux
 			else:
 				legenda = legendas[0]
+		elif 'cloud.mail.ru' in links[servidor]:
+			stream, ext_g = URLResolverMedia.CloudMailRu(links[servidor]).getMediaUrl()
+			if legendaAux != '':
+				legenda = legendaAux
+			else:
+				legenda = legendas[0]
 	else:
 		if 'server.mrpiracy.win' in links[0]:
 			stream = links[0]
