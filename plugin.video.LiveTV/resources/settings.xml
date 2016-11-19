@@ -8,6 +8,9 @@
 	  <setting id="lista_epg" type="text" label="Endereço EPG: " default="http://liveitkodi.com/epg.xml"/>
 	  <setting id="lista_m3u" type="text" label="Lista M3U: " default="" visible="false"/>
 	  <setting id="email" type="text" default="liveitkodi@gmail.com" enable="false" visible="false"/>
+	  <setting id="tokenMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
+      <setting id="refreshMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
+	  <setting id="loggedin" type="text" option="hidden" visible="false" label="" default="" />
       <setting id="password" type="text" default="livekodi" option="hidden" enable="false" visible="false"/>
 	  <setting label="Buffering" type="text" id="bbcBitRateMax" default="800" values="800|1500|2200|3700" visible="false"/>
 	  <setting id="ip_addr" type="text" label="30156" default="127.0.0.1" visible="false"/>

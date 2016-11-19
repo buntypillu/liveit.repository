@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
+import os, base64
 import xbmcgui
 import xbmc
 import xbmcvfs
@@ -24,7 +24,7 @@ __ALERTA__ = xbmcgui.Dialog().ok
 #enen92 class (RatoTv) adapted for MrPiracy.xyz addon
 
 class Player(xbmc.Player):
-    def __init__(self, url, idFilme, pastaData, temporada, episodio, nome, ano, logo, serieNome):
+    def __init__(self, url, idFilme, pastaData, temporada, episodio, nome, logo):
         xbmc.Player.__init__(self)
         self.url=url
         self.temporada=temporada
@@ -35,9 +35,8 @@ class Player(xbmc.Player):
         self.idFilme = idFilme
         self.pastaData = xbmc.translatePath(pastaData)
         self.nome = nome
-        self.ano = ano
         self.logo = logo
-        self.serieNome = serieNome
+        self.API_SITE = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5Lndpbi9hcGkv')
 
         if not xbmcvfs.exists(os.path.join(pastaData,'tracker')):
             xbmcvfs.mkdirs(os.path.join(pastaData,'tracker'))
