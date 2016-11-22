@@ -15,7 +15,7 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse
+import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64
 import xml.etree.ElementTree as ET
 import fileUtils as fu
 from datetime import date
@@ -56,8 +56,8 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0)
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
-__SITEFILMES__ = 'http://mrpiracy.win/api/'
-__SITEFILMES2__ = 'http://mrpiracy.win/'
+__SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsvYXBpLw==')
+__SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5Lm1sLw==')
 
 ###################################################################################
 #                              Iniciar Addon		                                  #
@@ -1755,7 +1755,8 @@ def download(url,name, temporada,episodio,serieNome):
 			extensaoStream = ext_g
 
 		nomeStream = name+'.'+extensaoStream
-
+		
+		nomelegenda = ''
 		if '.vtt' in legenda:
 			legendaAux = clean(legenda.split('/')[-1])
 			extensaoLegenda = clean(legendaAux.split('.')[1])
@@ -1773,7 +1774,7 @@ def download_legendas(url,path):
         fh.close()
     return
 
-def clean(self, text):
+def clean(text):
 	command={'&#8220;':'"','&#8221;':'"', '&#8211;':'-','&amp;':'&','&#8217;':"'",'&#8216;':"'"}
 	regex = re.compile("|".join(map(re.escape, command.keys())))
 	return regex.sub(lambda mo: command[mo.group(0)], text)
@@ -1798,8 +1799,9 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 		#visto = checkVisto(url)
 		if __ADDON__.getSetting('trailer-filmes') == 'true':
 			try:
-				idYoutube = urlparse.urlparse(trailer).path.split("=")[-1]
-				linkTrailer = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+idYoutube
+				idYoutube=trailer.split('=')
+				#__ALERTA__('Live!t TV', 'ID: '+idYoutube[1])
+				linkTrailer = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+idYoutube[1]
 				#linkTrailer = trailer
 			except:
 				linkTrailer = ''
@@ -1919,7 +1921,6 @@ def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,inf
 def abrir_url(url, post=None, header=None, code=False, erro=False):
 	if header == None:
 		header = headers
-	
 	if post:
 		req = urllib2.Request(url, data=post, headers=header)
 	else:
@@ -1929,8 +1930,22 @@ def abrir_url(url, post=None, header=None, code=False, erro=False):
 	except urllib2.HTTPError as response:
 		if erro == True:
 			return str(response.code), "asd"
-	
 	link=response.read()
+	
+	if 'myapimp.tk' in url:
+		coiso = json.loads(link)
+		if 'error' in coiso:
+			if coiso['error'] == 'access_denied':
+				headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
+				dados = {'refresh_token': __ADDON__.getSetting('refreshMrpiracy'),'grant_type': 'refresh_token', 'client_id': 'kodi', 'client_secret':'pyRmmKK3cbjouoDMLXNtt2eGkyTTAG' }
+				resultado = abrir_url('http://myapimp.tk/api/token/refresh',post=json.dumps(dados), headers=headers)
+				resultado = json.loads(resultado)
+				__ADDON__.setSetting('tokenMrpiracy', resultado['access_token'])
+				__ADDON__.setSetting('refreshMrpiracy', resultado['refresh_token'])
+				if post:
+					return abrir_url(url, post=post, headers=header)
+				else:
+					return abrir_url(url, headers=header)
 	
 	if 'judicial' in link:
 		return 'DNS'
@@ -1969,7 +1984,7 @@ def play_mult_canal(arg, icon, nome):
 					if(d.tag == 'url'):
 						urlcorrecto = d.text
 	
-	__ALERTA__('Live!t TV', 'Url: '+urlcorrecto)
+	#__ALERTA__('Live!t TV', 'Url: '+urlcorrecto)
 	
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
