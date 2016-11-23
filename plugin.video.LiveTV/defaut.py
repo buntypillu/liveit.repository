@@ -17,6 +17,7 @@
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64
 import xml.etree.ElementTree as ET
+from resources.lib import common
 import fileUtils as fu
 from datetime import date
 from bs4 import BeautifulSoup
@@ -172,6 +173,7 @@ def login():
 			'email': '',
 			'tipo': '',
 			'dias': '',
+			'lista': '',
 			'servidor': '',
 			'senhaadulto': ''
 		},
@@ -222,6 +224,8 @@ def login():
 						informacoes['user']['tipo'] = d.text
 					elif(d.tag == 'dias'):
 						informacoes['user']['dias'] = d.text
+					elif(d.tag == 'Lista'):
+						informacoes['user']['lista'] = d.text
 					elif(d.tag == 'DataFim'):
 						try:
 							informacoes['datafim']['data'] = "Membro Ativo até "+ d.text
@@ -591,9 +595,16 @@ def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
+	_listauser = men['user']['lista']
 
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
+	
+	tiposelect = ''
+	opcaoselec = __ADDON__.getSetting("lista_m3u")
+	if opcaoselec == '0': tiposelect = 'm3u8'
+	elif opcaoselec == '1': tiposelect = 'ts'
+	elif opcaoselec == '2': tiposelect = 'rtmp'
 	
 	passanovo = True
 	if _tipouser == 'Teste' and _servuser == 'Teste':
@@ -768,32 +779,42 @@ def Menu_inicial(men,build,tipo):
 			_fanart = __SITEAddon__+"Imagens/participa.jpg"
 			urlbuild = __SITEAddon__+"Ficheiros/patrocinadores.txt"
 		
-		if(tipo == 'Adulto'):
-			if(__ADDON__.getSetting("login_adultos") == ''):
-				__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos. No subMenu Credênciais que está no menu Utilizador.')
-			elif(__ADDON__.getSetting("login_adultos") != senhaadu):
-				__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
-			else:
-				if _tipouser == 'Teste' and _servuser == 'Teste':
-					__ALERTA__('Live!t TV', 'É um utilizador Teste logo não tem acesso a esta Secção.')
-				else:
-					addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-					listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
-					xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+		if(tipo == 'Novidades') or (tipo == 'Patrocinadores'):
+			listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
 		else:
-			if (_tipouser == 'Desporto' and tipo == 'Radio'):
-				__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
+			if _servuser == 'Servidor3':
+				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
 			else:
-				if(urlbuild == ''):
-					__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
-					abrirDefinincoesMesmo()
-				else:
-					if(tipo == 'Novidades' or tipo == 'Patrocinadores'):
-						listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
-					else:
-						addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-						listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
-						xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+			
+			addDir('Refresh',tipo,'',8000,'',os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
+			abrim3u(urlbuild,'')
+			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+		#	if(__ADDON__.getSetting("login_adultos") == ''):
+		#		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos. No subMenu Credênciais que está no menu Utilizador.')
+		#	elif(__ADDON__.getSetting("login_adultos") != senhaadu):
+		#		__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
+		#	else:
+		#		if _tipouser == 'Teste' and _servuser == 'Teste':
+		#			__ALERTA__('Live!t TV', 'É um utilizador Teste logo não tem acesso a esta Secção.')
+		#		else:
+		#			addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+		#			listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
+		#			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+		#else:
+		#	if (_tipouser == 'Desporto' and tipo == 'Radio'):
+		#		__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
+		#	else:
+		#		if(urlbuild == ''):
+		#			__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
+		#			abrirDefinincoesMesmo()
+		#		else:
+		#			if(tipo == 'Novidades' or tipo == 'Patrocinadores'):
+		#				listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
+		#			else:
+		#				addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
+		#				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
+		#				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -829,18 +850,54 @@ def Menu_inicial(men,build,tipo):
 					else:
 						if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 							if nome == 'TVs':
-								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+								if _servuser == 'Servidor3':
+									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
+								else:
+									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
+								
+								addDir(nome,link,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 								addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 							else:
 								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 						else:
-							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+							if nome == 'TVs':
+								if _servuser == 'Servidor3':
+									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+								else:
+									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+								
+								addDir(nome,link,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+							else:
+								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 		
 		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
 		thread.start_new_thread( obter_ficheiro_epg, () )
 		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
 		vista_Canais()
 	#check_version()
+
+def abrim3u(url, name):	
+	tmpList = []
+	list = common.m3u2list(url)
+	addLinkCanal('Vídeo Instalação Build','plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid=PulxztcAHks&t','','','')
+	addLinkCanal('http://liveitkodi.com/Aquisicao/ (Inscrições e Renovações)','','','','')
+	addLinkCanal('Dúvidas: liveitkodi@gmail.com ','','','','')
+	addLinkCanal('Chat: https://www.facebook.com/liveittv/','','','','')
+	for channel in list:
+		name = common.GetEncodeString(channel["display_name"])
+		image = channel.get("tvg_logo", "")
+		url = common.GetEncodeString(channel["url"])
+		id_ip = channel.get("tvg-ID", "")
+		
+		addLinkCanal(name,url,image,id_ip,'')
+	
+	vista_Canais_Lista()
+
+def PlayUrl(name, url, iconimage=None):
+	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
+	listitem.setInfo(type="Video", infoLabels={ "Title": name })
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+
 ###############################################################################################################
 #                                                   Listar Grupos                                             #
 ###############################################################################################################
@@ -1873,6 +1930,22 @@ def addFolder(name,url,mode,iconimage,folder):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=folder)
 	return ok
 
+def addLinkCanal(name,url,iconimage,idcanal,id_p):
+	infoLabelssss = {"title": name, "genre": 'All'}
+	ok=True
+	cm=[]
+	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+	
+	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	#liz.setProperty('fanart_image', fanart)
+	#liz.setArt({'fanart': fanart})
+	liz.setInfo( type="Video", infoLabels=infoLabelssss)
+	liz.addContextMenuItems(cm, replaceItems=False)
+	liz.setProperty('IsPlayable', 'true')
+	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=3334&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
+	return ok
+	
 def addLink(name,url,iconimage,idCanal,srtfilm,descricao,tipo,tipo_user,id_p,infoLabelssss,fanart,tipppp,adultos=False,total=1):
 	ok=True
 	cm=[]
@@ -2099,6 +2172,17 @@ def vista_Canais():
 	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
 	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
 
+def vista_Canais_Lista():
+	opcao = __ADDON__.getSetting('canaisView2')
+	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(508)")
+	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(504)")
+	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(503)")
+	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(515)")
+
 def abrirDefinincoes():
 	__ADDON__.openSettings()
 	addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
@@ -2284,14 +2368,17 @@ elif mode==120: pesquisa(url,servidor_user)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==3000: abrirDefinincoesMesmo()
+elif mode==3333: abrim3u(url,name)
+elif mode==3334: PlayUrl(name,url,iconimage)
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
 elif mode==7000: loginPesquisa()
 elif mode==8000: buildLiveit(url)
 
+
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 else:
-	if mode !=7000 and  mode !=120: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	if mode !=7000 and  mode !=120 and  mode !=3333: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 	else: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
