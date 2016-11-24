@@ -851,24 +851,28 @@ def Menu_inicial(men,build,tipo):
 						if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 							if nome == 'TVs':
 								if _servuser == 'Servidor3':
-									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
+									urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
 								else:
-									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
+									urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
 								
-								addDir(nome,link,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 								addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 							else:
 								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 						else:
-							if nome == 'TVs':
+							if nome == 'TVs' and _tipouser != 'Teste':
 								if _servuser == 'Servidor3':
-									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+									urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
 								else:
-									link = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+									urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 								
-								addDir(nome,link,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 							else:
-								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								if tipo != 'Adulto' or nome != 'Radios':
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								else:
+									if _tipouser == 'Teste':
+										addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 		
 		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
 		thread.start_new_thread( obter_ficheiro_epg, () )
@@ -1218,14 +1222,16 @@ def getList(url, pagina):
 			categoria += ','+i['categoria2']
 		if i['categoria3'] != '':
 			categoria += ','+i['categoria3']
-		
-		
+		visto = False
+		pt = ''
+		cor = "white"
+		if 'Portu' in categoria:
+			pt = '[B]PT: [/B]'
 		if 'PT' in i['IMBD']:
 			i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+			pt = '[B]PT: [/B]'
 		if i['visto'] == 1:
 			visto = True
-		else:			
-			visto = False
 
 		infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'IMDBNumber': i['IMBD'] }
 		
@@ -1248,6 +1254,7 @@ def getList(url, pagina):
 	except: pass 
 	if current < total:
 		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 111, 'filmes', os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),1)
+	vista_filmesSeries()
 		
 def getSeries(url, pagina):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
@@ -1266,9 +1273,12 @@ def getSeries(url, pagina):
 			categoria += ','+i['categoria2']
 		if i['categoria3'] != '':
 			categoria += ','+i['categoria3']
-
+		if 'Portu' in categoria:
+			pt = '[B]PT: [/B]'
+		if 'PT' in i['IMBD']:
+			pt = '[B]PT: [/B]'
 		infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
-	
+		
 		try:
 			nome = i['nome_ingles'].decode('utf-8')
 		except:
@@ -1286,6 +1296,7 @@ def getSeries(url, pagina):
 	except: pass 
 	if current < total:
 		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 114, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	vista_filmesSeries()
 
 def getSeasons(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
@@ -1322,12 +1333,11 @@ def getEpisodes(url):
 			nome = i['nome_episodio'].encode('utf-8')
 		if 'PT' in i['IMBD']:
 			i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+		visto = False
+		cor = 'white'
 		if i['visto'] == 1:
-			visto = True
-		else:
-			visto = False	
-					
-
+			visto = True	
+		
 		if i['imagem'] == 1:
 			imagem = __SITEFILMES2__+'images/capas/'+i['IMBD']+'.jpg'
 		elif i['imagem'] == 0:
@@ -1335,6 +1345,7 @@ def getEpisodes(url):
 				imagem = __SITEFILMES2__+'images/capas/'+resultadoS['foto'].split('/')[-1]
 			else:
 				imagem = resultadoS['foto']
+		
 		addVideo('[B]Episodio '+str(i['episodio'])+'[/B] '+nome, __SITEFILMES__+tipo+'/'+str(i['id_serie'])+'/temporada/'+str(i['temporada'])+'/episodio/'+str(i['episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, __SITEFILMES2__+i['background'])
 	
 	vista_episodios()
