@@ -1429,7 +1429,7 @@ def categorias(url):
 	
 	for i in resultadoa["data"]:
 		if 'filme' in url:
-			resultado = controlo.abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
+			resultado = abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
 			resultado = json.loads(resultado)
 			categoria = resultado['categoria1']
 			if resultado['categoria2'] != '':
@@ -1756,7 +1756,8 @@ def pesquisa(url,servuss):
 		tipo = 2
 	
 	if 'page' not in url:
-		tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes', 'Canais', 'Praias', 'Rádios'])
+		#tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes', 'Canais', 'Praias', 'Rádios'])
+		tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes'])
 		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
 		if tipo == 0:
 			url = __SITEFILMES__+'filmes/pesquisa'
@@ -1990,6 +1991,8 @@ def pesquisa(url,servuss):
 			except: pass 
 			if current < total:
 				addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 120, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+			
+			vista_filmesSeries()
 
 
 def download(url,name, temporada,episodio,serieNome):
