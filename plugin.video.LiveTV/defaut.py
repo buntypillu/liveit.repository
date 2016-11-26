@@ -1167,17 +1167,17 @@ class ThreadWithReturnValue(Thread):
 def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
-		menuSeries(iconimage,fanart)
+		menuSeries(iconimage,__SITEAddon__+'Imagens/series1.png')
 
 def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
-		menuFilmes(iconimage,fanart)
+		menuFilmes(iconimage,__SITEAddon__+'Imagens/filme1.png')
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
-		menuAnimes(iconimage,fanart)
+		menuAnimes(iconimage,__SITEAddon__+'Imagens/animes1.png')
 
 def menuFilmes(iconimage,fanart):
 	database = Database.isExists()
@@ -1190,8 +1190,8 @@ def menuFilmes(iconimage,fanart):
 
 def menuSeries(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todas as Series', __SITEFILMES__+'series', 112, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'), 1, poster=fanart)
-	addDir2('Series em Destaque',  __SITEFILMES__+'series/destaque', 112, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'), 1, poster=fanart)
+	addDir2('Todas as Series', __SITEFILMES__+'series', 123, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'), 1, poster=fanart)
+	addDir2('Series em Destaque',  __SITEFILMES__+'series/destaque', 123, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'), 1, poster=fanart)
 	addDir2('Series por Ano', __SITEFILMES__+'series/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, poster=fanart)
 	addDir2('Series por Genero', __SITEFILMES__+'series/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, poster=fanart)
 
@@ -1289,13 +1289,61 @@ def getSeries(url, pagina):
 			visto=True
 		else:
 			visto=False
-		addDir2(nome+' ('+i['ano']+')', __SITEFILMES__+tipo+'/'+str(i['id_video']), 114, 'series', i['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+i['background'],visto=visto)
+		nomeee = removerAcentos(nome)+' ('+i['ano']+')'
+		addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_video']), 123, 'series', i['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+i['background'],visto=visto)
 	current = resultado['meta']['pagination']['current_page']
 	total = resultado['meta']['pagination']['total_pages']
 	try: proximo = resultado['meta']['pagination']['links']['next']
 	except: pass 
 	if current < total:
-		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 114, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 123, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	vista_filmesSeries()
+	
+def series(url):
+	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
+	resultado = abrir_url(url, header=headers)
+	if resultado == 'DNS':
+		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		return False
+	resultado = json.loads(resultado)
+	if 'serie' in url:
+		tipo = 'serie'
+	elif 'anime' in url:
+		tipo = 'anime'
+	for i in resultado['data']:
+		categoria = i['categoria1']
+		if i['categoria2'] != '':
+			categoria += ','+i['categoria2']
+		if i['categoria3'] != '':
+			categoria += ','+i['categoria3']
+		pt=''
+		if 'Portu' in categoria:
+			pt = '[B]PT: [/B]'
+		if 'PT' in i['IMBD']:
+			pt = '[B]PT: [/B]'
+		infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
+	
+		try:
+			nome = i['nome_ingles'].decode('utf-8')
+		except:
+			nome = i['nome_ingles'].encode('utf-8')
+		if 'http' not in i['foto']:
+			i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+		if i['visto'] == 1:
+			visto=True
+		else:
+			visto=False
+		
+		nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
+		addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_video']), 114, 'temporadas', i['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+i['background'],visto=visto)
+	
+	current = resultado['meta']['pagination']['current_page']
+	total = resultado['meta']['pagination']['total_pages']
+	try: proximo = resultado['meta']['pagination']['links']['next']
+	except: pass 
+	if current < total:
+		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 123, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	
 	vista_filmesSeries()
 
 def getSeasons(url):
@@ -1309,6 +1357,7 @@ def getSeasons(url):
 	while j <= resultado['temporadas']:
 		addDir2("[B]Temporada[/B] "+str(j), url+'/temporada/'+str(j), 115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(j)+'.png'),poster=__SITEFILMES2__+resultado['background'])
 		j+=1
+	
 	vista_temporadas()
 
 def getEpisodes(url):
@@ -1326,6 +1375,9 @@ def getEpisodes(url):
 	resultadoS = abrir_url(__SITEFILMES__+tipo+'/'+url.split('/')[5], header=headers)
 	resultadoS = json.loads(resultadoS)
 	for i in resultado['data']:
+		if i['URL'] == '' and i['URL2'] == '':
+			continue
+		pt = ''
 		infoLabels = {'Title': i['nome_episodio'], 'Code': i['IMBD'], 'Episode': i['episodio'], 'Season': i['temporada'] }
 		try:
 			nome = i['nome_episodio'].decode('utf-8')
@@ -1333,6 +1385,7 @@ def getEpisodes(url):
 			nome = i['nome_episodio'].encode('utf-8')
 		if 'PT' in i['IMBD']:
 			i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+			pt = '[B]PT: [/B]'
 		visto = False
 		cor = 'white'
 		if i['visto'] == 1:
@@ -1346,7 +1399,8 @@ def getEpisodes(url):
 			else:
 				imagem = resultadoS['foto']
 		
-		addVideo('[B]Episodio '+str(i['episodio'])+'[/B] '+nome, __SITEFILMES__+tipo+'/'+str(i['id_serie'])+'/temporada/'+str(i['temporada'])+'/episodio/'+str(i['episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, __SITEFILMES2__+i['background'])
+		nomeee = '[B]Episodio '+str(i['episodio'])+'[/B] '+removerAcentos(nome)
+		addVideo(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_serie'])+'/episodio/'+str(i['id_episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, __SITEFILMES2__+i['background'])
 	
 	vista_episodios()
 
@@ -1361,8 +1415,92 @@ def getGeneros(url):
 	for i in resultado:
 		if i['id_categoria'] == 0:
 			continue
-		addDir2(i['categorias'], url+'/'+str(i['id_categoria']), 111, 'categorias', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+		addDir2(i['categorias'], url+'/'+str(i['id_categoria']), 122, 'categorias', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+	
+	vista_menu()
 
+def categorias(url):
+	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
+	resultado = abrir_url(url, header=headers)
+	if resultado == 'DNS':
+		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		return False
+	resultadoa = json.loads(resultado)
+	
+	for i in resultadoa["data"]:
+		if 'filme' in url:
+			resultado = controlo.abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
+			resultado = json.loads(resultado)
+			categoria = resultado['categoria1']
+			if resultado['categoria2'] != '':
+				categoria += ','+resultado['categoria2']
+			if resultado['categoria3'] != '':
+				categoria += ','+resultado['categoria3']
+			
+			try:
+				nome = resultado['nome_ingles'].decode('utf-8')
+			except:
+				nome = resultado['nome_ingles'].encode('utf-8')
+			if 'http' not in resultado['foto']:
+				resultado['foto'] = __SITEFILMES__+'images/capas/'+resultado['foto'].split('/')[-1]
+			pt = ''
+			if 'Portu' in categoria:
+				pt = '[B]PT: [/B]'
+			cor = "white"
+			if 'PT' in i['IMBD']:
+				i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+				pt = '[B]PT: [/B]'
+			visto = False
+			if i['visto'] == 1:
+				visto = True
+			
+			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot':resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'IMDBNumber': resultado['IMBD'] }
+			nomeee = '[COLOR '+cor+']'+pt+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
+			fotooo = resultado['foto']
+			fanarttt = __SITEFILMES2__+resultado['background']
+			addVideo(nomeee, urlnoo, 111, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
+		elif 'serie' in url or 'anime' in url:
+			cor = "white"
+			if 'serie' in url:
+				tipo = 'serie'
+			elif 'anime' in url:
+				tipo = 'anime'
+			resultado = abrir_url(__SITEFILMES__+tipo+'/'+str(i['id_video']), header=headers)
+			resultado = json.loads(resultado)
+			categoria = resultado['categoria1']
+			pt = ''
+			if resultado['categoria2'] != '':
+				categoria += ','+resultado['categoria2']
+			if resultado['categoria3'] != '':
+				categoria += ','+resultado['categoria3']
+			if 'Portu' in categoria:
+				pt = '[B]PT: [/B]'
+			if 'PT' in resultado['IMBD']:
+				pt = '[B]PT: [/B]'
+			try:
+				nome = resultado['nome_ingles'].decode('utf-8')
+			except:
+				nome = resultado['nome_ingles'].encode('utf-8')
+			if 'http' not in resultado['foto']:
+				resultado['foto'] = __SITEFILMES__+'images/capas/'+resultado['foto'].split('/')[-1]
+			visto = False
+			if resultado['visto'] == 1:
+				visto=True
+			
+			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot': resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'Code': resultado['IMBD'] }
+			
+			nomeee = '[COLOR '+cor+']'+pt+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+			addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', resultado['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+resultado['background'],visto=visto)
+	
+	current = resultadoa['meta']['pagination']['current_page']
+	total = resultadoa['meta']['pagination']['total_pages']
+	try: proximo = resultadoa['meta']['pagination']['links']['next']
+	except: pass 
+	if current < total:
+		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
+	
+	vista_filmesSeries()
 
 def getYears(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
@@ -1373,7 +1511,94 @@ def getYears(url):
 	match = re.compile('\?anos=.+?\">\s+<img.+?>\s+(.+?)<\/').findall(conteudo)
 	
 	for i in match:
-		addDir2(i, url+'/'+i, 111, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
+		addDir2(i, url+'/'+i, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
+		
+	vista_menu()
+
+def getAnos(url):
+	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
+	resultado = abrir_url(url, header=headers)
+	if resultado == 'DNS':
+		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		return False
+	resultadoa = json.loads(resultado)
+	
+	for i in resultadoa["data"]:
+		if 'filme' in url:
+			resultado = abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
+			resultado = json.loads(resultado)
+			categoria = resultado['categoria1']
+			if resultado['categoria2'] != '':
+				categoria += ','+resultado['categoria2']
+			if resultado['categoria3'] != '':
+				categoria += ','+resultado['categoria3']
+			
+			visto = False
+			pt = ''
+			if 'Portu' in categoria:
+				pt = '[B]PT: [/B]'
+			cor = "white"
+			if 'PT' in i['IMBD']:
+				i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+				pt = '[B]PT: [/B]'
+			if i['visto'] == 1:
+				visto = True
+			
+			try:
+				nome = resultado['nome_ingles'].decode('utf-8')
+			except:
+				nome = resultado['nome_ingles'].encode('utf-8')
+			if 'http' not in resultado['foto']:
+				resultado['foto'] = __SITEFILMES2__+'images/capas/'+resultado['foto'].split('/')[-1]
+	
+			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot':resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'IMDBNumber': resultado['IMBD'] }
+			nomeee = '[COLOR '+cor+']'+pt+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
+			fotooo = resultado['foto']
+			fanarttt = __SITEFILMES2__+resultado['background']
+			addVideo(nomeee, urlnoo, 111, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
+		elif 'serie' in url or 'anime' in url:
+			cor = "white"
+			if 'serie' in url:
+				tipo = 'serie'
+			elif 'anime' in url:
+				tipo = 'anime'
+			resultado = abrir_url(__SITEFILMES__+tipo+'/'+str(i['id_video']), header=headers)
+			resultado = json.loads(resultado)
+			categoria = resultado['categoria1']
+			if resultado['categoria2'] != '':
+				categoria += ','+resultado['categoria2']
+			if resultado['categoria3'] != '':
+				categoria += ','+resultado['categoria3']
+			pt=''
+			if 'Portu' in categoria:
+				pt = '[B]PT: [/B]'
+			if 'PT' in resultado['IMBD']:
+				pt = '[B]PT: [/B]'
+			try:
+				nome = resultado['nome_ingles'].decode('utf-8')
+			except:
+				nome = resultado['nome_ingles'].encode('utf-8')
+			if 'http' not in resultado['foto']:
+				resultado['foto'] = __SITEFILMES2__+'images/capas/'+resultado['foto'].split('/')[-1]
+			if resultado['visto'] == 1:
+				visto=True
+			else:
+				visto=False
+			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot': resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'Code': resultado['IMBD'] }
+			
+			nomeee = '[COLOR '+cor+']'+pt+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+			addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', resultado['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+resultado['background'],visto=visto)
+	
+	current = resultadoa['meta']['pagination']['current_page']
+	total = resultadoa['meta']['pagination']['total_pages']
+	try: proximo = resultadoa['meta']['pagination']['links']['next']
+	except: pass 
+	if current < total:
+		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
+	
+	vista_filmesSeries()
+
 
 def player(name,url,iconimage,temporada,episodio,serieNome):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
@@ -1711,16 +1936,18 @@ def pesquisa(url,servuss):
 						nome = i['nome_ingles'].decode('utf-8')
 					except:
 						nome = i['nome_ingles'].encode('utf-8')
+					pt = ''
+					if 'Portu' in categoria:
+						pt = '[B]PT: [/B]'
+					cor = "white"
 					if 'http' not in i['foto']:
 						i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
 					if 'PT' in i['IMBD']:
 						i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
-					if i['visto'] == 1:
-						visto = True
-					else:			
-						visto = False
+						pt = '[B]PT: [/B]'
+					visto = False
 					
-					nomeee = removerAcentos(nome)+' ('+i['ano']+')'
+					nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
 					urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
 					fotooo = i['foto']
 					fanarttt = __SITEFILMES2__+i['background']
@@ -1732,9 +1959,14 @@ def pesquisa(url,servuss):
 						categoria += ','+i['categoria2']
 					if i['categoria3'] != '':
 						categoria += ','+i['categoria3']
-
+					if 'Portu' in categoria:
+						pt = '[B]PT: [/B]'
 					infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
-					
+					cor = "white"
+					pt=''
+					if 'PT' in i['IMBD']:
+						i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+						pt = '[B]PT: [/B]'
 					try:
 						nome = i['nome_ingles'].decode('utf-8')
 					except:
@@ -1745,12 +1977,9 @@ def pesquisa(url,servuss):
 						link = 'serie'
 					elif tipo == 2:
 						link = 'anime'
-					if i['visto'] == 1:
-						visto=True
-					else:
-						visto=False
-					nomeee = removerAcentos(nome)+' ('+i['ano']+')'
-					urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
+					visto=False	
+					nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
+					urlnoo = __SITEFILMES__+link+'/'+str(i['id_video'])
 					fotooo = i['foto']
 					fanarttt = __SITEFILMES2__+i['background']
 					addDir2(nomeee, urlnoo, 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
@@ -2116,7 +2345,7 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 
 	if poster: posterAux = poster
 	else: posterAux = iconimage
-
+	
 	try:
 		name = name.encode('utf-8')
 	except:
@@ -2141,8 +2370,8 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 		if name != 'Refresh':
 			xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 	
-	liz=xbmcgui.ListItem(name, iconImage=posterAux, thumbnailImage=posterAux)
-	liz.setProperty('fanart_image', iconimage)
+	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
+	liz.setProperty('fanart_image', fanart)
 	liz.setInfo( type="Video", infoLabels=infoLabelsAux )
 
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -2376,6 +2605,9 @@ elif mode==117: download(url, name, temporada, episodio, serieNome)
 elif mode==118: getGeneros(url)
 elif mode==119: getYears(url)
 elif mode==120: pesquisa(url,servidor_user)
+elif mode==121: getAnos(url)
+elif mode==122: categorias(url)
+elif mode==123: series(url)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==3000: abrirDefinincoesMesmo()
