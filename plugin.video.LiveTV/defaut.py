@@ -114,13 +114,13 @@ def menu():
 					menus2['senha'] = ""
 					menus2['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
 					check_login['menus'].append(menus2)
-				menus['nome'] = "Participacoes"
-				menus['logo'] = check_login['info']['logo']
-				menus['link'] = check_login['info']['link']
-				menus['tipo'] = "patrocinadores"
-				menus['senha'] = ""
-				menus['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
-				check_login['menus'].append(menus)
+				#menus['nome'] = "Participacoes"
+				#menus['logo'] = check_login['info']['logo']
+				#menus['link'] = check_login['info']['link']
+				#menus['tipo'] = "patrocinadores"
+				#menus['senha'] = ""
+				#menus['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
+				#check_login['menus'].append(menus)
 				menus1['nome'] = "Novidades"
 				menus1['logo'] = check_login['info']['logo2']
 				menus1['link'] = check_login['info']['link2']
@@ -785,7 +785,6 @@ def Menu_inicial(men,build,tipo):
 			else:
 				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 			
-			addDir('Refresh',tipo,'',8000,'',os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','','','')
 			abrim3u(urlbuild,_datauser)
 			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 		#	if(__ADDON__.getSetting("login_adultos") == ''):
@@ -864,28 +863,35 @@ def Menu_inicial(men,build,tipo):
 							else:
 								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 							
-							addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+							addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 						else:
 							if tipo != 'Adulto' or nome != 'Radios':
-								addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								if _servuser == 'Teste':
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								else:
+									if _servuser == 'Servidor3':
+										urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+									else:
+										urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+									
+									addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 							else:
-								if _tipouser == 'Teste':
+								if _servuser == 'Teste':
 									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)	
 		
 		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
 		thread.start_new_thread( obter_ficheiro_epg, () )
 		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
-		vista_Canais()
+		vista_Canais_Lista()
 	#check_version()
 
 def abrim3u(url, datauser):	
 	tmpList = []
 	list = common.m3u2list(url)
+	addDir('Atualizar Lista',url,None,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','',datauser,os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'))
 	addLinkCanal('Vídeo Instalação Build','plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid=PulxztcAHks&t','','','')
-	addLinkCanal('http://liveitkodi.com/Aquisicao/ (Inscrições e Renovações)','','','','')
 	addLinkCanal('Dúvidas: liveitkodi@gmail.com ','','','','')
 	addLinkCanal(datauser,'','','','')
-	#addLinkCanal('Chat: https://www.facebook.com/liveittv/','','','','')
 	for channel in list:
 		name = common.GetEncodeString(channel["display_name"])
 		image = channel.get("tvg_logo", "")
@@ -2175,6 +2181,7 @@ def addLinkCanal(name,url,iconimage,idcanal,id_p):
 	infoLabelssss = {"title": name, "genre": 'All'}
 	ok=True
 	cm=[]
+	
 	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	
 	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
@@ -2183,7 +2190,7 @@ def addLinkCanal(name,url,iconimage,idcanal,id_p):
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
 	liz.setProperty('IsPlayable', 'true')
-	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=3334&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)
+	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=3334&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&data_user="+str(idcanal)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	return ok
 	
