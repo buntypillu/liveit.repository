@@ -1261,7 +1261,7 @@ def filmes(url, pagina):
 	try: proximo = resultado['meta']['pagination']['links']['next']
 	except: pass 
 	if current < total:
-		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 111, 'filmes', os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),1)
+		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 111, 'filmes', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
 	vista_filmesSeries()
 
 def series(url):
@@ -1446,7 +1446,7 @@ def categorias(url):
 			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
 			fotooo = resultado['foto']
 			fanarttt = __SITEFILMES2__+resultado['background']
-			addVideo(nomeee, urlnoo, 111, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
+			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
 		elif 'serie' in url or 'anime' in url:
 			cor = "white"
 			if 'serie' in url:
@@ -2075,7 +2075,7 @@ def clean(text):
 	regex = re.compile("|".join(map(re.escape, command.keys())))
 	return regex.sub(lambda mo: command[mo.group(0)], text)
 
-def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,poster, trailer=False,serieNome=False):
+def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,poster,trailer=False,serieNome=False):
 	menu = []
 	
 	if infoLabels: infoLabelsAux = infoLabels
@@ -2099,7 +2099,6 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 	fanart = __FANART__
 	
 	if tipo == 'filme':
-		fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 		if __ADDON__.getSetting('trailer-filmes') == 'true':
 			try:
@@ -2112,12 +2111,10 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 		else:
 			linkTrailer = ''
 	elif tipo == 'serie':
-		fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 		idIMDb = re.compile('imdb=(.+?)&').findall(url)[0]
 		linkTrailer = ""
 	elif tipo == 'episodio':
-		fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 		linkTrailer = ""
 	else:
@@ -2131,7 +2128,7 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 	infoLabelsAux["playcount"] = playcount
 
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	liz.setProperty('fanart_image',fanart)
+	liz.setProperty('fanart_image',poster)
 	liz.setInfo( type="Video", infoLabels=infoLabelsAux)
 	
 	if not serieNome:
