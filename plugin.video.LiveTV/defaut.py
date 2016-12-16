@@ -57,6 +57,7 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0)
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
+__SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsv')
 __SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsvYXBpLw==')
 __SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5Lm1sLw==')
 
@@ -1178,6 +1179,7 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 	check_login = login2()
 	if check_login == True:
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
+		
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
@@ -1186,28 +1188,28 @@ def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 
 def menuFilmes(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todos os Filmes', __SITEFILMES__+'filmes', 111, 'filmes', iconimage, 1, poster=fanart)
-	addDir2('Filmes em Destaque',  __SITEFILMES__+'filmes/destaque', 111, 'filmes', iconimage, 1, poster=fanart)
-	addDir2('Filmes por Ano', __SITEFILMES__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, poster=fanart)
-	addDir2('Filmes por Genero', __SITEFILMES__+'filmes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, poster=fanart)
+	addDir2('Todos os Filmes', __SITEFILMES__+'filmes', 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes em Destaque',  __SITEFILMES__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes por Ano', __SITEFILMES__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Filmes por Genero', __SITEFILMES__+'filmes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
 def menuSeries(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todas as Series', __SITEFILMES__+'series', 123, 'series', iconimage, 1, poster=fanart)
-	addDir2('Series em Destaque',  __SITEFILMES__+'series/destaque', 123, 'series', iconimage, 1, poster=fanart)
-	addDir2('Series por Ano', __SITEFILMES__+'series/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, poster=fanart)
-	addDir2('Series por Genero', __SITEFILMES__+'series/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, poster=fanart)
+	addDir2('Todas as Series', __SITEFILMES__+'series', 123, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Series em Destaque',  __SITEFILMES__+'series/destaque', 123, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Series por Ano', __SITEFILMES__+'series/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Series por Genero', __SITEFILMES__+'series/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
 def menuAnimes(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todos os Animes', __SITEFILMES__+'animes', 123, 'animes', iconimage, 1, poster=fanart)
-	addDir2('Animes em Destaque',  __SITEFILMES__+'animes/destaque', 123, 'animes', iconimage, 1, poster=fanart)
-	addDir2('Animes por Ano', __SITEFILMES__+'animes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, poster=fanart)
-	addDir2('Animes por Genero', __SITEFILMES__+'animes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, poster=fanart)
+	addDir2('Todos os Animes', __SITEFILMES__+'animes', 123, 'animes', iconimage, 1, None, None, fanart)
+	addDir2('Animes em Destaque',  __SITEFILMES__+'animes/destaque', 123, 'animes', iconimage, 1, None, None, fanart)
+	addDir2('Animes por Ano', __SITEFILMES__+'animes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Animes por Genero', __SITEFILMES__+'animes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
@@ -1446,7 +1448,7 @@ def categorias(url):
 			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
 			fotooo = resultado['foto']
 			fanarttt = __SITEFILMES2__+resultado['background']
-			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
+			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'player', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
 		elif 'serie' in url or 'anime' in url:
 			cor = "white"
 			if 'serie' in url:
@@ -1495,9 +1497,6 @@ def categorias(url):
 def getYears(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	conteudo = abrir_url(__SITEFILMES2__+'filmes.php', header=headers)
-	if conteudo == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
-		return False
 	match = re.compile('\?anos=.+?\">\s+<img.+?>\s+(.+?)<\/').findall(conteudo)
 	
 	for i in match:
@@ -1549,7 +1548,7 @@ def anos(url):
 			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
 			fotooo = resultado['foto']
 			fanarttt = __SITEFILMES2__+resultado['background']
-			addVideo(nomeee, urlnoo, 111, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
+			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'player', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
 		elif 'serie' in url or 'anime' in url:
 			cor = "white"
 			if 'serie' in url:
@@ -1662,32 +1661,77 @@ def getStreamLegenda(resultado):
 	if resultado['URL'] != '':
 		i+=1
 		servidores.append(resultado['URL'])
-		titulos.append('Servidor #%s' % i)
+		if 'openload' in resultado['URL']:
+			nome = "OpenLoad"
+		elif 'vidzi' in resultado['URL']:
+			nome = 'Vidzi'
+		elif 'google' in resultado['URL'] or 'cloud.mail.ru' in resultado['URL']:
+			nome = 'MrPiracy'
+		elif 'uptostream.com' in resultado['URL']:
+			nome = 'UpToStream'
+		elif 'rapidvideo.com' in resultado['URL']:
+			nome = 'RapidVideo'
+		titulos.append('Servidor #%s: %s' % (i, nome))
 	if resultado['URL2'] != '':
 		i+=1
 		servidores.append(resultado['URL2'])
-		titulos.append('Servidor #%s' % i)
+		if 'openload' in resultado['URL2']:
+			nome = "OpenLoad"
+		elif 'vidzi' in resultado['URL2']:
+			nome = 'Vidzi'
+		elif 'google' in resultado['URL2'] or 'cloud.mail.ru' in resultado['URL2']:
+			nome = 'MrPiracy'
+		elif 'uptostream.com' in resultado['URL2']:
+			nome = 'UpToStream'
+		elif 'rapidvideo.com' in resultado['URL2']:
+			nome = 'RapidVideo'
+		titulos.append('Servidor #%s: %s' % (i, nome))
 	try:
 		if resultado['URL3'] != '':
 			i+=1
 			servidores.append(resultado['URL3'])
-			titulos.append('Servidor #%s' % i)
+			if 'openload' in resultado['URL3']:
+				nome = "OpenLoad"
+			elif 'vidzi' in resultado['URL3']:
+				nome = 'Vidzi'
+			elif 'google' in resultado['URL3'] or 'cloud.mail.ru' in resultado['URL3']:
+				nome = 'MrPiracy'
+			elif 'uptostream.com' in resultado['URL3']:
+				nome = 'UpToStream'
+			elif 'rapidvideo.com' in resultado['URL3']:
+				nome = 'RapidVideo'
+			titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
 		pass
 	try:
 		if resultado['URL4'] != '':
 			i+=1
 			servidores.append(resultado['URL4'])
-			titulos.append('Servidor #%s' % i)
+			if 'openload' in resultado['URL4']:
+				nome = "OpenLoad"
+			elif 'vidzi' in resultado['URL4']:
+				nome = 'Vidzi'
+			elif 'google' in resultado['URL4'] or 'cloud.mail.ru' in resultado['URL4']:
+				nome = 'MrPiracy'
+			elif 'uptostream.com' in resultado['URL4']:
+				nome = 'UpToStream'
+			elif 'rapidvideo.com' in resultado['URL4']:
+				nome = 'RapidVideo'
+			titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
 		pass
 	legenda = ''
-	if '://' in resultado['legenda']:
-		legenda = __SITEFILMES2__+'subs/%s.srt' % resultado['IMBD']
+	if '://' in resultado['legenda'] or resultado['legenda'] == '':
+		legenda = __SITEAPI__+'subs/%s.srt' % resultado['IMBD']
 	elif resultado['legenda'] != '':
 		if not '.srt' in resultado['legenda']:
 			resultado['legenda'] = resultado['legenda']+'.srt'
-		legenda = __SITEFILMES2__+'subs/%s' % resultado['legenda']
+		legenda = __SITEAPI__+'subs/%s' % resultado['legenda']
+	try:
+		if resultado['semlegenda'] == 1:
+			legenda = ''
+	except:
+		pass
 	ext_g = 'coiso'
 	if len(titulos) > 1:
 		servidor = xbmcgui.Dialog().select('Escolha o servidor', titulos)
@@ -1883,6 +1927,10 @@ def pesquisa(url,servuss):
 									urlnoo = urlchama[4]
 								elif(servuss == 'Servidor6'):
 									urlnoo = urlchama[5]
+								elif(servuss == 'Servidor7'):
+									urlnoo = urlchama[6]
+								elif(servuss == 'Servidor8'):
+									urlnoo = urlchama[7]
 								
 								if(urlnoo == 'nada'):
 									adiciona = False
@@ -2051,16 +2099,14 @@ def download(url,name, temporada,episodio,serieNome):
 			extensaoStream = ext_g
 
 		nomeStream = name+'.'+extensaoStream
-		
 		nomelegenda = ''
-		if '.vtt' in legenda:
+		Downloader.Downloader().download(os.path.join(folder.decode("utf-8"), nomeStream), stream, name)
+		
+		if legendasOn:
 			legendaAux = clean(legenda.split('/')[-1])
 			extensaoLegenda = clean(legendaAux.split('.')[1])
 			nomeLegenda = name+'.'+extensaoLegenda
-			legendasOn = True
-		Downloader.Downloader().download(os.path.join(folder.decode("utf-8"), nomeStream), stream, name)
-		if legendasOn:
-			download_legendas(legenda, os.path.join(folder, nomelegenda))
+			download_legendas(legenda, os.path.join(folder, nomeLegenda))
 
 def download_legendas(url,path):
     contents = abrir_url(url)
@@ -2102,9 +2148,11 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 		if __ADDON__.getSetting('trailer-filmes') == 'true':
 			try:
-				idYoutube=trailer.split('=')
+				idYoutube = trailer.split('?v=')[-1].split('/')[-1].split('?')[0].split('&')[0]
+				linkTrailer = 'plugin://plugin.video.youtube/play/?video_id='+idYoutube
+				#idYoutube=trailer.split('=')
 				#__ALERTA__('Live!t TV', 'ID: '+idYoutube[1])
-				linkTrailer = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+idYoutube[1]
+				#linkTrailer = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+idYoutube[1]
 				#linkTrailer = trailer
 			except:
 				linkTrailer = ''
@@ -2347,9 +2395,9 @@ def play_canal(arg, icon, nome):
 def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,poster=None,visto=False):
 	if infoLabels: infoLabelsAux = infoLabels
 	else: infoLabelsAux = {'Title': name}
-
-	if poster: posterAux = poster
-	else: posterAux = iconimage
+	fanart = ''
+	if poster: fanart = poster
+	else: fanart = iconimage
 	
 	try:
 		name = name.encode('utf-8')
@@ -2360,16 +2408,16 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 	
 	ok=True
 
-	fanart = __FANART__
+	#fanart = __FANART__
 
 	if tipo == 'filme':
-		fanart = posterAux
+		#fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 	elif tipo == 'serie':
-		fanart = posterAux
+		#fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
 	elif tipo == 'episodio':
-		fanart = posterAux
+		#fanart = posterAux
 		xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
 	else:
 		if name != 'Refresh':
@@ -2380,9 +2428,10 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 	
 	infoLabelsAux["overlay"] = overlay
 	infoLabelsAux["playcount"] = playcount
-		
+	
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
+	liz.setArt({'fanart': fanart})
 	liz.setInfo( type="Video", infoLabels=infoLabelsAux )
 
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -2600,8 +2649,8 @@ elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
-elif mode==22: menuSeries()
-elif mode==23: menuFilmes()
+#elif mode==22: menuSeries()
+#elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
 elif mode==105: play_mult_canal(url, iconimage, name)
 elif mode==106: play_canal(url, iconimage, name)
