@@ -70,7 +70,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.LiveTV" name="Live!t TV" provider-name="Live!t TV" version="7.8.8">
+<addon id="plugin.video.LiveTV" name="Live!t" provider-name="Live!t" version="7.9.3">
   <requires>
     <import addon="xbmc.python" version="2.14.0"/>
 	<import addon="script.module.urlresolver" version="1.0.0"/>
@@ -82,10 +82,10 @@
     <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Live!t TV</summary>
-    <description lang="en">Addon para todos os membros do grupo Live!t TV.
+    <summary lang="en">Live!t</summary>
+    <description lang="en">Addon para todos os membros do grupo Live!t.
 	Espero que gostem e disfrutem.
-	Realizado por: Administrador (J.R).
+	Realizado por: Administrador Live!t.
 	Sempre Atualizado 24 horas por dia.
 
 	Os programadores deste addon nada tem a ver com os links disponibilizados.
@@ -94,11 +94,19 @@
 	</description>
 	<language>pt</language>
     <platform>all</platform>
-    <license></license>
-    <forum>http://www.pcteckserv.com/Forum/</forum>
-    <website>https://www.facebook.com/groups/LIVEITTV/</website>
+    <license>Live!t 2.0</license>
+    <forum>https://www.facebook.com/groups/LIVEITTV/</forum>
+    <website>https://www.facebook.com/liveittv/</website>
     <email>liveitkodi@gmail.com</email>
-    <source></source>
+    <source>https://github.com/rebolinho/liveit.repository/tree/master/plugin.video.LiveTV</source>
+	<assets>
+		   <icon>resources/img/v2/icon.png</icon>
+		   <fanart>resources/img/v2/fanart.png</fanart>
+		   <screenshot>resources/img/v2/filmes.png</screenshot>
+		   <screenshot>resources/img/v2/series.png</screenshot>
+		   <screenshot>resources/img/v2/pesquisa.png</screenshot>
+		   <screenshot>resources/img/v2/retroceder.png</screenshot>
+   </assets>
   </extension>
 </addon>
 
