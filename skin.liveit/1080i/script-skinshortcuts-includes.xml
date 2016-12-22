@@ -1,0 +1,1456 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<includes>
+	<include name="skinshortcuts-mainmenu" />
+	<include />
+	<include name="skinshortcuts-submenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Credênciais[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-credenciais-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Estado[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-estado-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Pesquisa[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-pesquisa-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=7000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Instalador[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-instalador-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</property>
+			<property name="list">plugin://plugin.program.iliveit/?url=http&amp;mode=4</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Novidades[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-novidades-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>Live!t-TV</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.LiveTV</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x2)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.exodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</property>
+			<property name="list">plugin://plugin.video.exodus</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x2)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[24001]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">24001</property>
+			<property name="defaultID">24001</property>
+			<onclick>ActivateWindow(AddonBrowser)</onclick>
+			<property name="path">ActivateWindow(AddonBrowser)</property>
+			<property name="list">AddonBrowser</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[7]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[130]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">130</property>
+			<property name="defaultID">130</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Cache</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limparcache</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=5000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Tudo</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limpartudo</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=6000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13016]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13016</property>
+			<property name="defaultID">13016</property>
+			<visible>[System.CanPowerDown] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x6)</visible>
+			<onclick>Powerdown()</onclick>
+			<property name="path">Powerdown()</property>
+			<property name="list">Powerdown()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13010]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13010</property>
+			<property name="defaultID">13010</property>
+			<visible>[System.CanHibernate] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x6)</visible>
+			<onclick>Hibernate()</onclick>
+			<property name="path">Hibernate()</property>
+			<property name="list">Hibernate()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13009]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13009</property>
+			<property name="defaultID">13009</property>
+			<visible>[System.ShowExitButton] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x6)</visible>
+			<onclick>Quit</onclick>
+			<property name="path">Quit</property>
+			<property name="list">Quit</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">7</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movies&amp;url=featured</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x7)</visible>
+			<property name="group">x7</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canais</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>Noticias</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">noticias</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>Desporto</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">desporto</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>KIDS</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">kids</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais de Filmes</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canaisdefilmes</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>Documentarios</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">documentarios</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>Musica</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">musica</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">10</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movieNavigator</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x10)</visible>
+			<property name="group">x10</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">11</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x11)</visible>
+			<property name="group">x11</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Programas TV[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-programastv-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Praias[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-praias-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Animes[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-animes-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</onclick>
+			<property name="path">ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Container(9000).ListItem.Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Credênciais[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-credenciais-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Estado[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-estado-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Pesquisa[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-pesquisa-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=7000</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Instalador[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-instalador-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</property>
+			<property name="list">plugin://plugin.program.iliveit/?url=http&amp;mode=4</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Novidades[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-novidades-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Credênciais[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-credenciais-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=3000&amp;buildtipo=Adulto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Estado[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-estado-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4000&amp;buildtipo=Adulto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Pesquisa[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-pesquisa-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=7000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=7000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Instalador[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-instalador-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.program.iliveit/?url=http&amp;mode=4",return)</property>
+			<property name="list">plugin://plugin.program.iliveit/?url=http&amp;mode=4</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>[COLORdeepskyblue]Novidades[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-novidades-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Novidades</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x1)</visible>
+			<property name="group">x1</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x2">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>Live!t-TV</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.LiveTV</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.exodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</property>
+			<property name="list">plugin://plugin.video.exodus</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x2">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>Live!t-TV</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.LiveTV</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x2)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">plugin.video.exodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus",return)</property>
+			<property name="list">plugin://plugin.video.exodus</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x2)</visible>
+			<property name="group">x2</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x3">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x3">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x4">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x4">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x5">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[24001]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">24001</property>
+			<property name="defaultID">24001</property>
+			<onclick>ActivateWindow(AddonBrowser)</onclick>
+			<property name="path">ActivateWindow(AddonBrowser)</property>
+			<property name="list">AddonBrowser</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[7]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[130]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">130</property>
+			<property name="defaultID">130</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Cache</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limparcache</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=5000</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Tudo</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limpartudo</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=6000</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x5">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[24001]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">24001</property>
+			<property name="defaultID">24001</property>
+			<onclick>ActivateWindow(AddonBrowser)</onclick>
+			<property name="path">ActivateWindow(AddonBrowser)</property>
+			<property name="list">AddonBrowser</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[7]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">5</property>
+			<label>$LOCALIZE[130]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">130</property>
+			<property name="defaultID">130</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Cache</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limparcache</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=5000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=5000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">5</property>
+			<label>Limpar Tudo</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">limpartudo</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=6000",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=6000</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x5)</visible>
+			<property name="group">x5</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x6">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13016]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13016</property>
+			<property name="defaultID">13016</property>
+			<visible>System.CanPowerDown</visible>
+			<onclick>Powerdown()</onclick>
+			<property name="path">Powerdown()</property>
+			<property name="list">Powerdown()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13010]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13010</property>
+			<property name="defaultID">13010</property>
+			<visible>System.CanHibernate</visible>
+			<onclick>Hibernate()</onclick>
+			<property name="path">Hibernate()</property>
+			<property name="list">Hibernate()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13009]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13009</property>
+			<property name="defaultID">13009</property>
+			<visible>System.ShowExitButton</visible>
+			<onclick>Quit</onclick>
+			<property name="path">Quit</property>
+			<property name="list">Quit</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x6">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13016]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13016</property>
+			<property name="defaultID">13016</property>
+			<visible>[System.CanPowerDown] + StringCompare(Window(10000).Property(submenuVisibility),x6)</visible>
+			<onclick>Powerdown()</onclick>
+			<property name="path">Powerdown()</property>
+			<property name="list">Powerdown()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13010]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13010</property>
+			<property name="defaultID">13010</property>
+			<visible>[System.CanHibernate] + StringCompare(Window(10000).Property(submenuVisibility),x6)</visible>
+			<onclick>Hibernate()</onclick>
+			<property name="path">Hibernate()</property>
+			<property name="list">Hibernate()</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13009]</label>
+			<label2 />
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">13009</property>
+			<property name="defaultID">13009</property>
+			<visible>[System.ShowExitButton] + StringCompare(Window(10000).Property(submenuVisibility),x6)</visible>
+			<onclick>Quit</onclick>
+			<property name="path">Quit</property>
+			<property name="list">Quit</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x6</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x7">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">7</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movies&amp;url=featured</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x7</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x7">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">7</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movies&amp;url=featured",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movies&amp;url=featured</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x7)</visible>
+			<property name="group">x7</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x8">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canais</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>Noticias</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">noticias</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>Desporto</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">desporto</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>KIDS</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">kids</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais de Filmes</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canaisdefilmes</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>Documentarios</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">documentarios</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>Musica</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">musica</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x8">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canais</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Canal</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>Noticias</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">noticias</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Noticia</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>Desporto</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">desporto</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Desporto</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>KIDS</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">kids</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Crianca</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>Canais de Filmes</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">canaisdefilmes</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Filme</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>Documentarios</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">documentarios</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Documentario</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>Musica</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">musica</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=Musica</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x8)</visible>
+			<property name="group">x8</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x9">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x9">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x10">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">10</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movieNavigator</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x10</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x10">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">10</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=movieNavigator",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=movieNavigator</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x10)</visible>
+			<property name="group">x10</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x11">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">11</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x11</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x11">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">11</property>
+			<label>Ver no Exodus</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">vernoexodus</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere",return)</property>
+			<property name="list">plugin://plugin.video.exodus/?action=tvshows&amp;url=premiere</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x11)</visible>
+			<property name="group">x11</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x12">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Programas TV[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-programastv-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Praias[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-praias-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Animes[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-animes-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</onclick>
+			<property name="path">ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive</property>
+			<visible>StringCompare(System.ProfileName,Master user)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-alt-x12">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Programas TV[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-programastv-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fwww.pcteckserv.com%2FGrupoKodi%2FAddon%2FFicheiros%2Fproteleaddongr.txt&amp;mode=1&amp;name=Programas+e+Telenovelas+TV&amp;senha=None&amp;estilo=Miniatura&amp;tipologia=ProgramasTV&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=http://178.62.95.238:8008/&amp;loluser=joserebolo&amp;lolpass=51113A</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Praias[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-praias-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=",return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http%3A%2F%2Fliveitkodi.com%2FAddon%2FFicheiros%2Fpraiasaddonservidor1.txt&amp;mode=2&amp;name=Praias+PT&amp;senha=None&amp;estilo=Lista&amp;tipologia=Praia&amp;tipo_user=Administrador&amp;servidor_user=Servidor1&amp;data_user=&amp;lolserv=&amp;loluser=&amp;lolpass=</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">12</property>
+			<label>[COLORdeepskyblue]Animes[/COLOR]</label>
+			<label2>Custom item</label2>
+			<icon>DefaultShortcut.png</icon>
+			<thumb />
+			<property name="labelID">colordeepskyblue-animes-color</property>
+			<property name="defaultID" />
+			<onclick>ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</onclick>
+			<property name="path">ActivateWindow(10025,plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive,return)</property>
+			<property name="list">plugin://plugin.video.LiveTV/?url=http&amp;mode=4&amp;buildtipo=AnimesLive</property>
+			<visible>[StringCompare(System.ProfileName,Master user)] + StringCompare(Window(10000).Property(submenuVisibility),x12)</visible>
+			<property name="group">x12</property>
+			<property name="isSubmenu">True</property>
+		</item>
+	</include>
+	<include name="skinshortcuts-group-x13">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x13">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x101">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x101">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x202">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x202">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x303">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x303">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x404">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x404">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x505">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x505">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-x606">
+		<description>No items</description>
+	</include>
+	<include name="skinshortcuts-group-alt-x606">
+		<description>No items</description>
+	</include>
+</includes>

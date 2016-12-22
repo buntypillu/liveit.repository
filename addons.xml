@@ -188,4 +188,95 @@ Oorspronkelijk ontwikkeld door Andrew 'drewzh' Higginson (xbmcfilecleaner@drewzh
     <description lang="en">Use this addon to play F4m v1 and v2 streams</description>
   </extension>
 </addon>
+
+<addon
+  id="skin.liveit"
+  version="1.0.1"
+  name="Live !t"
+  provider-name="Jose Rebolo e SCasaleiro">
+	<requires>
+		<import addon="xbmc.gui" version="5.10.0"/>
+		<import addon="script.grab.fanart" version="0.12.8"/>
+		<import addon="script.skinshortcuts" version="0.4.5"/>
+		<import addon="service.library.data.provider" version="0.0.7"/>
+		<import addon="resource.images.studios.white" version="0.0.1"/>
+		<import addon="resource.images.recordlabels.white" version="0.0.1"/>
+		<import addon="script.image.resource.select" version="0.0.5"/>
+	</requires>
+	<extension
+	  point="xbmc.gui.skin"
+	  debugging="false"
+	  effectslowdown="0.75">
+		<res width="1920" height="1080" aspect="16:9" default="true" folder="1080i" />
+		<res width="2560" height="1080" aspect="21:9" default="false" folder="21x9" />
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="de">Live !t</summary>
+		<summary lang="el">Live !t</summary>
+		<summary lang="en">Live !t</summary>
+		<summary lang="en_AU">Live !t</summary>
+		<summary lang="en_NZ">Live !t</summary>
+		<summary lang="en_US">Live !t</summary>
+		<summary lang="es">Live !t</summary>
+		<summary lang="fi">Live !t</summary>
+		<summary lang="fr">Live !t</summary>
+		<summary lang="fr_CA">Live !t</summary>
+		<summary lang="gl">Live !t</summary>
+		<summary lang="he">Live !t</summary>
+		<summary lang="hu">Live !t</summary>
+		<summary lang="is">Live !t</summary>
+		<summary lang="it">Live !t</summary>
+		<summary lang="ko">Live !t</summary>
+		<summary lang="lt">Live !t</summary>
+		<summary lang="ms">Live !t</summary>
+		<summary lang="nl">Live !t</summary>
+		<summary lang="no">Live !t</summary>
+		<summary lang="pl">Live !t</summary>
+		<summary lang="pt">Live !t</summary>
+		<summary lang="pt_BR">Live !t</summary>
+		<summary lang="ro">Live !t</summary>
+		<summary lang="ru">Live !t</summary>
+		<summary lang="sk">Live !t</summary>
+		<summary lang="sv">Live !t</summary>
+		<summary lang="th">Live !t</summary>
+		<summary lang="vi">Live !t</summary>
+		<summary lang="zh">Live !t</summary>
+		<description lang="de">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="el">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="en">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="en_AU">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="en_NZ">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="en_US">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="es">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="fi">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="fr">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="fr_CA">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="he">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="hr">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="hu">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="is">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="it">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="ko">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="lt">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="ms">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="nl">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="no">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="pl">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="pt">Live !t skin - baseada na skin Aeon Nox 5, redesenhada para apresentar um toque moderno e funcional.</description>
+		<description lang="pt_BR">Live !t skin - baseada na skin Aeon Nox 5, redesenhada para apresentar um toque moderno e funcional.</description>
+		<description lang="ru">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="sk">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="sv">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="th">Live !t skin - based on Aeon Nox 5.</description>
+		<description lang="vi">Live !t skin - based on Aeon Nox 5.</description>
+		<platform>all</platform>
+		<license>Live!t 2.0</license>
+		<forum>https://www.facebook.com/liveittv/</forum>
+		<assets>
+			   <icon>resources/icon.png</icon>
+			   <fanart>resources/fanart.jpg</fanart>
+			   <screenshot>resources/default_settings.jpg</screenshot>
+	   </assets>
+	</extension>
+</addon>
 </addons>
