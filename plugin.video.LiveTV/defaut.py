@@ -1666,7 +1666,7 @@ def getStreamLegenda(resultado):
 		elif 'vidzi' in resultado['URL']:
 			nome = 'Vidzi'
 		elif 'google' in resultado['URL'] or 'cloud.mail.ru' in resultado['URL']:
-			nome = 'MrPiracy'
+			nome = 'Live!t-TV'
 		elif 'uptostream.com' in resultado['URL']:
 			nome = 'UpToStream'
 		elif 'rapidvideo.com' in resultado['URL']:
@@ -1680,7 +1680,7 @@ def getStreamLegenda(resultado):
 		elif 'vidzi' in resultado['URL2']:
 			nome = 'Vidzi'
 		elif 'google' in resultado['URL2'] or 'cloud.mail.ru' in resultado['URL2']:
-			nome = 'MrPiracy'
+			nome = 'Live!t-TV'
 		elif 'uptostream.com' in resultado['URL2']:
 			nome = 'UpToStream'
 		elif 'rapidvideo.com' in resultado['URL2']:
@@ -1695,7 +1695,7 @@ def getStreamLegenda(resultado):
 			elif 'vidzi' in resultado['URL3']:
 				nome = 'Vidzi'
 			elif 'google' in resultado['URL3'] or 'cloud.mail.ru' in resultado['URL3']:
-				nome = 'MrPiracy'
+				nome = 'Live!t-TV'
 			elif 'uptostream.com' in resultado['URL3']:
 				nome = 'UpToStream'
 			elif 'rapidvideo.com' in resultado['URL3']:
@@ -1712,7 +1712,7 @@ def getStreamLegenda(resultado):
 			elif 'vidzi' in resultado['URL4']:
 				nome = 'Vidzi'
 			elif 'google' in resultado['URL4'] or 'cloud.mail.ru' in resultado['URL4']:
-				nome = 'MrPiracy'
+				nome = 'Live!t-TV'
 			elif 'uptostream.com' in resultado['URL4']:
 				nome = 'UpToStream'
 			elif 'rapidvideo.com' in resultado['URL4']:
@@ -1721,6 +1721,7 @@ def getStreamLegenda(resultado):
 	except:
 		pass
 	legenda = ''
+	stream = ''
 	if '://' in resultado['legenda'] or resultado['legenda'] == '':
 		legenda = __SITEAPI__+'subs/%s.srt' % resultado['IMBD']
 	elif resultado['legenda'] != '':
@@ -1982,8 +1983,11 @@ def pesquisa(url,servuss):
 					except:
 						nome = i['nome_ingles'].encode('utf-8')
 					pt = ''
+					br = ''
+					if 'Brasileiro' in categoria:
+						br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
 					if 'Portu' in categoria:
-						pt = '[B]PT: [/B]'
+						pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 					cor = "white"
 					if 'http' not in i['foto']:
 						i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
@@ -2004,11 +2008,14 @@ def pesquisa(url,servuss):
 						categoria += ','+i['categoria2']
 					if i['categoria3'] != '':
 						categoria += ','+i['categoria3']
+					pt = ''
+					br = ''
+					if 'Brasileiro' in categoria:
+						br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
 					if 'Portu' in categoria:
-						pt = '[B]PT: [/B]'
+						pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 					infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
 					cor = "white"
-					pt=''
 					if 'PT' in i['IMBD']:
 						i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
 						pt = '[B]PT: [/B]'
