@@ -1786,6 +1786,7 @@ def pesquisa(url,servuss):
 	net.set_cookies(__COOKIE_FILE__)
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	tabela = ''
+	strPesquisa = ''
 	if 'filmes' in url:
 		ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
 		tipo = 0
@@ -1841,7 +1842,11 @@ def pesquisa(url,servuss):
 				traceback.print_exc()
 				print "Não gravou o conteudo em %s" % ficheiro
 			
-			resultado = abrir_url(url,post=json.dumps(dados), header=headers)
+			if strPesquisa == '':
+				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
+				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+			else:
+				resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	else:
 		if xbmcvfs.exists(ficheiro):
 			f = open(ficheiro, "r")
@@ -1850,203 +1855,204 @@ def pesquisa(url,servuss):
 		
 		resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	
-	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
-		return False
-	
-	if tipo == 3 or  tipo == 4 or tipo == 5:
-		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-		if strPesquisa == '':
-			__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
-			addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
-		else:
-			dados = {'searchBox': strPesquisa, 'tabela': tabela}
-			codigo_fonte = net.http_POST(url, form_data=dados, headers=__HEADERS__).content.decode('latin-1').encode("utf-8")
-			informa = {
-					'servidor' : {
-						'nome': '',
-						'serv': ''
-					},
-					'servidores': [],
-					'canais': []
-				}
-			sucesso = 'no'
-			elems = ET.fromstring(codigo_fonte)
-			
-			for childee in elems:
-				if(childee.tag == 'servidores'):
-					servidor = {
-						'nome': '',
-						'link': ''
-					}
-					for gg in childee:	
-						if(gg.tag == 'Nome'):
-							servidor['nome'] = gg.text	
-						elif(gg.tag == 'Servidor'):
-							servidor['link'] = gg.text		
-						informa['servidores'].append(servidor)
-				
-			for servvvv in informa['servidores']:
-				if(servvvv['nome'] == servuss):
-					informa['servidor']['nome'] = servvvv['nome']
-					informa['servidor']['serv'] = servvvv['link']			
-			
-			for child in elems:
-				if(child.tag == 'sucesso'):
-					sucesso = child.text
-				elif(child.tag == 'canais'):
-					canal = {
-						'nome': '',
-						'logo': '',
-						'link': '',
-						'grupo': '',
-						'nomeid': '',
-						'idnovo': ''
-					}
-					adiciona = True
-					pagante = False
-					for g in child:
-						adiciona = True
-						if(g.tag == 'Nome'):
-							canal['nome'] = g.text
-						elif(g.tag == 'Imagem'):
-							canal['logo'] = g.text
-						elif(g.tag == 'Pagante'):
-							if(g.text == 'true'):
-								pagante = True
-						elif(g.tag == 'Url'):
-							urlchama = g.text.split(';')
-							urlnoo = g.text
-							try:
-								if(servuss == 'Servidor1'):
-									urlnoo = urlchama[0]
-								elif(servuss == 'Servidor2'):
-									urlnoo = urlchama[1]
-								elif(servuss == 'Servidor3'):
-									urlnoo = urlchama[2]
-								elif(servuss == 'Servidor4'):
-									urlnoo = urlchama[3]
-								elif(servuss == 'Servidor5'):
-									urlnoo = urlchama[4]
-								elif(servuss == 'Servidor6'):
-									urlnoo = urlchama[5]
-								elif(servuss == 'Servidor7'):
-									urlnoo = urlchama[6]
-								elif(servuss == 'Servidor8'):
-									urlnoo = urlchama[7]
-								
-								if(urlnoo == 'nada'):
-									adiciona = False
-								else:
-									if pagante:
-										canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
-									else:
-										canal['link'] = urlnoo
-							except:
-								canal['link'] = g.text
-						elif(g.tag == 'Grupo'):
-							canal['grupo'] = g.text
-						elif(g.tag == 'NomeID'):
-							canal['nomeid'] = g.text
-						elif(g.tag == 'ID'):
-							canal['idnovo'] = g.text
-					if adiciona:
-						informa['canais'].append(canal)
-
-			if sucesso == 'yes':
+	if strPesquisa != '':
+		if resultado == 'DNS':
+			__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+			return False
+		
+		if tipo == 3 or  tipo == 4 or tipo == 5:
+			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+			if strPesquisa == '':
+				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
 				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
-				for cann in informa['canais']:
-					nomee = cann['nome']
-					img = cann['logo']
-					rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
-					grup = cann['grupo']
-					id_it = cann['nomeid']
-					id_p = cann['idnovo']
-					srt_f = ''
-					descri = ''
-					
-					addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
-				
-				vista_Canais()
-			
-	else:
-		resultado = json.loads(resultado)
-		if resultado['data'] != '':
-			if tipo == 0:
-				for i in resultado['data']:
-					categoria = i['categoria1']
-					if i['categoria2'] != '':
-						categoria += ','+i['categoria2']
-					if i['categoria3'] != '':
-						categoria += ','+i['categoria3']
-					infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'IMDBNumber': i['IMBD'] }				
-					try:
-						nome = i['nome_ingles'].decode('utf-8')
-					except:
-						nome = i['nome_ingles'].encode('utf-8')
-					pt = ''
-					br = ''
-					if 'Brasileiro' in categoria:
-						br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
-					if 'Portu' in categoria:
-						pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
-					cor = "white"
-					if 'http' not in i['foto']:
-						i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
-					if 'PT' in i['IMBD']:
-						i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
-						pt = '[B]PT: [/B]'
-					visto = False
-					
-					nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
-					urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
-					fotooo = i['foto']
-					fanarttt = __SITEFILMES2__+i['background']
-					addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
-			elif tipo == 1 or tipo == 2:
-				for i in resultado['data']:
-					categoria = i['categoria1']
-					if i['categoria2'] != '':
-						categoria += ','+i['categoria2']
-					if i['categoria3'] != '':
-						categoria += ','+i['categoria3']
-					pt = ''
-					br = ''
-					if 'Brasileiro' in categoria:
-						br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
-					if 'Portu' in categoria:
-						pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
-					infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
-					cor = "white"
-					if 'PT' in i['IMBD']:
-						i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
-						pt = '[B]PT: [/B]'
-					try:
-						nome = i['nome_ingles'].decode('utf-8')
-					except:
-						nome = i['nome_ingles'].encode('utf-8')
-					if 'http' not in i['foto']:
-						i['foto'] =__SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
-					if tipo == 1:
-						link = 'serie'
-					elif tipo == 2:
-						link = 'anime'
-					visto=False	
-					nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
-					urlnoo = __SITEFILMES__+link+'/'+str(i['id_video'])
-					fotooo = i['foto']
-					fanarttt = __SITEFILMES2__+i['background']
-					addDir2(nomeee, urlnoo, 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
-
-			current = resultado['meta']['pagination']['current_page']
-			total = resultado['meta']['pagination']['total_pages']
-			try: proximo = resultado['meta']['pagination']['links']['next']
-			except: pass 
-			if current < total:
-				addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 120, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
 			else:
-				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-			vista_filmesSeries()
+				dados = {'searchBox': strPesquisa, 'tabela': tabela}
+				codigo_fonte = net.http_POST(url, form_data=dados, headers=__HEADERS__).content.decode('latin-1').encode("utf-8")
+				informa = {
+						'servidor' : {
+							'nome': '',
+							'serv': ''
+						},
+						'servidores': [],
+						'canais': []
+					}
+				sucesso = 'no'
+				elems = ET.fromstring(codigo_fonte)
+				
+				for childee in elems:
+					if(childee.tag == 'servidores'):
+						servidor = {
+							'nome': '',
+							'link': ''
+						}
+						for gg in childee:	
+							if(gg.tag == 'Nome'):
+								servidor['nome'] = gg.text	
+							elif(gg.tag == 'Servidor'):
+								servidor['link'] = gg.text		
+							informa['servidores'].append(servidor)
+					
+				for servvvv in informa['servidores']:
+					if(servvvv['nome'] == servuss):
+						informa['servidor']['nome'] = servvvv['nome']
+						informa['servidor']['serv'] = servvvv['link']			
+				
+				for child in elems:
+					if(child.tag == 'sucesso'):
+						sucesso = child.text
+					elif(child.tag == 'canais'):
+						canal = {
+							'nome': '',
+							'logo': '',
+							'link': '',
+							'grupo': '',
+							'nomeid': '',
+							'idnovo': ''
+						}
+						adiciona = True
+						pagante = False
+						for g in child:
+							adiciona = True
+							if(g.tag == 'Nome'):
+								canal['nome'] = g.text
+							elif(g.tag == 'Imagem'):
+								canal['logo'] = g.text
+							elif(g.tag == 'Pagante'):
+								if(g.text == 'true'):
+									pagante = True
+							elif(g.tag == 'Url'):
+								urlchama = g.text.split(';')
+								urlnoo = g.text
+								try:
+									if(servuss == 'Servidor1'):
+										urlnoo = urlchama[0]
+									elif(servuss == 'Servidor2'):
+										urlnoo = urlchama[1]
+									elif(servuss == 'Servidor3'):
+										urlnoo = urlchama[2]
+									elif(servuss == 'Servidor4'):
+										urlnoo = urlchama[3]
+									elif(servuss == 'Servidor5'):
+										urlnoo = urlchama[4]
+									elif(servuss == 'Servidor6'):
+										urlnoo = urlchama[5]
+									elif(servuss == 'Servidor7'):
+										urlnoo = urlchama[6]
+									elif(servuss == 'Servidor8'):
+										urlnoo = urlchama[7]
+									
+									if(urlnoo == 'nada'):
+										adiciona = False
+									else:
+										if pagante:
+											canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
+										else:
+											canal['link'] = urlnoo
+								except:
+									canal['link'] = g.text
+							elif(g.tag == 'Grupo'):
+								canal['grupo'] = g.text
+							elif(g.tag == 'NomeID'):
+								canal['nomeid'] = g.text
+							elif(g.tag == 'ID'):
+								canal['idnovo'] = g.text
+						if adiciona:
+							informa['canais'].append(canal)
+
+				if sucesso == 'yes':
+					addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+					for cann in informa['canais']:
+						nomee = cann['nome']
+						img = cann['logo']
+						rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
+						grup = cann['grupo']
+						id_it = cann['nomeid']
+						id_p = cann['idnovo']
+						srt_f = ''
+						descri = ''
+						
+						addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
+					
+					vista_Canais()
+				
+		else:
+			resultado = json.loads(resultado)
+			if resultado['data'] != '':
+				if tipo == 0:
+					for i in resultado['data']:
+						categoria = i['categoria1']
+						if i['categoria2'] != '':
+							categoria += ','+i['categoria2']
+						if i['categoria3'] != '':
+							categoria += ','+i['categoria3']
+						infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'IMDBNumber': i['IMBD'] }				
+						try:
+							nome = i['nome_ingles'].decode('utf-8')
+						except:
+							nome = i['nome_ingles'].encode('utf-8')
+						pt = ''
+						br = ''
+						if 'Brasileiro' in categoria:
+							br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
+						if 'Portu' in categoria:
+							pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+						cor = "white"
+						if 'http' not in i['foto']:
+							i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+						if 'PT' in i['IMBD']:
+							i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+							pt = '[B]PT: [/B]'
+						visto = False
+						
+						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
+						urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
+						fotooo = i['foto']
+						fanarttt = __SITEFILMES2__+i['background']
+						addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
+				elif tipo == 1 or tipo == 2:
+					for i in resultado['data']:
+						categoria = i['categoria1']
+						if i['categoria2'] != '':
+							categoria += ','+i['categoria2']
+						if i['categoria3'] != '':
+							categoria += ','+i['categoria3']
+						pt = ''
+						br = ''
+						if 'Brasileiro' in categoria:
+							br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
+						if 'Portu' in categoria:
+							pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+						infoLabels = {'Title': i['nome_ingles'], 'Year': i['ano'], 'Genre': categoria, 'Plot': i['descricao_video'], 'Cast':i['atores'].split(','), 'Trailer': i['trailer'], 'Director': i['diretor'], 'Rating': i['imdbRating'], 'Code': i['IMBD'] }
+						cor = "white"
+						if 'PT' in i['IMBD']:
+							i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+							pt = '[B]PT: [/B]'
+						try:
+							nome = i['nome_ingles'].decode('utf-8')
+						except:
+							nome = i['nome_ingles'].encode('utf-8')
+						if 'http' not in i['foto']:
+							i['foto'] =__SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+						if tipo == 1:
+							link = 'serie'
+						elif tipo == 2:
+							link = 'anime'
+						visto=False	
+						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
+						urlnoo = __SITEFILMES__+link+'/'+str(i['id_video'])
+						fotooo = i['foto']
+						fanarttt = __SITEFILMES2__+i['background']
+						addDir2(nomeee, urlnoo, 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
+
+				current = resultado['meta']['pagination']['current_page']
+				total = resultado['meta']['pagination']['total_pages']
+				try: proximo = resultado['meta']['pagination']['links']['next']
+				except: pass 
+				if current < total:
+					addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 120, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+				else:
+					xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+				vista_filmesSeries()
 
 
 def download(url,name, temporada,episodio,serieNome):
