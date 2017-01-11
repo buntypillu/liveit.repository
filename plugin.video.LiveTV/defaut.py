@@ -1840,13 +1840,14 @@ def pesquisa(url,servuss):
 			except:
 				traceback.print_exc()
 				print "Não gravou o conteudo em %s" % ficheiro
-
+			
 			resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	else:
 		if xbmcvfs.exists(ficheiro):
 			f = open(ficheiro, "r")
 			texto = f.read()
 		dados = {'pesquisa': texto}
+		
 		resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	
 	if resultado == 'DNS':
@@ -1854,6 +1855,7 @@ def pesquisa(url,servuss):
 		return False
 	
 	if tipo == 3 or  tipo == 4 or tipo == 5:
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 		if strPesquisa == '':
 			__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
 			addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
@@ -2042,7 +2044,8 @@ def pesquisa(url,servuss):
 			except: pass 
 			if current < total:
 				addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 120, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
-			
+			else:
+				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 			vista_filmesSeries()
 
 
@@ -2666,7 +2669,7 @@ elif mode==111: filmes(url, pagina)
 elif mode==123: series(url)
 elif mode==118: getGeneros(url)
 elif mode==119: getYears(url)
-elif mode==120: pesquisa(url,servidor_user)
+#elif mode==120: pesquisa(url,servidor_user)
 elif mode==121: anos(url)
 elif mode==122: categorias(url)
 elif mode==113: player(name, url, iconimage, temporada, episodio, serieNome)
@@ -2681,12 +2684,20 @@ elif mode==3334: PlayUrl(name,url,iconimage)
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
-elif mode==7000: loginPesquisa()
+#elif mode==7000: loginPesquisa()
 elif mode==8000: buildLiveit(url)
 
 
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 else:
-	if mode !=7000 and  mode !=120 and  mode !=3333: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-	else: xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+	if mode !=7000 and  mode !=120 and  mode !=3333: 
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	elif mode == 120 or mode == 7000:
+		pesquisa(url,servidor_user)
+		#if mode = 120:
+		#	pesquisa(url,servidor_user)
+		#else:
+		#	loginPesquisa()
+	else: 
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
