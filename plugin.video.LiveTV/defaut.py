@@ -1669,7 +1669,7 @@ def getStreamLegenda(resultado):
 			nome = 'Live!t-TV'
 		elif 'uptostream.com' in resultado['URL']:
 			nome = 'UpToStream'
-		elif 'rapidvideo.com' in resultado['URL']:
+		elif 'rapidvideo.com' in resultado['URL'] or 'raptu' in resultado['URL']:
 			nome = 'RapidVideo'
 		titulos.append('Servidor #%s: %s' % (i, nome))
 	if resultado['URL2'] != '':
@@ -1683,7 +1683,7 @@ def getStreamLegenda(resultado):
 			nome = 'Live!t-TV'
 		elif 'uptostream.com' in resultado['URL2']:
 			nome = 'UpToStream'
-		elif 'rapidvideo.com' in resultado['URL2']:
+		elif 'rapidvideo.com' in resultado['URL2'] or 'raptu' in resultado['URL2']:
 			nome = 'RapidVideo'
 		titulos.append('Servidor #%s: %s' % (i, nome))
 	try:
@@ -1698,7 +1698,7 @@ def getStreamLegenda(resultado):
 				nome = 'Live!t-TV'
 			elif 'uptostream.com' in resultado['URL3']:
 				nome = 'UpToStream'
-			elif 'rapidvideo.com' in resultado['URL3']:
+			elif 'rapidvideo.com' in resultado['URL3'] or 'raptu' in resultado['URL3']:
 				nome = 'RapidVideo'
 			titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
@@ -1715,7 +1715,7 @@ def getStreamLegenda(resultado):
 				nome = 'Live!t-TV'
 			elif 'uptostream.com' in resultado['URL4']:
 				nome = 'UpToStream'
-			elif 'rapidvideo.com' in resultado['URL4']:
+			elif 'rapidvideo.com' in resultado['URL4'] or 'raptu' in resultado['URL4']:
 				nome = 'RapidVideo'
 			titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
@@ -1751,7 +1751,7 @@ def getStreamLegenda(resultado):
 			stream, ext_g = URLResolverMedia.GoogleVideo(servidores[servidor]).getMediaUrl()
 		elif 'cloud.mail.ru' in servidores[servidor]:
 			stream, ext_g = URLResolverMedia.CloudMailRu(servidores[servidor]).getMediaUrl()
-		elif 'rapidvideo.com' in servidores[servidor]:
+		elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
 			rapid = URLResolverMedia.RapidVideo(servidores[servidor])
 			stream = rapid.getMediaUrl()
 			legenda = rapid.getLegenda()
@@ -1771,7 +1771,7 @@ def getStreamLegenda(resultado):
 			stream, ext_g = URLResolverMedia.GoogleVideo(servidores[0]).getMediaUrl()
 		elif 'cloud.mail.ru' in servidores[0]:
 			stream, ext_g = URLResolverMedia.CloudMailRu(servidores[0]).getMediaUrl()
-		elif 'rapidvideo.com' in servidores[servidor]:
+		elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
 			rapid = URLResolverMedia.RapidVideo(servidores[servidor])
 			stream = rapid.getMediaUrl()
 			legenda = rapid.getLegenda()
