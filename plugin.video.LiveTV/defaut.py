@@ -15,8 +15,9 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64,plugintools
 import xml.etree.ElementTree as ET
+
 from resources.lib import common
 import fileUtils as fu
 from datetime import date
@@ -34,9 +35,92 @@ from unicodedata import normalize
 ####################################################### CONSTANTES #####################################################
 
 global g_timer
+global pnimi
+global televisioonilink
+global filmilink
+global andmelink
+global uuenduslink
+global lehekylg
+global LOAD_LIVE
+global uuendused
+global vanemalukk
+global version
+global mode
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+SKIN_VIEW_FOR_MOVIES="515"
+addonDir = plugintools.get_runtime_path()
 AddonTitle = "Live!t TV"
-__ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
+LIST="list"
+THUMBNAIL="thumbnail"
+MOVIES="movies"
+TV_SHOWS="tvshows"
+SEASONS="seasons"
+EPISODES="episodes"
+OTHER="other"
+ALL_VIEW_CODES={
+    'list': {
+        'skin.confluence': 50, # List
+        'skin.aeon.nox': 50, # List
+        'skin.droid': 50, # List
+        'skin.quartz': 50, # List
+        'skin.re-touched': 50, # List
+    },
+    'thumbnail': {
+        'skin.confluence': 500, # Thumbnail
+        'skin.aeon.nox': 500, # Wall
+        'skin.droid': 51, # Big icons
+        'skin.quartz': 51, # Big icons
+        'skin.re-touched': 500, #Thumbnail
+    },
+    'movies': {
+        'skin.confluence': 500, # Thumbnail 515, # Media Info 3
+        'skin.aeon.nox': 500, # Wall
+        'skin.droid': 51, # Big icons
+        'skin.quartz': 52, # Media info
+        'skin.re-touched': 500, #Thumbnail
+    },
+    'tvshows': {
+        'skin.confluence': 500, # Thumbnail 515, # Media Info 3
+        'skin.aeon.nox': 500, # Wall
+        'skin.droid': 51, # Big icons
+        'skin.quartz': 52, # Media info
+        'skin.re-touched': 500, #Thumbnail
+    },
+    'seasons': {
+        'skin.confluence': 50, # List
+        'skin.aeon.nox': 50, # List
+        'skin.droid': 50, # List
+        'skin.quartz': 52, # Media info
+        'skin.re-touched': 50, # List
+    },
+    'episodes': {
+        'skin.confluence': 504, # Media Info
+        'skin.aeon.nox': 518, # Infopanel
+        'skin.droid': 50, # List
+        'skin.quartz': 52, # Media info
+        'skin.re-touched': 550, # Wide
+    },
+}
+mode = 3333
+version = ""
+kasutajanimi = ""
+salasona = ""
+lehekylg = ""
+pordinumber = ""
+#uuendused=plugintools.get_setting(sync_data("dXVlbmR1c2Vk"))
+vanemakood = ""
+vanemalukk = ""
+pnimi = "Live!t"
+LOAD_LIVE = ""
+televisioonilink = ""
+filmilink = ""
+andmelink = ""
+	
+	
+	
+__ADDON_ID__	= xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
@@ -49,7 +133,6 @@ __SITE__ = 'http://liveitkodi.com/PHP/'
 __SITEAddon__ = 'http://liveitkodi.com/Addon/'
 __EPG__ = __ADDON__.getSetting("lista_epg")
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
-__ALERTA__ = xbmcgui.Dialog().ok
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
 check_login = {}
@@ -62,8 +145,14 @@ __SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsvYXBpLw==')
 __SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5Lm1sLw==')
 
 ###################################################################################
-#                              Iniciar Addon		                                  #
+#							  Iniciar Addon										  #
 ###################################################################################
+
+def __ALERTA__(text1="",text2="",text3=""):
+	if text3=="": xbmcgui.Dialog().ok(text1,text2)
+	elif text2=="": xbmcgui.Dialog().ok("",text1)
+	else: xbmcgui.Dialog().ok(text1,text2,text3)
+
 def menu():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
 		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
@@ -108,9 +197,11 @@ def menu():
 					'tipo': '',
 					'senha': ''
 					}
-					menus2['nome'] = check_login['datafim']['data']
+					_listauser = check_login['user']['lista']
+					andmelink = _listauser+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
+					menus2['nome'] = "Ver Informacao da Conta"
 					menus2['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-					menus2['link'] = 'url'
+					menus2['link'] = andmelink
 					menus2['tipo'] = "estado"
 					menus2['senha'] = ""
 					menus2['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
@@ -159,7 +250,7 @@ def menu():
 			vista_menu()
 
 ###################################################################################
-#                              Login Addon		                                  #
+#							  Login Addon										  #
 ###################################################################################
 def minhaConta(data_user,estilo):
 	addDir(data_user, 'url', None, None, estilo, __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
@@ -175,6 +266,7 @@ def login():
 			'tipo': '',
 			'dias': '',
 			'lista': '',
+			'listanova': '',
 			'servidor': '',
 			'senhaadulto': ''
 		},
@@ -227,6 +319,8 @@ def login():
 						informacoes['user']['dias'] = d.text
 					elif(d.tag == 'Lista'):
 						informacoes['user']['lista'] = d.text
+					elif(d.tag == 'ListaNova'):
+						informacoes['user']['listanova'] = d.text
 					elif(d.tag == 'DataFim'):
 						try:
 							informacoes['datafim']['data'] = "Membro Ativo até "+ d.text
@@ -332,8 +426,9 @@ def minhaContabuild():
 		if check_login['datafim']['data'] == '':
 			abrirDefinincoesMesmo()
 		else:
-			data_user = check_login['datafim']['data']
-			addDir(data_user, 'url', None, None, 'Lista', __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+			_listauser = check_login['user']['lista']
+			andmelink = _listauser+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
+			execute_ainfo(andmelink)
 
 def loginPesquisa():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
@@ -380,213 +475,213 @@ def buildLiveit(tipologia):
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 
 ################################
-###       Clear Cache        ###
+###		Clear Cache		###
 ################################
 
 def CLEARCACHE():
-    xbmc_cache_path = os.path.join(xbmc.translatePath('special://home'), 'cache')
-    if os.path.exists(xbmc_cache_path)==True:    
-        for root, dirs, files in os.walk(xbmc_cache_path):
-            file_count = 0
-            file_count += len(files)
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar Cache no XBMC.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        try:
-                            os.unlink(os.path.join(root, f))
-                        except:
-                            pass
-                    for d in dirs:
-                        try:
-                            shutil.rmtree(os.path.join(root, d))
-                        except:
-                            pass
-                        
-            else:
-                pass
-    if xbmc.getCondVisibility('system.platform.ATV2'):
-        atv2_cache_a = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'Other')
-        
-        for root, dirs, files in os.walk(atv2_cache_a):
-            file_count = 0
-            file_count += len(files)
-        
-            if file_count > 0:
+	xbmc_cache_path = os.path.join(xbmc.translatePath('special://home'), 'cache')
+	if os.path.exists(xbmc_cache_path)==True:	
+		for root, dirs, files in os.walk(xbmc_cache_path):
+			file_count = 0
+			file_count += len(files)
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar Cache no XBMC.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						try:
+							os.unlink(os.path.join(root, f))
+						except:
+							pass
+					for d in dirs:
+						try:
+							shutil.rmtree(os.path.join(root, d))
+						except:
+							pass
+						
+			else:
+				pass
+	if xbmc.getCondVisibility('system.platform.ATV2'):
+		atv2_cache_a = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'Other')
+		
+		for root, dirs, files in os.walk(atv2_cache_a):
+			file_count = 0
+			file_count += len(files)
+		
+			if file_count > 0:
 
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Outros'", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-        atv2_cache_b = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'LocalAndRental')
-        
-        for root, dirs, files in os.walk(atv2_cache_b):
-            file_count = 0
-            file_count += len(files)
-        
-            if file_count > 0:
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Outros'", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+		atv2_cache_b = os.path.join('/private/var/mobile/Library/Caches/AppleTV/Video/', 'LocalAndRental')
+		
+		for root, dirs, files in os.walk(atv2_cache_b):
+			file_count = 0
+			file_count += len(files)
+		
+			if file_count > 0:
 
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Local'", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-              # Set path to Cydia Archives cache files
-                             
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar ficheiros ATV2.", str(file_count) + " ficheiros encontrados em 'Local'", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+			  # Set path to Cydia Archives cache files
+							 
 
-    # Set path to What th Furk cache files
-    wtf_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.whatthefurk/cache'), '')
-    if os.path.exists(wtf_cache_path)==True:    
-        for root, dirs, files in os.walk(wtf_cache_path):
-            file_count = 0
-            file_count += len(files)
-        
-        # Count files and give option to delete
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar a cache WTF.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-                
-                # Set path to 4oD cache files
-    channel4_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.4od/cache'), '')
-    if os.path.exists(channel4_cache_path)==True:    
-        for root, dirs, files in os.walk(channel4_cache_path):
-            file_count = 0
-            file_count += len(files)
-        
-        # Count files and give option to delete
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar ficheiros 4oD em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-                
-                # Set path to BBC iPlayer cache files
-    iplayer_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.iplayer/iplayer_http_cache'), '')
-    if os.path.exists(iplayer_cache_path)==True:    
-        for root, dirs, files in os.walk(iplayer_cache_path):
-            file_count = 0
-            file_count += len(files)
-        
-        # Count files and give option to delete
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar ficheiros BBC iPlayer em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-                
-                
-                # Set path to Simple Downloader cache files
-    downloader_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/script.module.simple.downloader'), '')
-    if os.path.exists(downloader_cache_path)==True:    
-        for root, dirs, files in os.walk(downloader_cache_path):
-            file_count = 0
-            file_count += len(files)
-        
-        # Count files and give option to delete
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar ficheiros Simple Downloader em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-    
-    itv_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.itv/Images'), '')
-    if os.path.exists(itv_cache_path)==True:    
-        for root, dirs, files in os.walk(itv_cache_path):
-            file_count = 0
-            file_count += len(files)
+	# Set path to What th Furk cache files
+	wtf_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.whatthefurk/cache'), '')
+	if os.path.exists(wtf_cache_path)==True:	
+		for root, dirs, files in os.walk(wtf_cache_path):
+			file_count = 0
+			file_count += len(files)
+		
+		# Count files and give option to delete
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar a cache WTF.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+				
+				# Set path to 4oD cache files
+	channel4_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.4od/cache'), '')
+	if os.path.exists(channel4_cache_path)==True:	
+		for root, dirs, files in os.walk(channel4_cache_path):
+			file_count = 0
+			file_count += len(files)
+		
+		# Count files and give option to delete
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar ficheiros 4oD em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+				
+				# Set path to BBC iPlayer cache files
+	iplayer_cache_path= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.iplayer/iplayer_http_cache'), '')
+	if os.path.exists(iplayer_cache_path)==True:	
+		for root, dirs, files in os.walk(iplayer_cache_path):
+			file_count = 0
+			file_count += len(files)
+		
+		# Count files and give option to delete
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar ficheiros BBC iPlayer em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+				
+				
+				# Set path to Simple Downloader cache files
+	downloader_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/script.module.simple.downloader'), '')
+	if os.path.exists(downloader_cache_path)==True:	
+		for root, dirs, files in os.walk(downloader_cache_path):
+			file_count = 0
+			file_count += len(files)
+		
+		# Count files and give option to delete
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar ficheiros Simple Downloader em cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+	
+	itv_cache_path = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.itv/Images'), '')
+	if os.path.exists(itv_cache_path)==True:	
+		for root, dirs, files in os.walk(itv_cache_path):
+			file_count = 0
+			file_count += len(files)
 			
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Apagar items em cache", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
-                
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                        
-            else:
-                pass
-    dialog = xbmcgui.Dialog()
-    dialog.ok(AddonTitle, "       Cache apagada com sucesso!")
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Apagar items em cache", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros em cache?"):
+				
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+						
+			else:
+				pass
+	dialog = xbmcgui.Dialog()
+	dialog.ok(AddonTitle, "		Cache apagada com sucesso!")
 
 
 ################################
-###     Purge Packages       ###
+###	 Purge Packages		###
 ################################
 
 def PURGEPACKAGES():
-    packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
-    try:    
-        for root, dirs, files in os.walk(packages_cache_path):
-            file_count = 0
-            file_count += len(files)
-            
-            if file_count > 0:
-    
-                dialog = xbmcgui.Dialog()
-                if dialog.yesno("Excluir informação em Cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros?"):
-                            
-                    for f in files:
-                        os.unlink(os.path.join(root, f))
-                    for d in dirs:
-                        shutil.rmtree(os.path.join(root, d))
-                    dialog = xbmcgui.Dialog()
-                    dialog.ok(AddonTitle, "       Kodi limpo com sucesso.")
-                else:
-                        pass
-            else:
-                dialog = xbmcgui.Dialog()
-                dialog.ok(AddonTitle, "       Não foram encontrados ficheiros a apagar.")
-    except: 
-        dialog = xbmcgui.Dialog()
-        dialog.ok(AddonTitle, "Erro ao tentar apagar ficheiros em cache.")
+	packages_cache_path = xbmc.translatePath(os.path.join('special://home/addons/packages', ''))
+	try:	
+		for root, dirs, files in os.walk(packages_cache_path):
+			file_count = 0
+			file_count += len(files)
+			
+			if file_count > 0:
+	
+				dialog = xbmcgui.Dialog()
+				if dialog.yesno("Excluir informação em Cache.", str(file_count) + " ficheiros encontrados.", "Quer apagar todos os ficheiros?"):
+							
+					for f in files:
+						os.unlink(os.path.join(root, f))
+					for d in dirs:
+						shutil.rmtree(os.path.join(root, d))
+					dialog = xbmcgui.Dialog()
+					dialog.ok(AddonTitle, "		Kodi limpo com sucesso.")
+				else:
+						pass
+			else:
+				dialog = xbmcgui.Dialog()
+				dialog.ok(AddonTitle, "		Não foram encontrados ficheiros a apagar.")
+	except: 
+		dialog = xbmcgui.Dialog()
+		dialog.ok(AddonTitle, "Erro ao tentar apagar ficheiros em cache.")
 
 ###############################################################################################################
-#                                                   Menus                                                     #
+#													Menus													 #
 ###############################################################################################################
 
 def Menu_inicial(men,build,tipo):
@@ -594,6 +689,7 @@ def Menu_inicial(men,build,tipo):
 	_servuser = men['user']['servidor']
 	_nomeuser = men['user']['nome']
 	_listauser = men['user']['lista']
+	_listausernova = men['user']['listanova']
 	_datauser = men['datafim']['data']
 	
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
@@ -786,33 +882,9 @@ def Menu_inicial(men,build,tipo):
 			else:
 				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 			
-			abrim3u(urlbuild,_datauser)
+			#abrim3u(urlbuild,_datauser)
+			abrim3u2(_listauser)
 			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
-		#	if(__ADDON__.getSetting("login_adultos") == ''):
-		#		__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos. No subMenu Credênciais que está no menu Utilizador.')
-		#	elif(__ADDON__.getSetting("login_adultos") != senhaadu):
-		#		__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
-		#	else:
-		#		if _tipouser == 'Teste' and _servuser == 'Teste':
-		#			__ALERTA__('Live!t TV', 'É um utilizador Teste logo não tem acesso a esta Secção.')
-		#		else:
-		#			addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-		#			listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo,True)
-		#			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
-		#else:
-		#	if (_tipouser == 'Desporto' and tipo == 'Radio'):
-		#		__ALERTA__('Live!t TV', 'Como tem o pack Desporto não tem associado as Rádios. Logo não tem qualquer rádio a ouvir. Se entender na próxima renovação peça o pack Total.')
-		#	else:
-		#		if(urlbuild == ''):
-		#			__ALERTA__('Live!t TV', 'Defina as suas Credênciais.')
-		#			abrirDefinincoesMesmo()
-		#		else:
-		#			if(tipo == 'Novidades' or tipo == 'Patrocinadores'):
-		#				listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
-		#			else:
-		#				addDir('Refresh', tipo, 8000, os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'), 0)
-		#				listar_canais_url(nomebuild,urlbuild,'Miniatura',tipocan,_tipouser,'',_fanart,tipo)
-		#				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -821,14 +893,6 @@ def Menu_inicial(men,build,tipo):
 			tipo = menu['tipo']
 			senha = menu['senha']
 			fanart = menu['fanart']
-			#if _tipouser == 'Desporto':
-			#	if nome == 'TVs - Desporto':
-			#		addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-			#	elif(nome == 'Adultos - Desporto'):
-			#		addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-			#	elif(tipo == 'estado'):
-			#		addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-			#else:
 			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
 				if tipo == 'Adulto' :
 					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
@@ -837,11 +901,11 @@ def Menu_inicial(men,build,tipo):
 				elif(tipo == 'Anime'):
 					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'Filme'):
-					addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+					addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'Serie'):
 					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'estado'):
-					addDir(nome,link,None,10,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+					addDir(nome, link, None, 3335, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'pesquisa'):
 					if _tipouser != 'Teste':
 						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
@@ -853,7 +917,7 @@ def Menu_inicial(men,build,tipo):
 							else:
 								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
 							
-							addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 							addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 						else:
 							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
@@ -864,7 +928,7 @@ def Menu_inicial(men,build,tipo):
 							else:
 								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 							
-							addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 						else:
 							if tipo != 'Adulto' or nome != 'Radios':
 								if _servuser == 'Teste':
@@ -875,7 +939,7 @@ def Menu_inicial(men,build,tipo):
 									else:
 										urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
 									
-									addDir(nome,urllis,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+									addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 							else:
 								if _servuser == 'Teste':
 									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)	
@@ -886,7 +950,8 @@ def Menu_inicial(men,build,tipo):
 		vista_Canais_Lista()
 	#check_version()
 
-def abrim3u(url, datauser):	
+
+def abrim3u(url, datauser):
 	tmpList = []
 	list = common.m3u2list(url)
 	addDir('Atualizar Lista',url,None,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'),'','','',datauser,os.path.join(__ART_FOLDER__, __SKIN__, 'retroceder.png'))
@@ -902,6 +967,246 @@ def abrim3u(url, datauser):
 		addLinkCanal(name,url,image,id_ip,'')
 	
 	vista_Canais_Lista()
+	
+def abrim3u2(url):
+	version = __ADDONVERSION__
+	kasutajanimi=__ADDON__.getSetting("login_name")
+	salasona=__ADDON__.getSetting("login_password")
+	lehekylg=url
+	pordinumber=80
+	#uuendused=plugintools.get_setting(sync_data("dXVlbmR1c2Vk"))
+	vanemakood=__ADDON__.getSetting("login_adultos")
+	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
+	pnimi = "Live!t"
+	
+	televisioonilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_live_categories'
+
+	addDir('Atualizar Lista',url,None,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	security_check(televisioonilink)
+
+def security_check(url):
+	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
+	u = urllib2.urlopen(request)
+	tree = ET.parse(u)
+	rootElem = tree.getroot()
+	for channel in tree.findall("channel"):
+		kanalinimi = channel.find("title").text
+		kanalinimi = base64.b64decode(kanalinimi)
+		kategoorialink = channel.find("playlist_url").text
+		
+		addDir(kanalinimi,kategoorialink,None,3338,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	meterskin(LIST)
+
+def detect_modification(url):
+	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
+	u = urllib2.urlopen(request)
+	tree = ET.parse(u)
+	rootElem = tree.getroot()
+	for channel in tree.findall("channel"):
+		filminimi = channel.find("title").text
+		filminimi = base64.b64decode(filminimi)
+		kategoorialink = channel.find("playlist_url").text
+		
+		addDir(filminimi,kategoorialink,None,3339,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	meterskin(LIST)
+
+def meterskin(view_mode):
+	skin_name=xbmc.getSkinDir()
+	view_codes=ALL_VIEW_CODES.get(view_mode)
+	view_code=view_codes.get(skin_name)
+	xbmc.executebuiltin("Container.SetViewMode("+str(view_code)+")")
+
+def stream_video(name,url,image):
+	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
+	if vanemalukk == "true":
+		vanema_lukk(name)
+	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
+	u = urllib2.urlopen(request)
+	tree = ET.parse(u)
+	rootElem = tree.getroot()
+	for channel in tree.findall(sync_data("Y2hhbm5lbA==")):
+		kanalinimi = channel.find(get_live("dGl0bGU=")).text
+		kanalinimi = base64.b64decode(kanalinimi)
+		kanalinimi = kanalinimi.partition("[")
+		striimilink = channel.find(get_live("c3RyZWFtX3VybA==")).text
+		pilt = channel.find("desc_image").text
+		kava = kanalinimi[1]+kanalinimi[2]
+		kava = kava.partition("]")
+		kava = kava[2]
+		kava = kava.partition("	")
+		kava = kava[2]
+		shou = get_live("W0NPTE9SIHdoaXRlXSVzIFsvQ09MT1Jd")%(kanalinimi[0])+kava
+		kirjeldus = channel.find("description").text
+		if kirjeldus:
+			kirjeldus = base64.b64decode(kirjeldus)
+			nyyd = kirjeldus.partition("(")
+			nyyd = "Agora: "+nyyd[0]
+			jargmine = kirjeldus.partition(")\n")
+			jargmine = jargmine[2].partition("(")
+			jargmine = "A seguir: "+jargmine[0]
+			kokku = nyyd+jargmine
+		else:
+			kokku = ""
+		if pilt:
+			addLinkCanalLista(shou,striimilink,pilt,kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'))
+		else:
+			addLinkCanalLista(shou,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'))
+	
+	xbmcplugin.setContent(int(sys.argv[1]) ,"episodes")
+	xbmc.executebuiltin("Container.SetViewMode(503)")
+def get_myaccount(name,url,image):
+	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
+	if vanemalukk == "true":
+		vanema_lukk(name)
+	
+	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
+	u = urllib2.urlopen(request)
+	tree = ET.parse(u)
+	rootElem = tree.getroot()
+	for channel in tree.findall("channel"):
+		pealkiri = channel.find("title").text
+		pealkiri = base64.b64decode(pealkiri)
+		pealkiri = pealkiri.encode("utf-8")
+		striimilink = channel.find("stream_url").text
+		pilt = channel.find("desc_image").text 
+		kirjeldus = channel.find("description").text
+		if kirjeldus:
+			kirjeldus = base64.b64decode(kirjeldus)
+		if pilt:
+			addLinkCanalLista(pealkiri,striimilink,pilt,kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+		else:
+			addLinkCanalLista(pealkiri,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	xbmcplugin.setContent( int(sys.argv[1]) ,"movies" )
+	xbmc.executebuiltin('Container.SetViewMode(515)')
+
+def addLinkCanalLista(title,url,thumbnail,plot,fanart, isPlayable=True, folder=False):
+	ok=True
+	
+	listitem=xbmcgui.ListItem(title,iconImage=thumbnail,thumbnailImage=thumbnail)
+	info_labels={"Title":title,"FileName":title,"Plot":plot}
+	listitem.setInfo( "video", info_labels )
+	if fanart!="": 
+		listitem.setProperty('fanart_image',fanart)
+		xbmcplugin.setPluginFanart(int(sys.argv[1]),fanart)
+	if url.startswith("plugin://"): 
+		itemurl=url
+		listitem.setProperty('IsPlayable','true')
+		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=itemurl,listitem=listitem,isFolder=folder)
+	elif isPlayable: 
+		listitem.setProperty("Video","true")
+	
+	u = sys.argv[0] + "?url=" + str(url) + "&mode=3340&name=" + str(name) + "&iconimage="+str(iconimage)+"&fanart="+str(fanart)+"&plot="+str(plot)
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem,isFolder=folder)
+	return ok
+
+def run_cronjob(title,url,image,plot,fanart):
+	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
+	if vanemalukk == "true":
+		vanema_lukk(name)
+	
+	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+	playlist.clear()
+	
+	info_labels={"Title":title,"FileName":title,"Plot":plot}
+	listitem=xbmcgui.ListItem(title,iconImage=image,thumbnailImage=image)
+	listitem.setInfo( "video", info_labels )
+	playlist.add(url=url, listitem=listitem, index=1)
+	xbmc.Player().play(playlist)
+
+def sync_data(channel):
+	video = base64.b64decode(channel)
+	return video
+
+def restart_service(params):
+	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
+	if vanemalukk == "true":
+		pealkiri = params.get(sync_data("dGl0bGU="))
+		vanema_lukk(pealkiri)
+	lopplink = params.get(vod_channels("dXJs"))
+	
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+
+def grab_epg(url):
+	req = urllib2.Request(url)
+	req.add_header(sync_data("VXNlci1BZ2VudA==") , vod_channels("S29kaSBwbHVnaW4gYnkgTGl2ZSF0"))
+	response = urllib2.urlopen(req)
+	link=response.read()
+	jdata = json.loads(link.decode('utf8'))
+	response.close()
+	if jdata:
+		return jdata
+def kontroll(url):
+	randomstring = grab_epg(url)
+	kasutajainfo = randomstring[sync_data("dXNlcl9pbmZv")]
+	kontroll = kasutajainfo[get_live("YXV0aA==")]
+	return kontroll
+def get_live(channel):
+	video = base64.b64decode(channel)
+	return video
+def execute_ainfo(url):
+	andmed = grab_epg(url)
+	kasutajaAndmed = andmed[sync_data("dXNlcl9pbmZv")]
+	seis = kasutajaAndmed[get_live("c3RhdHVz")]
+	aegub = kasutajaAndmed[sync_data("ZXhwX2RhdGU=")]
+	if aegub:
+		aegub = datetime.datetime.fromtimestamp(int(aegub)).strftime('%H:%M %d.%m.%Y')
+	else:
+		aegub = vod_channels("TmV2ZXI=") 
+	rabbits = kasutajaAndmed[vod_channels("aXNfdHJpYWw=")]
+	if rabbits == "0":
+		rabbits = sync_data("Tm8=")
+	else:
+		rabbits = sync_data("WWVz")
+	leavemealone = kasutajaAndmed[get_live("bWF4X2Nvbm5lY3Rpb25z")]
+	polarbears = kasutajaAndmed[sync_data("dXNlcm5hbWU=")]
+	
+	addLinkCanalLista("[COLOR = white]Utilizador: [/COLOR]"+polarbears,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	addLinkCanalLista("[COLOR = white]Estado: [/COLOR]"+seis,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	addLinkCanalLista("[COLOR = white]Expira: [/COLOR]"+aegub,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	addLinkCanalLista("[COLOR = white]Conta de Teste: [/COLOR]"+rabbits,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	addLinkCanalLista("[COLOR = white]Maximo de Connec: [/COLOR]"+leavemealone,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	
+	meterskin(LIST)
+
+def vanema_lukk(name):
+	a = 'XXX', 'Adult', 'Adults','ADULT','ADULTS','adult','adults','Porn','PORN','porn','Porn','xxx'
+	if any(s in name for s in a):
+		xbmc.executebuiltin((u'XBMC.Notification("Controlo Parental", "O canal contem conteudo adulto", 2000)'))
+		text = plugintools.keyboard_input(default_text="", title="Codigo para controlo parental")
+		if text==plugintools.get_setting(sync_data("bG9naW5fYWR1bHRvcw==")):
+		  return
+		else:
+		  exit()
+	else:
+		name = ""
+
+def DownloaderClass(url,dest):
+	dp = xbmcgui.DialogProgress()
+	dp.create(sync_data("R2V0dGluZyB1cGRhdGU="),get_live("RG93bmxvYWRpbmc="))
+	urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+
+def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
+	try:
+		percent = min((numblocks*blocksize*100)/filesize, 100)
+		print percent
+		dp.update(percent)
+	except:
+		percent = 100
+		dp.update(percent)
+	if dp.iscanceled(): 
+		print "DOWNLOAD CANCELLED" # need to get this part working
+		dp.close()
+
+def vod_channels(channel):
+	video = base64.b64decode(channel)
+	return video
+
+
 
 def PlayUrl(name, url, iconimage=None):
 	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
@@ -909,7 +1214,7 @@ def PlayUrl(name, url, iconimage=None):
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 ###############################################################################################################
-#                                                   Listar Grupos                                             #
+#													Listar Grupos											 #
 ###############################################################################################################
 def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,fanart):
 	passa = True
@@ -1006,7 +1311,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 
 
 ###############################################################################################################
-#                                                   Listar Canais                                             #
+#													Listar Canais											 #
 ###############################################################################################################
 def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo,adultos=False):
 	if url != 'nada':
@@ -1087,7 +1392,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 	#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 
 ###############################################################################################################
-#                                                   EPG                                                     #
+#													EPG													 #
 ###############################################################################################################
 def obter_ficheiro_epg():
 	if not xbmcvfs.exists(__FOLDER_EPG__):
@@ -1129,7 +1434,7 @@ def programacao_canal(idCanal):
 
 	titles=['[B][COLOR white]Programação:[/COLOR][/B]']
 
-    
+	
 	for start, stop, programa1 in source:
 
 		start1 = re.compile('([0-9]{4}[0-1][0-9][0-3][0-9])([0-9]{2})([0-9]{2})([0-9]{2})').findall(start)
@@ -1155,20 +1460,20 @@ def programacao_canal(idCanal):
 from threading import Thread
 
 class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs={}, Verbose=None):
-        Thread.__init__(self, group, target, name, args, kwargs, Verbose)
-        self._return = None
-    def run(self):
-        if self._Thread__target is not None:
-            self._return = self._Thread__target(*self._Thread__args,
-                                                **self._Thread__kwargs)
-    def join(self):
-        Thread.join(self)
-        return self._return
+	def __init__(self, group=None, target=None, name=None,
+				 args=(), kwargs={}, Verbose=None):
+		Thread.__init__(self, group, target, name, args, kwargs, Verbose)
+		self._return = None
+	def run(self):
+		if self._Thread__target is not None:
+			self._return = self._Thread__target(*self._Thread__args,
+												**self._Thread__kwargs)
+	def join(self):
+		Thread.join(self)
+		return self._return
 
 ############################################################################################################
-#                                               Addon Filmes e Series                                      #
+#												Addon Filmes e Series									  #
 ############################################################################################################
 def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
@@ -1178,8 +1483,10 @@ def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
+		database = Database.isExists()
+		filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
-		
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
@@ -1187,7 +1494,6 @@ def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/animes1.png')
 
 def menuFilmes(iconimage,fanart):
-	database = Database.isExists()
 	addDir2('Todos os Filmes', __SITEFILMES__+'filmes', 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes em Destaque',  __SITEFILMES__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes por Ano', __SITEFILMES__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
@@ -2125,12 +2431,12 @@ def download(url,name, temporada,episodio,serieNome):
 			download_legendas(legenda, os.path.join(folder, nomeLegenda))
 
 def download_legendas(url,path):
-    contents = abrir_url(url)
-    if contents:
-        fh = open(path, 'w')
-        fh.write(contents)
-        fh.close()
-    return
+	contents = abrir_url(url)
+	if contents:
+		fh = open(path, 'w')
+		fh.write(contents)
+		fh.close()
+	return
 
 def clean(text):
 	command={'&#8220;':'"','&#8221;':'"', '&#8211;':'-','&amp;':'&','&#8217;':"'",'&#8216;':"'"}
@@ -2211,7 +2517,7 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 	return ok
 
 ###################################################################################
-#                               FUNCOES JA FEITAS                                 #
+#								FUNCOES JA FEITAS								 #
 ###################################################################################
 def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")
@@ -2401,7 +2707,7 @@ def play_canal(arg, icon, nome):
 			TSPlayer.play_url_ind(0,nome + ' (' + chid + ')',icon,icon)
 			TSPlayer.end()
 			return
-		else:    
+		else:	
 			__ALERTA__('Live!t TV', 'Erro ao abrir o canal Acestream. ')
 			TSPlayer.end()
 			return	
@@ -2454,7 +2760,7 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 	return ok
 
 ###################################################################################
-#                              DEFININCOES		                                  #
+#							  DEFININCOES										  #
 ###################################################################################	
 def returnestilo(estilonovo):
 	__estilagem__ = ""
@@ -2546,8 +2852,8 @@ def vista_episodios():
 	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
 
 ############################################################################################################
-#                                               GET PARAMS                                                 #
-############################################################################################################          
+#												GET PARAMS												 #
+############################################################################################################		  
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
@@ -2590,7 +2896,7 @@ temporada=None
 episodio=None
 serieNome=None
 fanart=None
-
+thumbnail=None
 
 try: url=urllib.unquote_plus(params["url"])
 except: pass
@@ -2646,6 +2952,8 @@ try : buildtipo=urllib.unquote_plus(params["buildtipo"])
 except: pass
 try : fanart=urllib.unquote_plus(params["fanart"])
 except: pass
+try : thumbnail=urllib.unquote_plus(params["thumbnail"])
+except: pass
 try : data_user=urllib.unquote_plus(params["data_user"])
 except: pass
 
@@ -2653,7 +2961,7 @@ except: pass
 
 
 ###############################################################################################################
-#                                                   MODOS                                                     #
+#													MODOS													 #
 ###############################################################################################################
 
 if mode==None or url==None or len(url)<1: menu()
@@ -2685,14 +2993,20 @@ elif mode==117: download(url, name, temporada, episodio, serieNome)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==3000: abrirDefinincoesMesmo()
-elif mode==3333: abrim3u(url,data_user)
+elif mode==3333: abrim3u2(url)
+#elif mode==3333: abrim3u2(url,data_user)
+elif mode==3335: execute_ainfo(url)
+elif mode==3336: security_check(url)
+elif mode==3337: detect_modification(url)
+elif mode==3338: stream_video(name,url,iconimage)
+elif mode==3339: get_myaccount(name,url,iconimage)
+elif mode==3340: run_cronjob(name,url,iconimage,thumbnail,fanart)
 elif mode==3334: PlayUrl(name,url,iconimage)
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()
 #elif mode==7000: loginPesquisa()
 elif mode==8000: buildLiveit(url)
-
 
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)

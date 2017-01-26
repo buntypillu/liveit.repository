@@ -4,9 +4,10 @@
       <setting label="[B][COLOR green]Dados de conta:[/B][/COLOR]" type="lsep" />
       <setting id="login_name" type="text" label="Utilizador" default=""/>
       <setting id="login_password" type="text" label="Senha" default="" option="hidden" enable="!eq(-1,false)"/>
-	  <setting id="login_adultos" type="text" label="Senha Adultos" default="" option="hidden"/>
-	  <setting id="lista_epg" type="text" label="Endereço EPG: " default="http://liveitkodi.com/epg.xml"/>
-	  <setting id="lista_m3u" type="enum" label="Tipologia M3U" values="M3U8|TS|RTMP" default="1"/>
+	  <setting id="login_adultos_sim" type="bool" label="Parental lock?"value="true"/>
+	  <setting id="login_adultos" type="text" label="Senha Adultos" default="12345" option="writeable,hidden"/>
+	  <setting id="lista_epg" type="text" label="Endereço EPG: " default="http://liveitkodi.com/epg.xml" visible="false"/>
+	  <setting id="lista_m3u" type="enum" label="Tipologia M3U" values="M3U8|TS|RTMP" default="1" visible="false"/>
 	  <setting id="email" type="text" default="liveitkodi@gmail.com" enable="false" visible="false"/>
 	  <setting id="tokenMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
       <setting id="refreshMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
