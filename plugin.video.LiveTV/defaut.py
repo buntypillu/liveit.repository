@@ -896,17 +896,20 @@ def Menu_inicial(men,build,tipo):
 			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
 				if tipo == 'Adulto' :
 					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'patrocinadores' or tipo == 'novidades':
+				elif(tipo == 'patrocinadores' or tipo == 'novidades'):
 					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'Anime'):
+				elif tipo == 'Anime':
 					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'Filme'):
-					addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'Serie'):
+				elif tipo == 'Filme':
+					if _tipouser != 'Teste':
+						addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+					else:
+						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'Serie':
 					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'estado'):
+				elif(tipo == 'estado' and _tipouser != 'Teste'):
 					addDir(nome, link, None, 3335, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'pesquisa'):
+				elif(tipo == 'pesquisa' and _tipouser != 'Teste'):
 					if _tipouser != 'Teste':
 						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
 				else:
@@ -1484,8 +1487,9 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 	check_login = login2()
 	if check_login == True:
 		database = Database.isExists()
-		filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
-		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+		if tipo_user != 'Teste':
+			filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
+			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
