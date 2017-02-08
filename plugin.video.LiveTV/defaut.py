@@ -1498,6 +1498,10 @@ def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/animes1.png')
 
 def menuFilmes(iconimage,fanart):
+	evento = getEventos()
+	if evento:
+		addDir2('[B]'+evento+'[/B]', __SITEFILMES__+'evento/1', 111, 'filmes', iconimage, 1, None, None, fanart)
+		addDir2(' ', '', 0, '', os.path.join(__ART_FOLDER__, __SKIN__, 'nada.png'), 1, None, None, fanart)
 	addDir2('Todos os Filmes', __SITEFILMES__+'filmes', 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes em Destaque',  __SITEFILMES__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes por Ano', __SITEFILMES__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
@@ -1687,14 +1691,12 @@ def getEpisodes(url):
 		if i['visto'] == 1:
 			visto = True	
 		
+		imagem = ''
 		if i['imagem'] == 1:
-			imagem = __SITEFILMES2__+'images/capas/'+i['IMBD']+'.jpg'
+			imagem = __SITEFILMES2__+'images/series/'+i['IMBD']+'.jpg'
 		elif i['imagem'] == 0:
-			if 'http' not in resultadoS['foto']:
-				imagem = __SITEFILMES2__+'images/capas/'+resultadoS['foto'].split('/')[-1]
-			else:
-				imagem = resultadoS['foto']
-		
+			imagem = __SITEFILMES2__+'images/capas/'+i['imdbSerie']+'.jpg'
+			
 		nomeee = pt+br+final+semLegenda+'[COLOR '+cor+'][B]Episodio '+str(i['episodio'])+'[/B][/COLOR] '+removerAcentos(nome)
 		addVideo(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_serie'])+'/episodio/'+str(i['id_episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, __SITEFILMES2__+i['background'])
 	
@@ -1904,7 +1906,19 @@ def anos(url):
 	
 	vista_filmesSeries()
 
-
+def getEventos():
+	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
+	
+	resultado = abrir_url(__SITEFILMES__+'eventos', header=headers)
+	resultado = json.loads(resultado)
+	try:
+		if resultado['codigo'] == 204:
+			return False
+	except:
+		pass
+	return resultado['data']['nome']
+		
+		
 def player(name,url,iconimage,temporada,episodio,serieNome):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
@@ -2044,47 +2058,34 @@ def getStreamLegenda(resultado):
 	except:
 		pass
 	ext_g = 'coiso'
+	legendaAux = legenda
+	servidor = 0
 	if len(titulos) > 1:
 		servidor = xbmcgui.Dialog().select('Escolha o servidor', titulos)
-		if 'vidzi' in servidores[servidor]:
-			vidzi = URLResolverMedia.Vidzi(servidores[servidor])
-			stream = vidzi.getMediaUrl()
-			legenda = vidzi.getSubtitle()
-		elif 'uptostream.com' in servidores[servidor]:
-			stream = URLResolverMedia.UpToStream(servidores[servidor]).getMediaUrl()
-		elif 'server.mrpiracy.win' in servidores[servidor]:
-			stream = servidores[servidor]
-		elif 'openload' in servidores[servidor]:
-			stream = URLResolverMedia.OpenLoad(servidores[servidor]).getMediaUrl()
-			legenda = URLResolverMedia.OpenLoad(servidores[servidor]).getSubtitle()
-		elif 'drive.google.com/' in servidores[servidor]:
-			stream, ext_g = URLResolverMedia.GoogleVideo(servidores[servidor]).getMediaUrl()
-		elif 'cloud.mail.ru' in servidores[servidor]:
-			stream, ext_g = URLResolverMedia.CloudMailRu(servidores[servidor]).getMediaUrl()
-		elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
-			rapid = URLResolverMedia.RapidVideo(servidores[servidor])
-			stream = rapid.getMediaUrl()
-			legenda = rapid.getLegenda()
 	else:
-		if 'vidzi' in servidores[0]:
-			vidzi = URLResolverMedia.Vidzi(servidores[0])
-			stream = vidzi.getMediaUrl()
-			legenda = vidzi.getSubtitle()
-		elif 'uptostream.com' in servidores[0]:
-			stream = URLResolverMedia.UpToStream(servidores[0]).getMediaUrl()
-		elif 'server.mrpiracy.win' in servidores[0]:
-			stream = servidores[servidor]
-		elif 'openload' in servidores[0]:
-			stream = URLResolverMedia.OpenLoad(servidores[0]).getMediaUrl()
-			legenda = URLResolverMedia.OpenLoad(servidores[0]).getSubtitle()
-		elif 'drive.google.com/' in servidores[0]:
-			stream, ext_g = URLResolverMedia.GoogleVideo(servidores[0]).getMediaUrl()
-		elif 'cloud.mail.ru' in servidores[0]:
-			stream, ext_g = URLResolverMedia.CloudMailRu(servidores[0]).getMediaUrl()
-		elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
-			rapid = URLResolverMedia.RapidVideo(servidores[servidor])
-			stream = rapid.getMediaUrl()
-			legenda = rapid.getLegenda()
+		servidor = 0
+	
+	if 'vidzi' in servidores[servidor]:
+		vidzi = URLResolverMedia.Vidzi(servidores[servidor])
+		stream = vidzi.getMediaUrl()
+		legenda = vidzi.getSubtitle()
+	elif 'uptostream.com' in servidores[servidor]:
+		stream = URLResolverMedia.UpToStream(servidores[servidor]).getMediaUrl()
+	elif 'server.mrpiracy.win' in servidores[servidor]:
+		stream = servidores[servidor]
+	elif 'openload' in servidores[servidor]:
+		stream = URLResolverMedia.OpenLoad(servidores[servidor]).getMediaUrl()
+		legenda = URLResolverMedia.OpenLoad(servidores[servidor]).getSubtitle()
+		if not '.vtt' in legenda:
+			legenda = legendaAux
+	elif 'drive.google.com/' in servidores[servidor]:
+		stream, ext_g = URLResolverMedia.GoogleVideo(servidores[servidor]).getMediaUrl()
+	elif 'cloud.mail.ru' in servidores[servidor]:
+		stream, ext_g = URLResolverMedia.CloudMailRu(servidores[servidor]).getMediaUrl()
+	elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
+		rapid = URLResolverMedia.RapidVideo(servidores[servidor])
+		stream = rapid.getMediaUrl()
+		legenda = rapid.getLegenda()
 	
 	return stream, legenda, ext_g
 
