@@ -142,7 +142,7 @@ __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
 __SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsv')
 __SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsvYXBpLw==')
-__SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5Lm1sLw==')
+__SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
 
 ###################################################################################
 #							  Iniciar Addon										  #

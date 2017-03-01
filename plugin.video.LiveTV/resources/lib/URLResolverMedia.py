@@ -33,10 +33,16 @@ def clean(text):
     regex = re.compile("|".join(map(re.escape, command.keys())))
     return regex.sub(lambda mo: command[mo.group(0)], text)
 
+def __ALERTA__(text1="",text2="",text3=""):
+    if text3=="": xbmcgui.Dialog().ok(text1,text2)
+    elif text2=="": xbmcgui.Dialog().ok("",text1)
+    else: xbmcgui.Dialog().ok(text1,text2,text3)
+
 def log(msg, level=xbmc.LOGNOTICE):
 	level = xbmc.LOGNOTICE
 	print('[LIVEIT]: %s' % (msg))
-
+	xbmc.log('[LIVEIT]: %s' % (msg), level)
+	
 	try:
 		if isinstance(msg, unicode):
 			msg = msg.encode('utf-8')
@@ -274,28 +280,25 @@ class OpenLoad():
 				#log("No Encoded Section Found. Deleted?")
 				raise ResolverError('No Encoded Section Found. Deleted?')
 
-
+			
 			urlcode = ''
 			ido = hideenurl
-			first_two_chars = int(float(ido[0:][:2]))
-			TabCode = {}
-			num = 2
+
+			first_char = int(ido[0])
+			urlcode = []
+			num = 1
 
 			while (num < len(ido)):
-				key = int(float(ido[num + 3:][:2]))
-				TabCode[key] = chr(int(float(ido[num:][:3])) - first_two_chars)
+				i = ord(ido[num])
+				key = 0
+				if i <= 90:
+					key = i - 65
+				elif i >= 97:
+					key = 25 + i - 97
+				urlcode.append((key, chr(int(ido[num + 2:num + 5]) // int(ido[num + 1]) - first_char)))
 				num = num + 5
 
-			sorted(TabCode, key=lambda key: TabCode[key])
-			urlcode = ''.join(['%s' % (value) for (key, value) in TabCode.items()])
-			
-			
-			if not (urlcode):
-				log("Error not url")
-				raise ResolverError('Error not url')
-
-			api_call = "https://openload.co/stream/" + urlcode + "?mime=true"
-			api_call = self.GetOpenloadUrl(api_call, urlF)
+			api_call = "https://openload.co/stream/" + ''.join([value for _, value in sorted(urlcode, key=lambda x: x[0])]) + "?mime=true" 
 
 			if not (api_call):
 				url0 = url[:-1]+chr(ord(url[-1])-val)
