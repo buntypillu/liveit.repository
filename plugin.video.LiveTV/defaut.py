@@ -1482,6 +1482,8 @@ def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 	check_login = login2()
 	if check_login == True:
 		menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series1.png')
+	else:
+		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
@@ -1491,11 +1493,15 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 			filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
 			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
+	else:
+		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
 		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/animes1.png')
+	else:
+		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def menuFilmes(iconimage,fanart):
 	evento = getEventos()
@@ -2625,26 +2631,11 @@ def abrir_url(url, post=None, header=None, code=False, erro=False):
 			return str(response.code), "asd"
 	link=response.read()
 	
-	if 'myapimp.tk' in url:
-		coiso = json.loads(link)
-		if 'error' in coiso:
-			if coiso['error'] == 'access_denied':
-				headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
-				dados = {'refresh_token': __ADDON__.getSetting('refreshMrpiracy'),'grant_type': 'refresh_token', 'client_id': 'kodi', 'client_secret':'pyRmmKK3cbjouoDMLXNtt2eGkyTTAG' }
-				resultado = abrir_url('http://myapimp.tk/api/token/refresh',post=json.dumps(dados), headers=headers)
-				resultado = json.loads(resultado)
-				__ADDON__.setSetting('tokenMrpiracy', resultado['access_token'])
-				__ADDON__.setSetting('refreshMrpiracy', resultado['refresh_token'])
-				if post:
-					return abrir_url(url, post=post, headers=header)
-				else:
-					return abrir_url(url, headers=header)
-	
-	if 'judicial' in link:
+	if 'judicial blblblblbl' in link:
 		return 'DNS'
 	if code:
 		return str(response.code), link
-	
+
 	response.close()
 	return link
 
