@@ -1255,10 +1255,11 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 				urlllserv5 = params[8]
 				urlllserv6 = params[9]
 				urlllserv7 = params[10]
+				urlllserv8 = params[10]
 				paramss = estil.split('\n')
 				if tipo_user == 'Administrador' or tipo_user == 'Pagante' or tipo_user == 'PatrocinadorPagante' or tipo_user == 'Desporto':
 					if nome_nov == 'TVs-Free':
-						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',fanart)
+						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 					elif servidor_user == 'Servidor1':
 						addDir(nomee,urlllserv1,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
 					elif servidor_user == 'Servidor2':
@@ -1271,15 +1272,17 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 						addDir(nomee,urlllserv5,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
 					elif servidor_user == 'Servidor6':
 						addDir(nomee,urlllserv6,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
-					else:
+					elif servidor_user == 'Servidor7':
 						addDir(nomee,urlllserv7,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
+					else:
+						addDir(nomee,urlllserv8,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,nome_nov,fanart)
 				elif tipo_user == 'Patrocinador':
 					if nome_nov == 'TVs-Free':
-						addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',fanart)
+						addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 				else:
 					if tipo_user == 'Teste':
 						if servidor_user == "Teste":
-							addDir(nomee,urlll,None,2,'TesteServer',imag,tipo,tipo_user,servidor_user,'',fanart)
+							addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 						else:
 							if servidor_user != '':
 								if servidor_user == 'Servidor1':
@@ -1294,8 +1297,10 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 									addDir(nomee,urlllserv5,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 								elif servidor_user == 'Servidor6':
 									addDir(nomee,urlllserv6,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
-								else:
+								elif servidor_user == 'Servidor7':
 									addDir(nomee,urlllserv7,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
+								else:
+									addDir(nomee,urlllserv8,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 							else:
 								addDir(nomee,urlll,None,2,paramss[0],imag,tipo,tipo_user,servidor_user,'',fanart)
 					else:
@@ -1383,6 +1388,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 			except:
 				pass
 		
+		#__ALERTA__('Live!t TV', 'Tipo: '+tipo)
 		if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV' or nome == 'Eventos Diários':
 			estiloSelect = returnestilo(estilo)
 			xbmc.executebuiltin(estiloSelect)
