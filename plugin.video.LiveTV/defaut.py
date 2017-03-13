@@ -712,157 +712,24 @@ def Menu_inicial(men,build,tipo):
 		urlbuild = ''
 		nomebuild = ''
 		senhaadu = men['user']['senhaadulto']
-		if tipo == 'Desporto' or tipo == 'Crianca' or tipo == 'Canal' or tipo == 'Documentario' or tipo == 'Musica' or tipo == 'Filme' or tipo == 'Noticia' or tipo == 'DE' or tipo == 'FR' or tipo == 'UK' or tipo == 'BR' or tipo == 'ES' or tipo == 'IT' or tipo == 'USA':
-			thread.start_new_thread( obter_ficheiro_epg, () )
-			if _servuser == 'Servidor1':
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor1.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor1.txt"
-			elif(_servuser == 'Servidor2'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor2.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor2.txt"
-			elif(_servuser == 'Servidor3'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor3.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor3.txt"
-			elif(_servuser == 'Servidor4'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor4.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor4.txt"
-			elif(_servuser == 'Servidor5'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor5.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor5.txt"
-			elif(_servuser == 'Servidor6'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor6.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor6.txt"
-			elif(_servuser == 'Servidor7'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/desportoservidor7.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor7.txt"
-		
-		if tipo == 'Desporto':
-			tipocan = 'Normal'
-			nomebuild = 'Desporto PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Crianca'):
-			tipocan = 'Normal'
-			nomebuild = 'Desenhos Animados PT'
-			_fanart = __SITEAddon__+"Imagens/criancas.png"
-		elif(tipo == 'Canal'):
+		if tipo == 'Praia':
+			urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
+			_fanart = __SITEAddon__+"Imagens/praias.png"
+			tipocan = 'Praia'
+			nomebuild = 'Praia'
+		if tipo == 'ProgramasTV':
+			urlbuild = __SITEAddon__+"Ficheiros/proteleaddongr.txt"
+			_fanart = __SITEAddon__+"Imagens/telenovelas.png"
+			tipocan = 'ProgramasTV'
+			nomebuild = 'ProgramasTV'
+		#if _servuser == 'Teste':
+		#	urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
+		#elif(_servuser == 'Servidor1'):
+		#	urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor1.txt"
+		if(tipo == 'Canal'):
 			tipocan = 'Normal'
 			nomebuild = 'Canais PT'
 			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Documentario'):
-			tipocan = 'Normal'
-			nomebuild = 'Documentários PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Musica'):
-			tipocan = 'Normal'
-			nomebuild = 'Música PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Filme'):
-			tipocan = 'Normal'
-			nomebuild = 'Canais Filmes PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Noticia'):
-			tipocan = 'Normal'
-			nomebuild = 'Notícias PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'DE'):
-			tipocan = 'Normal'
-			nomebuild = 'Alemanha'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'FR'):
-			tipocan = 'Normal'
-			nomebuild = 'França'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'UK'):
-			tipocan = 'Normal'
-			nomebuild = 'UK'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'BR'):
-			tipocan = 'Normal'
-			nomebuild = 'Brasil'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'ES'):
-			tipocan = 'Normal'
-			nomebuild = 'Espanha'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'IT'):
-			tipocan = 'Normal'
-			nomebuild = 'Itália'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'USA'):
-			tipocan = 'Normal'
-			nomebuild = 'USA'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
-		elif(tipo == 'Radio'):
-			tipocan = 'Normal'
-			nomebuild = 'Radios PT'
-			_fanart = __SITEAddon__+"Imagens/radio.png"
-			if _servuser == 'Servidor1':
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor1.txt"	
-			elif(_servuser == 'Servidor2'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor2.txt"
-			elif(_servuser == 'Servidor3'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor3.txt"
-			elif(_servuser == 'Servidor4'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor4.txt"
-			elif(_servuser == 'Servidor5'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor5.txt"
-			elif(_servuser == 'Servidor6'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor6.txt"
-			elif(_servuser == 'Servidor7'):
-				urlbuild = __SITEAddon__+"Ficheiros/radiosaddonservidor7.txt"
-		elif(tipo == 'Adulto'):
-			tipocan = 'Adulto'
-			nomebuild = 'Adultos'
-			_fanart = __SITEAddon__+"Imagens/adultos1.png"
-			if _servuser == 'Servidor1':
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor1desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor1.txt"
-			elif(_servuser == 'Servidor2'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor2desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor2.txt"
-			elif(_servuser == 'Servidor3'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor3desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor3.txt"
-			elif(_servuser == 'Servidor4'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor4.txt"
-			elif(_servuser == 'Servidor5'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor5.txt"
-			elif(_servuser == 'Servidor6'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor6desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor6.txt"
-			elif(_servuser == 'Servidor7'):
-				if _tipouser == 'Desporto':
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor7desp.txt"
-				else:
-					urlbuild = __SITEAddon__+"Ficheiros/adultosaddonservidor7.txt"
 		elif(tipo == 'Novidades'):
 			tipocan = 'novidades'
 			nomebuild = 'Novidades'
@@ -877,14 +744,16 @@ def Menu_inicial(men,build,tipo):
 		if(tipo == 'Novidades') or (tipo == 'Patrocinadores'):
 			listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
 		else:
-			if _servuser == 'Servidor3':
-				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+			if(tipo == 'Praia') or (tipo == 'ProgramasTV'):
+				listar_grupos('',urlbuild,'Miniatura',tipocan,_tipouser,_servuser,_fanart)
+				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 			else:
-				urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-			
-			#abrim3u(urlbuild,_datauser)
-			abrim3u2(_listauser)
-			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+				if _servuser == 'Servidor3':
+					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+				else:
+					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+				abrim3u2(_listauser)
+				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 	else:
 		for menu in men['menus']:
 			nome = menu['nome']
@@ -946,6 +815,7 @@ def Menu_inicial(men,build,tipo):
 		thread.start_new_thread( obter_ficheiro_epg, () )
 		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
 		vista_Canais_Lista()
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 	#check_version()
 
 
@@ -1311,7 +1181,7 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 			vista_filmesSeries()
 		else:
 			vista_Canais()	
-
+	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 
 ###############################################################################################################
 #													Listar Canais											 #
@@ -1393,7 +1263,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 			else:
 				vista_Canais()
 	
-	#xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 
 ###############################################################################################################
 #													EPG													 #
