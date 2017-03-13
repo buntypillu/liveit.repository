@@ -937,12 +937,7 @@ def Menu_inicial(men,build,tipo):
 								if _servuser == 'Teste':
 									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 								else:
-									if _servuser == 'Servidor3':
-										urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
-									else:
-										urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-									
-									addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 							else:
 								if _servuser == 'Teste':
 									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)	
