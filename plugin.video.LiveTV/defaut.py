@@ -204,7 +204,7 @@ def menu():
 					menus2['link'] = andmelink
 					menus2['tipo'] = "estado"
 					menus2['senha'] = ""
-					menus2['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
+					menus2['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
 					check_login['menus'].append(menus2)
 				#menus['nome'] = "Participacoes"
 				#menus['logo'] = check_login['info']['logo']
@@ -218,7 +218,7 @@ def menu():
 				menus1['link'] = check_login['info']['link2']
 				menus1['tipo'] = "novidades"
 				menus1['senha'] = ""
-				menus1['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
+				menus1['fanart'] = __SITEAddon__+"Imagens/novidades_fanart.png"
 				check_login['menus'].append(menus1)
 				menus3['nome'] = "Pesquisa"
 				menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
@@ -230,12 +230,12 @@ def menu():
 				Menu_inicial(check_login,False,'')
 			elif check_login['sucesso']['resultado'] == 'utilizador':
 				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
-				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				vista_menu()
 			elif check_login['sucesso']['resultado'] == 'senha':
 				__ALERTA__('Live!t TV', 'Senha incorreta.')
-				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				vista_menu()
 			elif check_login['sucesso']['resultado'] == 'ativo':
@@ -245,7 +245,7 @@ def menu():
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 				vista_menu()
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 			vista_menu()
 
@@ -253,8 +253,8 @@ def menu():
 #							  Login Addon										  #
 ###################################################################################
 def minhaConta(data_user,estilo):
-	addDir(data_user, 'url', None, None, estilo, __SITEAddon__+"Imagens/estadomembro.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-	addDir('Definições', 'url', None, 1000, estilo, __SITEAddon__+"Imagens/definicoes.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	addDir(data_user, 'url', None, None, estilo, __SITEAddon__+"Imagens/estadomembro.png",'','','','',__SITEAddon__+"Imagens/estado_fanart.png")
+	addDir('Definições', 'url', None, 1000, estilo, __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 	vista_menu()
 
 def login():
@@ -453,11 +453,11 @@ def buildLiveit(tipologia):
 			check_login = login2()
 			if check_login == True:
 				if(tipologia == 'FilmesLive'):
-					menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
+					menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
 				elif(tipologia == 'SeriesLive'):
-					menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series1.png')
+					menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
 				elif(tipologia == 'AnimesLive'):
-					menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/animes1.png')
+					menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')
 		else:
 			check_login = login()
 			if check_login['user']['nome'] != '':
@@ -714,12 +714,12 @@ def Menu_inicial(men,build,tipo):
 		senhaadu = men['user']['senhaadulto']
 		if tipo == 'Praia':
 			urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
-			_fanart = __SITEAddon__+"Imagens/praias.png"
+			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
 			tipocan = 'Praia'
 			nomebuild = 'Praia'
 		if tipo == 'ProgramasTV':
 			urlbuild = __SITEAddon__+"Ficheiros/proteleaddongr.txt"
-			_fanart = __SITEAddon__+"Imagens/telenovelas.png"
+			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
 			tipocan = 'ProgramasTV'
 			nomebuild = 'ProgramasTV'
 		#if _servuser == 'Teste':
@@ -729,12 +729,12 @@ def Menu_inicial(men,build,tipo):
 		if(tipo == 'Canal'):
 			tipocan = 'Normal'
 			nomebuild = 'Canais PT'
-			_fanart = __SITEAddon__+"Imagens/tv1.png"
+			_fanart = __SITEAddon__+"Imagens/tv_fanart.png"
 		elif(tipo == 'Novidades'):
 			tipocan = 'novidades'
 			nomebuild = 'Novidades'
 			_fanart = __SITEAddon__+"Imagens/novidadestv.png"
-			urlbuild = __SITEAddon__+"Ficheiros/novidades.txt"
+			urlbuild = __SITEAddon__+"Ficheiros/novidades_fanart.txt"
 		elif(tipo == 'Patrocinadores'):
 			tipocan = 'patrocinadores'
 			nomebuild = 'Patrocinadores'
@@ -1352,7 +1352,7 @@ class ThreadWithReturnValue(Thread):
 def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
-		menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series1.png')
+		menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
 	else:
 		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
@@ -1363,14 +1363,14 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 		if tipo_user != 'Teste':
 			filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
 			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filme1.png')
+		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
 	else:
 		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
-		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/animes1.png')
+		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')
 	else:
 		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
