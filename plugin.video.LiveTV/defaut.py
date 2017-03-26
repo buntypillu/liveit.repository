@@ -184,6 +184,20 @@ def menu():
 					'tipo': '',
 					'senha': ''
 					}
+				menus4 = {
+					'nome': '',
+					'logo': '',
+					'link': '',
+					'tipo': '',
+					'senha': ''
+					}
+				menus5 = {
+					'nome': '',
+					'logo': '',
+					'link': '',
+					'tipo': '',
+					'senha': ''
+					}
 				if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
 					if check_login['user']['dias'] == '5' or check_login['user']['dias'] == '4' or check_login['user']['dias'] == '3' or check_login['user']['dias'] == '2' or check_login['user']['dias'] == '1':
 						__ALERTA__('Live!t TV', 'Faltam '+check_login['user']['dias']+' dias para o serviço expirar.')
@@ -227,6 +241,20 @@ def menu():
 				menus3['senha'] = ""
 				menus3['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
 				check_login['menus'].append(menus3)
+				menus4['nome'] = "Limpar Cache"
+				menus4['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
+				menus4['link'] = 'adsfsdfsd'
+				menus4['tipo'] = "limparcache"
+				menus4['senha'] = ""
+				menus4['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
+				check_login['menus'].append(menus4)
+				menus5['nome'] = "Limpar Tudo Gravado"
+				menus5['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
+				menus5['link'] = 'sdfsdfsd'
+				menus5['tipo'] = "limpartudo"
+				menus5['senha'] = ""
+				menus5['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
+				check_login['menus'].append(menus5)
 				Menu_inicial(check_login,False,'')
 			elif check_login['sucesso']['resultado'] == 'utilizador':
 				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
@@ -477,6 +505,144 @@ def buildLiveit(tipologia):
 			else:
 				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
 
+def Menu_inicial(men,build,tipo):
+	_tipouser = men['user']['tipo']
+	_servuser = men['user']['servidor']
+	_nomeuser = men['user']['nome']
+	_listauser = men['user']['lista']
+	_listausernova = men['user']['listanova']
+	_datauser = men['datafim']['data']
+	
+	_senhaadultos = __ADDON__.getSetting("login_adultos")
+	_fanart = ''
+	
+	tiposelect = ''
+	opcaoselec = __ADDON__.getSetting("lista_m3u")
+	if opcaoselec == '0': tiposelect = 'm3u8'
+	elif opcaoselec == '1': tiposelect = 'ts'
+	elif opcaoselec == '2': tiposelect = 'rtmp'
+	
+	passanovo = True
+	if _tipouser == 'Teste' and _servuser == 'Teste':
+		passanovo = False
+	
+	if build == True and passanovo == False:
+		__ALERTA__('Live!t TV', 'É um utilizador Free logo não tem acesso á nossa build a funcionar.')
+	elif(build == True):
+		tipocan = ''
+		urlbuild = ''
+		nomebuild = ''
+		senhaadu = men['user']['senhaadulto']
+		if tipo == 'Praia':
+			urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
+			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
+			tipocan = 'Praia'
+			nomebuild = 'Praia'
+		if tipo == 'ProgramasTV':
+			urlbuild = __SITEAddon__+"Ficheiros/proteleaddongr.txt"
+			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
+			tipocan = 'ProgramasTV'
+			nomebuild = 'ProgramasTV'
+		#if _servuser == 'Teste':
+		#	urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
+		#elif(_servuser == 'Servidor1'):
+		#	urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor1.txt"
+		if(tipo == 'Canal'):
+			tipocan = 'Normal'
+			nomebuild = 'Canais PT'
+			_fanart = __SITEAddon__+"Imagens/tv_fanart.png"
+		elif(tipo == 'Novidades'):
+			tipocan = 'novidades'
+			nomebuild = 'Novidades'
+			_fanart = __SITEAddon__+"Imagens/novidadestv.png"
+			urlbuild = __SITEAddon__+"Ficheiros/novidades_fanart.txt"
+		elif(tipo == 'Patrocinadores'):
+			tipocan = 'patrocinadores'
+			nomebuild = 'Patrocinadores'
+			_fanart = __SITEAddon__+"Imagens/participa.jpg"
+			urlbuild = __SITEAddon__+"Ficheiros/patrocinadores.txt"
+		
+		if(tipo == 'Novidades') or (tipo == 'Patrocinadores'):
+			listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
+		else:
+			if(tipo == 'Praia') or (tipo == 'ProgramasTV'):
+				listar_grupos('',urlbuild,'Miniatura',tipocan,_tipouser,_servuser,_fanart)
+				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+			else:
+				if _servuser == 'Servidor3':
+					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+				else:
+					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+				abrim3u2(_listauser)
+				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
+	else:
+		for menu in men['menus']:
+			nome = menu['nome']
+			logo = menu['logo']
+			link = menu['link']
+			tipo = menu['tipo']
+			senha = menu['senha']
+			fanart = menu['fanart']
+			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
+				if tipo == 'Adulto' :
+					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif(tipo == 'patrocinadores' or tipo == 'novidades'):
+					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'Anime':
+					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'Filme':
+					if _tipouser != 'Teste':
+						addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+					else:
+						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'Serie':
+					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif(tipo == 'limparcache'):
+					addDir(nome, link, None, 5000, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif(tipo == 'limpartudo'):
+					addDir(nome, link, None, 6000, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif(tipo == 'estado' and _tipouser != 'Teste'):
+					addDir(nome, link, None, 3335, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif(tipo == 'pesquisa' and _tipouser != 'Teste'):
+					if _tipouser != 'Teste':
+						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				else:
+					if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
+						if nome == 'TVs':
+							if _servuser == 'Servidor3':
+								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
+							else:
+								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
+							
+							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+						else:
+							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+					else:
+						if nome == 'TVs' and _tipouser != 'Teste':
+							if _servuser == 'Servidor3':
+								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
+							else:
+								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+							
+							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+						else:
+							if tipo != 'Adulto' or nome != 'Radios':
+								if _servuser == 'Teste':
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
+								else:
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							else:
+								if _servuser == 'Teste':
+									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)	
+		
+		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
+		thread.start_new_thread( obter_ficheiro_epg, () )
+		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
+		vista_Canais_Lista()
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	#check_version()
+
 ################################
 ###		Clear Cache		###
 ################################
@@ -686,141 +852,6 @@ def PURGEPACKAGES():
 ###############################################################################################################
 #													Menus													 #
 ###############################################################################################################
-
-def Menu_inicial(men,build,tipo):
-	_tipouser = men['user']['tipo']
-	_servuser = men['user']['servidor']
-	_nomeuser = men['user']['nome']
-	_listauser = men['user']['lista']
-	_listausernova = men['user']['listanova']
-	_datauser = men['datafim']['data']
-	
-	_senhaadultos = __ADDON__.getSetting("login_adultos")
-	_fanart = ''
-	
-	tiposelect = ''
-	opcaoselec = __ADDON__.getSetting("lista_m3u")
-	if opcaoselec == '0': tiposelect = 'm3u8'
-	elif opcaoselec == '1': tiposelect = 'ts'
-	elif opcaoselec == '2': tiposelect = 'rtmp'
-	
-	passanovo = True
-	if _tipouser == 'Teste' and _servuser == 'Teste':
-		passanovo = False
-	
-	if build == True and passanovo == False:
-		__ALERTA__('Live!t TV', 'É um utilizador Free logo não tem acesso á nossa build a funcionar.')
-	elif(build == True):
-		tipocan = ''
-		urlbuild = ''
-		nomebuild = ''
-		senhaadu = men['user']['senhaadulto']
-		if tipo == 'Praia':
-			urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
-			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
-			tipocan = 'Praia'
-			nomebuild = 'Praia'
-		if tipo == 'ProgramasTV':
-			urlbuild = __SITEAddon__+"Ficheiros/proteleaddongr.txt"
-			_fanart = __SITEAddon__+"Imagens/novidades_fanart.png"
-			tipocan = 'ProgramasTV'
-			nomebuild = 'ProgramasTV'
-		#if _servuser == 'Teste':
-		#	urlbuild = __SITEAddon__+"Ficheiros/praiasaddongr.txt"
-		#elif(_servuser == 'Servidor1'):
-		#	urlbuild = __SITEAddon__+"Ficheiros/canaisaddonservidor1.txt"
-		if(tipo == 'Canal'):
-			tipocan = 'Normal'
-			nomebuild = 'Canais PT'
-			_fanart = __SITEAddon__+"Imagens/tv_fanart.png"
-		elif(tipo == 'Novidades'):
-			tipocan = 'novidades'
-			nomebuild = 'Novidades'
-			_fanart = __SITEAddon__+"Imagens/novidadestv.png"
-			urlbuild = __SITEAddon__+"Ficheiros/novidades_fanart.txt"
-		elif(tipo == 'Patrocinadores'):
-			tipocan = 'patrocinadores'
-			nomebuild = 'Patrocinadores'
-			_fanart = __SITEAddon__+"Imagens/participa.jpg"
-			urlbuild = __SITEAddon__+"Ficheiros/patrocinadores.txt"
-		
-		if(tipo == 'Novidades') or (tipo == 'Patrocinadores'):
-			listar_grupos('',urlbuild,'Lista',tipocan,_tipouser,_servuser,_fanart)
-		else:
-			if(tipo == 'Praia') or (tipo == 'ProgramasTV'):
-				listar_grupos('',urlbuild,'Miniatura',tipocan,_tipouser,_servuser,_fanart)
-				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-			else:
-				if _servuser == 'Servidor3':
-					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
-				else:
-					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-				abrim3u2(_listauser)
-				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
-	else:
-		for menu in men['menus']:
-			nome = menu['nome']
-			logo = menu['logo']
-			link = menu['link']
-			tipo = menu['tipo']
-			senha = menu['senha']
-			fanart = menu['fanart']
-			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
-				if tipo == 'Adulto' :
-					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'patrocinadores' or tipo == 'novidades'):
-					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'Anime':
-					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'Filme':
-					if _tipouser != 'Teste':
-						addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-					else:
-						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'Serie':
-					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'estado' and _tipouser != 'Teste'):
-					addDir(nome, link, None, 3335, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'pesquisa' and _tipouser != 'Teste'):
-					if _tipouser != 'Teste':
-						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				else:
-					if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
-						if nome == 'TVs':
-							if _servuser == 'Servidor3':
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
-							else:
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=ts'
-							
-							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
-							addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-						else:
-							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
-					else:
-						if nome == 'TVs' and _tipouser != 'Teste':
-							if _servuser == 'Servidor3':
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
-							else:
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-							
-							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
-						else:
-							if tipo != 'Adulto' or nome != 'Radios':
-								if _servuser == 'Teste':
-									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
-								else:
-									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
-							else:
-								if _servuser == 'Teste':
-									addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)	
-		
-		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
-		thread.start_new_thread( obter_ficheiro_epg, () )
-		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
-		vista_Canais_Lista()
-		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-	#check_version()
-
 
 def abrim3u(url, datauser):
 	tmpList = []
@@ -2409,10 +2440,9 @@ def abrirNada():
 	xbmc.executebuiltin("Container.SetViewMode(51)")
 	
 def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,data_user,fanart,pasta=True,total=1):
-	if(tipo == 'pesquisa'):
+	if(tipo == 'pesquisa' and tipo == 'limparcache' and tipo == 'limpartudo'):				
 		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)
 	else:
-
 		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
@@ -2834,7 +2864,6 @@ except: pass
 ###############################################################################################################
 #													MODOS													 #
 ###############################################################################################################
-
 if mode==None or url==None or len(url)<1: menu()
 elif mode==1: listar_grupos(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,fanart)
 elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,fanart,data_user)
