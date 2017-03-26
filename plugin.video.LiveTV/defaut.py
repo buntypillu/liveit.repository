@@ -619,7 +619,7 @@ def Menu_inicial(men,build,tipo):
 						else:
 							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 					else:
-						if nome == 'TVs' and _tipouser != 'Teste':
+						if (nome == 'TVs' and _tipouser != 'Teste') or (nome == 'TVs' and _tipouser == 'Teste' and _servuser != 'Teste'):
 							if _servuser == 'Servidor3':
 								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
 							else:
