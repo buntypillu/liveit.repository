@@ -140,8 +140,8 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0)
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
-__SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsv')
-__SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL215YXBpbXAudGsvYXBpLw==')
+__SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sLw==')
+__SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sL2FwaS8=')
 __SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
 
 ###################################################################################
@@ -405,9 +405,6 @@ def login2():
 		except:
 			username = resultado['username'].encode('utf-8')
 		
-		#__ALERTA__('Live!t TV', 'Email: '+resultado['email'])
-		#__ALERTA__('Live!t TV', 'User: '+username)
-		
 		if resultado['email'] == __ADDON__.getSetting('email'):
 			__ADDON__.setSetting('tokenMrpiracy', token)
 			__ADDON__.setSetting('refreshMrpiracy', refresh)
@@ -452,9 +449,15 @@ def buildLiveit(tipologia):
 		if(tipologia == 'FilmesLive') or (tipologia == 'SeriesLive') or (tipologia == 'AnimesLive'):
 			check_login = login2()
 			if check_login == True:
+				check_login2 = login()
 				if(tipologia == 'FilmesLive'):
+					_listauser = check_login2['user']['lista']
+					if tipo_user != 'Teste':
+						filmilink = _listauser+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
+						addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 					menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
 				elif(tipologia == 'SeriesLive'):
+					__ALERTA__('Live!t-TV', 'Cheguei Aqui. 2')
 					menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
 				elif(tipologia == 'AnimesLive'):
 					menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')
@@ -1349,6 +1352,7 @@ class ThreadWithReturnValue(Thread):
 ############################################################################################################
 #												Addon Filmes e Series									  #
 ############################################################################################################
+
 def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
