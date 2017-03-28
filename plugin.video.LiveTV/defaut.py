@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 
 from resources.lib import common
 import fileUtils as fu
+from urllib2 import Request, urlopen
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
@@ -220,13 +221,13 @@ def menu():
 					menus2['senha'] = ""
 					menus2['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
 					check_login['menus'].append(menus2)
-				#menus['nome'] = "Participacoes"
-				#menus['logo'] = check_login['info']['logo']
-				#menus['link'] = check_login['info']['link']
-				#menus['tipo'] = "patrocinadores"
-				#menus['senha'] = ""
-				#menus['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
-				#check_login['menus'].append(menus)
+				menus['nome'] = "TV Archive (Ver o que passou)"
+				menus['logo'] = check_login['info']['logo']
+				menus['link'] = ''
+				menus['tipo'] = "tvarchive"
+				menus['senha'] = ""
+				menus['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
+				check_login['menus'].append(menus)
 				menus1['nome'] = "Novidades"
 				menus1['logo'] = check_login['info']['logo2']
 				menus1['link'] = check_login['info']['link2']
@@ -588,6 +589,9 @@ def Menu_inicial(men,build,tipo):
 					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'patrocinadores' or tipo == 'novidades'):
 					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'tvarchive':
+					if _tipouser != 'Teste' and _servuser != 'Teste':
+						addDir(nome,_listauser,None,25,'Miniatura',logo,'','','','',fanart)
 				elif tipo == 'Anime':
 					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif tipo == 'Filme':
@@ -1135,6 +1139,93 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,fanart):
 			__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
 		else:
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user,fanart)
+
+def listatvarchivecanais(name,url):
+	page_with_xml = urllib2.urlopen(url).readlines()
+	grouppp = ''
+	logoicon = ''
+	linkurl = ''
+	namechann = ''
+	menusTVs = []
+	adiciona = False
+	for line in page_with_xml:
+		objecto = line.decode('latin-1').encode("utf-8")
+		if(num == 0):
+			app2 = objecto.split(' group-title="')
+			app22 = app2[1].split('" tvg-logo=')
+			app3 = objecto.split(' tvg-logo=')
+			app33 = app3[1].split(',')
+			logoicon = app33[0]
+			app4 = objecto.split(',')
+			grouppp = app22[0]
+			if(grouppp == name):
+				namechann = app4[1]
+				logoicon = app33[0]
+				adiciona = True
+			
+			num = 1
+		else:
+			if(adiciona == True):
+				num = 0
+				addLink2(namechann,objecto,logoicon)
+
+def listatvarchive(url):
+	urllis = 'http://mikkm.xyz/android/androidApi.php?mode=timeshift&url='+url+'&username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
+	page_with_xml = urllib2.urlopen(urllis).readlines()
+	num = 0
+	menustv = {
+			'nome': '',
+			'logo': '',
+			'grupo': '',
+			'url': ''
+			}
+	groupant = ''
+	grouicon = ''
+	menusTVs = []
+	for line in page_with_xml:
+		objecto = line.decode('latin-1').encode("utf-8")
+		if(num == 0):
+			menustv = {
+			'nome': '',
+			'logo': '',
+			'grupo': '',
+			'url': ''
+			}
+			app2 = objecto.split(' group-title="')
+			app22 = app2[1].split('" tvg-logo=')
+			app3 = objecto.split(' tvg-logo=')
+			app33 = app3[1].split(',')
+			app4 = objecto.split(',')
+			grouppp = app22[0]
+			if(groupant != grouppp):
+				menusTVs = []
+				groupant = app22[0]
+				grouicon = app33[0]
+				addLinkGrupo(groupant,urllis,grouicon,grouicon,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+			
+			num = 1
+			menustv['nome'] = app4[1]
+			menustv['grupo'] = grouppp
+			menustv['logo'] = app33[0]
+			menustv['link'] = app4[1]
+		else:
+			num = 0
+			menustv['url'] = objecto
+			menusTVs.append(menustv)
+
+def addLinkGrupo(title,url,thumbnail,plot,fanart, isPlayable=True, folder=False):
+	ok=True
+	
+	listitem=xbmcgui.ListItem(title,iconImage=thumbnail,thumbnailImage=thumbnail)
+	info_labels={"Title":title,"FileName":title,"Plot":plot}
+	listitem.setInfo( "video", info_labels )
+	if fanart!="": 
+		listitem.setProperty('fanart_image',fanart)
+		xbmcplugin.setPluginFanart(int(sys.argv[1]),fanart)
+	
+	u = sys.argv[0] + "?url=" + str(url) + "&mode=26&name=" + str(name) + "&iconimage="+str(iconimage)+"&fanart="+str(fanart)+"&plot="+str(plot)
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem,isFolder=folder)
+	return ok
 
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 	if url != 'url':
@@ -2873,6 +2964,8 @@ elif mode==10: minhaConta(str(name),estilo)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
+elif mode==25: listatvarchive(str(url))
+elif mode==26: listatvarchivecanais(str(name),str(url))
 #elif mode==22: menuSeries()
 #elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
