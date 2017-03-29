@@ -15,16 +15,17 @@
 
 
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
-import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64,plugintools
+import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64,plugintools,calendar
 import xml.etree.ElementTree as ET
+import fileUtils as fu
 
 from resources.lib import common
-import fileUtils as fu
 from urllib2 import Request, urlopen
 from datetime import date
 from bs4 import BeautifulSoup
 from resources.lib import Downloader #Enen92 class
 from resources.lib import Player
+from resources.lib import TVArchive
 from t0mm0.common.net import Net
 from t0mm0.common.addon import Addon
 from t0mm0.common.net import HttpResponse
@@ -47,6 +48,8 @@ global uuendused
 global vanemalukk
 global version
 global mode
+global arrgrupos
+global arrlinks
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -118,9 +121,7 @@ LOAD_LIVE = ""
 televisioonilink = ""
 filmilink = ""
 andmelink = ""
-	
-	
-	
+
 __ADDON_ID__	= xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
@@ -144,6 +145,9 @@ __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
 __SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sLw==')
 __SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sL2FwaS8=')
 __SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
+
+arrgrupos = []
+arrlinks = []
 
 ###################################################################################
 #							  Iniciar Addon										  #
@@ -1140,91 +1144,62 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,fanart):
 		else:
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user,fanart)
 
-def listatvarchivecanais(name,url):
-	page_with_xml = urllib2.urlopen(url).readlines()
-	grouppp = ''
-	logoicon = ''
-	linkurl = ''
-	namechann = ''
-	menusTVs = []
-	adiciona = False
-	for line in page_with_xml:
-		objecto = line.decode('latin-1').encode("utf-8")
-		if(num == 0):
-			app2 = objecto.split(' group-title="')
-			app22 = app2[1].split('" tvg-logo=')
-			app3 = objecto.split(' tvg-logo=')
-			app33 = app3[1].split(',')
-			logoicon = app33[0]
-			app4 = objecto.split(',')
-			grouppp = app22[0]
-			if(grouppp == name):
-				namechann = app4[1]
-				logoicon = app33[0]
-				adiciona = True
-			
-			num = 1
-		else:
-			if(adiciona == True):
-				num = 0
-				addLink2(namechann,objecto,logoicon)
-
 def listatvarchive(url):
-	urllis = 'http://mikkm.xyz/android/androidApi.php?mode=timeshift&url='+url+'&username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
-	page_with_xml = urllib2.urlopen(urllis).readlines()
-	num = 0
-	menustv = {
-			'nome': '',
-			'logo': '',
-			'grupo': '',
-			'url': ''
-			}
-	groupant = ''
-	grouicon = ''
-	menusTVs = []
-	for line in page_with_xml:
-		objecto = line.decode('latin-1').encode("utf-8")
-		if(num == 0):
-			menustv = {
-			'nome': '',
-			'logo': '',
-			'grupo': '',
-			'url': ''
-			}
-			app2 = objecto.split(' group-title="')
-			app22 = app2[1].split('" tvg-logo=')
-			app3 = objecto.split(' tvg-logo=')
-			app33 = app3[1].split(',')
-			app4 = objecto.split(',')
-			grouppp = app22[0]
-			if(groupant != grouppp):
-				menusTVs = []
-				groupant = app22[0]
-				grouicon = app33[0]
-				addLinkGrupo(groupant,urllis,grouicon,grouicon,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	endereco = url+"/panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_live_streams"
+	iIiIIIi = urllib2.urlopen(endereco)
+	ooo00OOOooO	= json.load(iIiIIIi)
+	O00OOOoOoo0O = ooo00OOOooO['available_channels']
+	for	O000OOo00oo	in	O00OOOoOoo0O.values():
+		oo0OOo = O000OOo00oo['tv_archive']
+		if(oo0OOo == 1):
+			nametv=O000OOo00oo['name']
+			stream_id=O000OOo00oo['stream_id']
+			logo_tv=O000OOo00oo['stream_icon']
+			duration = O000OOo00oo['tv_archive_duration']
 			
-			num = 1
-			menustv['nome'] = app4[1]
-			menustv['grupo'] = grouppp
-			menustv['logo'] = app33[0]
-			menustv['link'] = app4[1]
-		else:
-			num = 0
-			menustv['url'] = objecto
-			menusTVs.append(menustv)
+			addLinkGrupo(nametv,logo_tv,stream_id,url,duration,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'),1)
 
-def addLinkGrupo(title,url,thumbnail,plot,fanart, isPlayable=True, folder=False):
+def listatvarchivecanais(name,stream_id,url,duration,iconimage,fanart):
+	endereco = url+"/panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_epg&stream_id="+stream_id
+	iIiIIIi	=	urllib2	.urlopen(endereco)
+	iiiI11	=	json.load(iIiIIIi)
+	iiIiI	=	datetime.datetime.utcnow() - datetime.timedelta(days=int(duration))
+	o00oooO0Oo	=calendar.timegm(iiIiI.timetuple())
+	o00oooO0Oo	=int(o00oooO0Oo)
+	o0O0OOO0Ooo	=time.time()
+	o0O0OOO0Ooo	=int(o0O0OOO0Ooo)
+	
+	for	iiIiII1	in	iiiI11	:
+		title_tv = iiIiII1['title']
+		title_tv=base64.b64decode(title_tv)
+		start	= int(iiIiII1['start'])
+		end	= int(iiIiII1['end'])
+		segundo = 0.0166666667
+		
+		duracao = int((end-start)*segundo)
+		
+		if(start > o00oooO0Oo and start < o0O0OOO0Ooo):
+			if 90 - 90:	Ooo0	%	Oo0ooO0oo0oO	/	Oo0oO0ooo
+			IIi = datetime.datetime.fromtimestamp(int(start)).strftime('%d.%m %H:%M')
+			i1Iii1i1I = datetime.datetime.fromtimestamp(int(start)).strftime('%Y-%m-%d:%H:%M')
+			title_tv = IIi + " " + title_tv
+			endereco = url+"/streaming/timeshift.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&stream="+stream_id+"&start="+i1Iii1i1I+"&duration="+str(duracao)
+			
+			addLinkCanal(title_tv,endereco,iconimage,'0001','')
+
+def addLinkGrupo(title,thumbnail,stream_id,url,duration,fanart,type):
 	ok=True
 	
 	listitem=xbmcgui.ListItem(title,iconImage=thumbnail,thumbnailImage=thumbnail)
-	info_labels={"Title":title,"FileName":title,"Plot":plot}
+	info_labels={"Title":title,"FileName":title}
 	listitem.setInfo( "video", info_labels )
-	if fanart!="": 
-		listitem.setProperty('fanart_image',fanart)
-		xbmcplugin.setPluginFanart(int(sys.argv[1]),fanart)
+	listitem.setProperty('fanart_image',fanart)
+	xbmcplugin.setPluginFanart(int(sys.argv[1]),fanart)
 	
-	u = sys.argv[0] + "?url=" + str(url) + "&mode=26&name=" + str(name) + "&iconimage="+str(iconimage)+"&fanart="+str(fanart)+"&plot="+str(plot)
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem,isFolder=folder)
+	u = sys.argv[0] + "?url=" + str(url) + "&mode=26&name=" + str(title) + "&iconimage="+str(thumbnail)+"&fanart="+str(fanart)+"&stream_id="+str(stream_id)+"&duration="+duration
+	
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem,isFolder=True)
+	
 	return ok
 
 def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
@@ -2556,7 +2531,8 @@ def addLinkCanal(name,url,iconimage,idcanal,id_p):
 	ok=True
 	cm=[]
 	
-	cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+	if(idcanal != '0001'):
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
 	
 	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	#liz.setProperty('fanart_image', fanart)
@@ -2889,7 +2865,13 @@ episodio=None
 serieNome=None
 fanart=None
 thumbnail=None
+stream_id=None
+duration=None
 
+try: duration=urllib.unquote_plus(params["duration"])
+except: pass
+try: stream_id=urllib.unquote_plus(params["stream_id"])
+except: pass
 try: url=urllib.unquote_plus(params["url"])
 except: pass
 try: name=urllib.unquote_plus(params["name"])
@@ -2965,7 +2947,7 @@ elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,se
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==25: listatvarchive(str(url))
-elif mode==26: listatvarchivecanais(str(name),str(url))
+elif mode==26: listatvarchivecanais(str(name),stream_id,str(url),duration,iconimage,fanart)
 #elif mode==22: menuSeries()
 #elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
@@ -3004,7 +2986,7 @@ elif mode==8000: buildLiveit(url)
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 else:
-	if mode !=7000 and  mode !=120 and  mode !=3333: 
+	if mode !=7000 and  mode !=120 and mode !=3333 and mode !=26 and mode !=27: 
 		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 	elif mode == 120 or mode == 7000:
 		pesquisa(url,servidor_user)
