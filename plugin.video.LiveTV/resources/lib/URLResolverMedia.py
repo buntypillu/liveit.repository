@@ -297,7 +297,6 @@ class OpenLoad():
 			itemsTab.append(data[idx1:idx2])
 			idx1 = tmpIdx2
 		return itemsTab
-	
 	def rgetDataBeetwenMarkers2(self, data, marker1, marker2, withMarkers=True, caseSensitive=True):
 		if caseSensitive:
 			sData = data
@@ -316,7 +315,6 @@ class OpenLoad():
 			return True, data[idx2:idx1+len(marker1)]
 		else:
 			return True, data[idx2+len(marker2):idx1]
-	
 	def getSearchGroups(self, data, pattern, grupsNum=1, ignoreCase=False):
 		tab = []
 		if ignoreCase:
@@ -329,7 +327,6 @@ class OpenLoad():
 			except Exception: value = ''
 			tab.append(value)
 		return tab
-	
 	def getDataBeetwenMarkers(self, data, marker1, marker2, withMarkers=True, caseSensitive=True):
 		if caseSensitive:
 			idx1 = data.find(marker1)
@@ -347,7 +344,6 @@ class OpenLoad():
 		else:
 			idx1 = idx1 + len(marker1)
 		return True, data[idx1:idx2]
-	
 	def parserOPENLOADIO(self, urlF):
 		try:
 			req = urllib2.Request(urlF, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0'})
@@ -385,6 +381,7 @@ class OpenLoad():
 			if(aResult[0]):
 				ID = aResult[1][0]
 
+			
 			tab = [(0x24, 0x37, 0x7), (0x1e, 0x34, 0x6)]
 			orgData = self.getDataBeetwenMarkers(code, '$(document)', '}});')[1].decode('string_escape')
 			p0 = self.getDataBeetwenMarkers(orgData, "splice", ';')[1]

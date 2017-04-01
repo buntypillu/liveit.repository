@@ -32,3 +32,6 @@ v6.1.4 (05/08/2016)
 v6.2.4 (15/08/2016)
 - Alterações feitas a nível de código para funcionamento da nova build.
 - Criação de nova build.
+------------------------------------------------------------------------
+v8.2.4 (01/04/2017)
+- Criação do menu TV Archive.
