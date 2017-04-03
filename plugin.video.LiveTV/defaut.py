@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 ##############BIBLIOTECAS A IMPORTAR E DEFINICOES####################
 import urllib,urllib2,sys,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc,os,json,glob,threading,gzip,xbmcvfs,cookielib,pprint,datetime,thread,time,urlparse,base64,plugintools,calendar
 import xml.etree.ElementTree as ET
@@ -31,9 +47,6 @@ global vanemalukk
 global version
 global mode
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-addonDir = plugintools.get_runtime_path()
 AddonTitle = "Live!t TV"
 mode = 3333
 version = ""
@@ -81,7 +94,7 @@ def __ALERTA__(text1="",text2="",text3=""):
 
 def menu():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
-		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		__ALERTA__(AddonTitle, 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoes()
 		
 	else:
@@ -126,9 +139,9 @@ def menu():
 					}
 				if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
 					if check_login['user']['dias'] == '5' or check_login['user']['dias'] == '4' or check_login['user']['dias'] == '3' or check_login['user']['dias'] == '2' or check_login['user']['dias'] == '1':
-						__ALERTA__('Live!t TV', 'Faltam '+check_login['user']['dias']+' dias para o serviço expirar.')
+						__ALERTA__(AddonTitle, 'Faltam '+check_login['user']['dias']+' dias para o servico expirar.')
 					if check_login['user']['dias'] == '0':
-						__ALERTA__('Live!t TV', 'É hoje que o seu serviço expira. Faça a sua Renovação. Caso não faça irá ficar Inactivo Hoje.')
+						__ALERTA__(AddonTitle, 'É hoje que o seu serviço expira. Faça a sua Renovação. Caso não faça irá ficar Inactivo Hoje.')
 				if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
 					menus2 = {
 					'nome': '',
@@ -176,20 +189,20 @@ def menu():
 				check_login['menus'].append(menus5)
 				Menu_inicial(check_login,False,'')
 			elif check_login['sucesso']['resultado'] == 'utilizador':
-				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+				__ALERTA__(AddonTitle, 'Utilizador incorreto.')
 				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				vista_menu()
 			elif check_login['sucesso']['resultado'] == 'senha':
-				__ALERTA__('Live!t TV', 'Senha incorreta.')
+				__ALERTA__(AddonTitle, 'Senha incorreta.')
 				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				vista_menu()
 			elif check_login['sucesso']['resultado'] == 'ativo':
-				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
+				__ALERTA__(AddonTitle, 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
 				vista_menu()
 			else:
-				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 				vista_menu()
 		else:
 			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
@@ -325,9 +338,9 @@ def login():
 						
 					informacoes['menus'].append(menu)		
 			else:
-				__ALERTA__('Live!t TV', 'Não sei o que estou a ler.')
+				__ALERTA__(AddonTitle, 'Não sei o que estou a ler.')
 	except:
-		__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+		__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 		return informacoes
 
 	return informacoes
@@ -340,7 +353,7 @@ def login2():
 		resultado = abrir_url(__SITEFILMES__+'login', post=json.dumps(post), header=headers)
 		
 		if resultado == 'DNS':
-			__ALERTA__('Live!t TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 			return False
 		resultado = json.loads(resultado)
 		#colocar o loggedin
@@ -362,12 +375,12 @@ def login2():
 			__ADDON__.setSetting('loggedin', username)
 			return True
 	except:
-		__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+		__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 		return False
 
 def minhaContabuild():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
-		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		__ALERTA__(AddonTitle, 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
 		check_login = login()
@@ -380,7 +393,7 @@ def minhaContabuild():
 
 def loginPesquisa():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
-		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		__ALERTA__(AddonTitle, 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
 		check_login = login()
@@ -394,7 +407,7 @@ def loginPesquisa():
 
 def buildLiveit(tipologia):
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
-		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		__ALERTA__(AddonTitle, 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
 		if(tipologia == 'FilmesLive') or (tipologia == 'SeriesLive') or (tipologia == 'AnimesLive'):
@@ -417,15 +430,15 @@ def buildLiveit(tipologia):
 				if check_login['sucesso']['resultado'] == 'yes':
 					Menu_inicial(check_login,True,tipologia)
 				elif check_login['sucesso']['resultado'] == 'utilizador':
-					__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+					__ALERTA__(AddonTitle, 'Utilizador incorreto.')
 				elif check_login['sucesso']['resultado'] == 'senha':
-					__ALERTA__('Live!t TV', 'Senha incorreta.')
+					__ALERTA__(AddonTitle, 'Senha incorreta.')
 				elif check_login['sucesso']['resultado'] == 'ativo':
-					__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com')
+					__ALERTA__(AddonTitle, 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com')
 				else:
-					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+					__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 			else:
-				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 
 def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
@@ -449,7 +462,7 @@ def Menu_inicial(men,build,tipo):
 		passanovo = False
 	
 	if build == True and passanovo == False:
-		__ALERTA__('Live!t TV', 'É um utilizador Free logo não tem acesso á nossa build a funcionar.')
+		__ALERTA__(AddonTitle, 'É um utilizador Free logo não tem acesso á nossa build a funcionar.')
 	elif(build == True):
 		tipocan = ''
 		urlbuild = ''
@@ -563,7 +576,7 @@ def Menu_inicial(men,build,tipo):
 		
 		#xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(_nomeuser, Versão do addon: '+_VERSAO_, 8000, _ICON_))
 		thread.start_new_thread( obter_ficheiro_epg, () )
-		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+_nomeuser, 8000, _ICON_))
+		xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%(AddonTitle,'Secção Iniciada: '+_nomeuser, 8000, _ICON_))
 		vista_Canais_Lista()
 		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 	#check_version()
@@ -1012,13 +1025,13 @@ def DownloaderClass(url,dest):
 def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 	try:
 		percent = min((numblocks*blocksize*100)/filesize, 100)
-		__ALERTA__('Live!t TV', ''+percent)
+		__ALERTA__(AddonTitle, ''+percent)
 		dp.update(percent)
 	except:
 		percent = 100
 		dp.update(percent)
 	if dp.iscanceled():
-		__ALERTA__('Live!t TV', 'O download foi cancelado.')
+		__ALERTA__(AddonTitle, 'O download foi cancelado.')
 		dp.close()
 
 def vod_channels(channel):
@@ -1040,16 +1053,16 @@ def listar_grupos_adultos(url,senha,estilo,tipo,tipo_user,servidor_user,fanart):
 	if tipo_user == 'Teste':
 		if servidor_user == "Teste":
 			passa = False
-			__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')
+			__ALERTA__(AddonTitle, 'Não tem acesso a este menu. Faça a sua doação.')
 		else:
 			if servidor_user == 'Teste':
 				passa = False
-				__ALERTA__('Live!t TV', 'Não tem acesso a este menu. Faça a sua doação.')	
+				__ALERTA__(AddonTitle, 'Não tem acesso a este menu. Faça a sua doação.')	
 	if passa:
 		if(__ADDON__.getSetting("login_adultos") == ''):
-			__ALERTA__('Live!t TV', 'Preencha o campo senha para adultos.')
+			__ALERTA__(AddonTitle, 'Preencha o campo senha para adultos.')
 		elif(__ADDON__.getSetting("login_adultos") != senha):
-			__ALERTA__('Live!t TV', 'Senha para adultos incorrecta. Verifique e tente de novo.')
+			__ALERTA__(AddonTitle, 'Senha para adultos incorrecta. Verifique e tente de novo.')
 		else:
 			listar_grupos('',url,estilo,tipo,tipo_user,servidor_user,fanart)
 
@@ -1252,7 +1265,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 						realizador = 'Director: '+params[8]
 						descri = params[9]
 						detalhes1 = grup
-						argumento = 'Live!t-TV'
+						argumento = AddonTitle
 						plot = 'Enredo: '+descri
 						detalhes2 = ano
 						imdb = '4510398'
@@ -1266,7 +1279,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 			except:
 				pass
 		
-		#__ALERTA__('Live!t TV', 'Tipo: '+tipo)
+		#__ALERTA__(AddonTitle, 'Tipo: '+tipo)
 		if tipo == 'patrocinadores' or tipo == 'novidades' or tipo == 'Praia' or tipo == 'pesquisa' or tipo == 'estado' or tipo == 'ProgramasTV' or nome == 'Eventos Diários':
 			estiloSelect = returnestilo(estilo)
 			xbmc.executebuiltin(estiloSelect)
@@ -1336,7 +1349,7 @@ def programacao_canal(idCanal):
 		xbmc.executebuiltin("ActivateWindow(10147)")
 		window = xbmcgui.Window(10147)
 		xbmc.sleep(100)
-		window.getControl(1).setLabel('Live!t TV')
+		window.getControl(1).setLabel(AddonTitle)
 		window.getControl(5).setText(programacao)
 	except:
 		pass
@@ -1368,7 +1381,7 @@ def listamenusseries(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 	if check_login == True:
 		menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
 	else:
-		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
+		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
@@ -1379,14 +1392,14 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
 	else:
-		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
+		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,fanart):
 	check_login = login2()
 	if check_login == True:
 		menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')
 	else:
-		__ALERTA__('Live!t-TV', 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
+		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def menuFilmes(iconimage,fanart):
 	evento = getEventos()
@@ -1425,7 +1438,7 @@ def filmes(url, pagina):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultado = json.loads(resultado)
 	for i in resultado['data']:
@@ -1475,7 +1488,7 @@ def series(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultado = json.loads(resultado)
 	if 'serie' in url:
@@ -1525,7 +1538,7 @@ def getSeasons(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultado = json.loads(resultado)
 	j=1
@@ -1539,7 +1552,7 @@ def getEpisodes(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultado = json.loads(resultado)
 	if 'serie' in url:
@@ -1597,7 +1610,7 @@ def getGeneros(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(__SITEFILMES__+'categorias', header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultado = json.loads(resultado)
 
@@ -1614,7 +1627,7 @@ def categorias(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultadoa = json.loads(resultado)
 	
@@ -1711,7 +1724,7 @@ def anos(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	resultadoa = json.loads(resultado)
 	
@@ -1814,7 +1827,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	
 	resultado = json.loads(resultado)
@@ -1835,7 +1848,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 		episodio = resultado['episodio']
 
 	mensagemprogresso = xbmcgui.DialogProgress()
-	mensagemprogresso.create('Live!t-TV', u'Abrir emissão','Por favor aguarde...')
+	mensagemprogresso.create(AddonTitle, u'Abrir emissão','Por favor aguarde...')
 	mensagemprogresso.update(25, "", u'Obter video e legenda', "")
 
 	stream, legenda, ext_g = getStreamLegenda(resultado)
@@ -1856,9 +1869,9 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	mensagemprogresso.update(75, "", u'Boa Sessão!!!', "")
 
 	if stream == False:
-		__ALERTA__('Live!t-TV', 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
+		__ALERTA__(AddonTitle, 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
 	else:
-		#__ALERTA__('Live!t TV', 'Stream: '+stream)
+		#__ALERTA__(AddonTitle, 'Stream: '+stream)
 		player_mr = Player.Player(url=url, idFilme=idVideo, pastaData=__PASTA_DADOS__, temporada=temporada, episodio=episodio, nome=name, logo=os.path.join(__ADDON_FOLDER__,'icon.png'))
 		
 		mensagemprogresso.close()
@@ -1881,7 +1894,7 @@ def getStreamLegenda(resultado):
 		elif 'vidzi' in resultado['URL']:
 			nome = 'Vidzi'
 		elif 'google' in resultado['URL'] or 'cloud.mail.ru' in resultado['URL']:
-			nome = 'Live!t-TV'
+			nome = AddonTitle
 		elif 'uptostream.com' in resultado['URL']:
 			nome = 'UpToStream'
 		elif 'rapidvideo.com' in resultado['URL'] or 'raptu' in resultado['URL']:
@@ -1895,7 +1908,7 @@ def getStreamLegenda(resultado):
 		elif 'vidzi' in resultado['URL2']:
 			nome = 'Vidzi'
 		elif 'google' in resultado['URL2'] or 'cloud.mail.ru' in resultado['URL2']:
-			nome = 'Live!t-TV'
+			nome = AddonTitle
 		elif 'uptostream.com' in resultado['URL2']:
 			nome = 'UpToStream'
 		elif 'rapidvideo.com' in resultado['URL2'] or 'raptu' in resultado['URL2']:
@@ -1910,7 +1923,7 @@ def getStreamLegenda(resultado):
 			elif 'vidzi' in resultado['URL3']:
 				nome = 'Vidzi'
 			elif 'google' in resultado['URL3'] or 'cloud.mail.ru' in resultado['URL3']:
-				nome = 'Live!t-TV'
+				nome = AddonTitle
 			elif 'uptostream.com' in resultado['URL3']:
 				nome = 'UpToStream'
 			elif 'rapidvideo.com' in resultado['URL3'] or 'raptu' in resultado['URL3']:
@@ -1927,7 +1940,7 @@ def getStreamLegenda(resultado):
 			elif 'vidzi' in resultado['URL4']:
 				nome = 'Vidzi'
 			elif 'google' in resultado['URL4'] or 'cloud.mail.ru' in resultado['URL4']:
-				nome = 'Live!t-TV'
+				nome = AddonTitle
 			elif 'uptostream.com' in resultado['URL4']:
 				nome = 'UpToStream'
 			elif 'rapidvideo.com' in resultado['URL4'] or 'raptu' in resultado['URL4']:
@@ -2042,10 +2055,10 @@ def pesquisa(url,servuss):
 				f.close()
 			except:
 				traceback.print_exc()
-				__ALERTA__('Live!t TV', 'Não gravou o conteudo em '+ficheiro)
+				__ALERTA__(AddonTitle, 'Não gravou o conteudo em '+ficheiro)
 			
 			if strPesquisa == '':
-				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
+				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
 				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
 			else:
 				resultado = abrir_url(url,post=json.dumps(dados), header=headers)
@@ -2059,13 +2072,13 @@ def pesquisa(url,servuss):
 	
 	if strPesquisa != '':
 		if resultado == 'DNS':
-			__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 			return False
 		
 		if tipo == 3 or  tipo == 4 or tipo == 5:
 			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 			if strPesquisa == '':
-				__ALERTA__('Live!t-TV', 'Insira algo na pesquisa.')
+				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
 				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
 			else:
 				dados = {'searchBox': strPesquisa, 'tabela': tabela}
@@ -2276,7 +2289,7 @@ def download(url,name, temporada,episodio,serieNome):
 
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__('Live!t-TV', 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
 	
 	resultado = json.loads(resultado)
@@ -2285,7 +2298,7 @@ def download(url,name, temporada,episodio,serieNome):
 
 	folder = xbmc.translatePath(__ADDON__.getSetting('pastaDownloads'))
 	if(folder == 'Escolha a pasta para Download'):
-		__ALERTA__('Live!t TV', 'Seleccione uma pasta primeiro no submenu Credênciais ou nas Configurações do Addon.')
+		__ALERTA__(AddonTitle, 'Seleccione uma pasta primeiro no submenu Credênciais ou nas Configurações do Addon.')
 	else:
 		if tipo > 0:
 			if tipo == 1:
@@ -2369,7 +2382,7 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 				idYoutube = trailer.split('?v=')[-1].split('/')[-1].split('?')[0].split('&')[0]
 				linkTrailer = 'plugin://plugin.video.youtube/play/?video_id='+idYoutube
 				#idYoutube=trailer.split('=')
-				#__ALERTA__('Live!t TV', 'ID: '+idYoutube[1])
+				#__ALERTA__(AddonTitle, 'ID: '+idYoutube[1])
 				#linkTrailer = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+idYoutube[1]
 				#linkTrailer = trailer
 			except:
@@ -2553,7 +2566,7 @@ def play_mult_canal(arg, icon, nome):
 					if(d.tag == 'url'):
 						urlcorrecto = d.text
 	
-	#__ALERTA__('Live!t TV', 'Url: '+urlcorrecto)
+	#__ALERTA__(AddonTitle, 'Url: '+urlcorrecto)
 	
 	playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 	playlist.clear()
@@ -2589,7 +2602,7 @@ def play_canal(arg, icon, nome):
 			TSPlayer.end()
 			return
 		else:	
-			__ALERTA__('Live!t TV', 'Erro ao abrir o canal Acestream. ')
+			__ALERTA__(AddonTitle, 'Erro ao abrir o canal Acestream. ')
 			TSPlayer.end()
 			return	
 	else:
