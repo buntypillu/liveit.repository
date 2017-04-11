@@ -227,6 +227,8 @@ def login():
 			'dias': '',
 			'lista': '',
 			'listanova': '',
+			'epg': '',
+			'tipologia': '',
 			'servidor': '',
 			'senhaadulto': ''
 		},
@@ -269,6 +271,10 @@ def login():
 				for d in child:
 					if(d.tag == 'Nome'):
 						informacoes['user']['nome'] = d.text
+					elif(d.tag == 'EPG'):
+						informacoes['user']['epg'] = d.text
+					elif(d.tag == 'Tipologia'):
+						informacoes['user']['tipologia'] = d.text
 					elif(d.tag == 'Email'):
 						informacoes['user']['email'] = d.text
 					elif(d.tag == 'Servidor'):
@@ -447,15 +453,11 @@ def Menu_inicial(men,build,tipo):
 	_listauser = men['user']['lista']
 	_listausernova = men['user']['listanova']
 	_datauser = men['datafim']['data']
+	_epguser = men['user']['epg']
+	tiposelect = men['user']['tipologia']
 	
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
-	
-	tiposelect = ''
-	opcaoselec = __ADDON__.getSetting("lista_m3u")
-	if opcaoselec == '0': tiposelect = 'm3u8'
-	elif opcaoselec == '1': tiposelect = 'ts'
-	elif opcaoselec == '2': tiposelect = 'rtmp'
 	
 	passanovo = True
 	if _tipouser == 'Teste' and _servuser == 'Teste':
@@ -504,11 +506,8 @@ def Menu_inicial(men,build,tipo):
 				listar_grupos('',urlbuild,'Miniatura',tipocan,_tipouser,_servuser,_fanart)
 				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 			else:
-				if _servuser == 'Servidor3':
-					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
-				else:
-					urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-				abrim3u2(_listauser)
+				#urlbuild = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect	
+				abrim3u2(_listauser,tiposelect)
 				xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
 	else:
 		for menu in men['menus']:
@@ -547,23 +546,15 @@ def Menu_inicial(men,build,tipo):
 				else:
 					if _tipouser == 'Administrador' or _tipouser == 'Patrocinador' or _tipouser == 'PatrocinadorPagante':
 						if nome == 'TVs':
-							if _servuser == 'Servidor3':
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=mpgets'
-							else:
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-							
-							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							#urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+							addDir(nome,_listauser,tiposelect,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 							addDir('TVs-Free',link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 						else:
 							addDir(nome,link,None,1,'Miniatura',logo,tipo,_tipouser,_servuser,nome,fanart)
 					else:
 						if (nome == 'TVs' and _tipouser != 'Teste') or (nome == 'TVs' and _tipouser == 'Teste' and _servuser != 'Teste'):
-							if _servuser == 'Servidor3':
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output=hls'
-							else:
-								urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
-							
-							addDir(nome,_listauser,None,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
+							#urllis = _listauser+'get.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=m3u_plus&output='+tiposelect
+							addDir(nome,_listauser,tiposelect,3333,'Miniatura',logo,tipo,_tipouser,_servuser,_datauser,fanart)
 						else:
 							if tipo != 'Adulto' or nome != 'Radios':
 								if _servuser == 'Teste':
@@ -808,7 +799,7 @@ def abrim3u(url, datauser):
 	
 	vista_Canais_Lista()
 	
-def abrim3u2(url):
+def abrim3u2(url,tipose):
 	version = __ADDONVERSION__
 	kasutajanimi=__ADDON__.getSetting("login_name")
 	salasona=__ADDON__.getSetting("login_password")
@@ -817,11 +808,11 @@ def abrim3u2(url):
 	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
 	
 	televisioonilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_live_categories'
-	
-	addDir('Atualizar Lista',url,None,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-	security_check(televisioonilink)
 
-def security_check(url):
+	addDir('Atualizar Lista',url,tipose,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	security_check(televisioonilink,tipose)
+
+def security_check(url,tipose):
 	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
 	u = urllib2.urlopen(request)
 	tree = ET.parse(u)
@@ -831,7 +822,7 @@ def security_check(url):
 		kanalinimi = base64.b64decode(kanalinimi)
 		kategoorialink = channel.find("playlist_url").text
 		
-		addDir(kanalinimi,kategoorialink,None,3338,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+		addDir(kanalinimi,kategoorialink,tipose,3338,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 	vista_Canais_Lista()
 
 def detect_modification(url):
@@ -847,7 +838,7 @@ def detect_modification(url):
 		addDir(filminimi,kategoorialink,None,3339,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 	vista_Canais_Lista()
 
-def stream_video(name,url,image):
+def stream_video(name,url,image,tiposelect):
 	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
 	if vanemalukk == "true":
 		vanema_lukk(name)
@@ -860,6 +851,7 @@ def stream_video(name,url,image):
 		kanalinimi = base64.b64decode(kanalinimi)
 		kanalinimi = kanalinimi.partition("[")
 		striimilink = channel.find(get_live("c3RyZWFtX3VybA==")).text
+		striimilink = striimilink.replace('.ts','.'+tiposelect)
 		pilt = channel.find("desc_image").text
 		kava = kanalinimi[1]+kanalinimi[2]
 		kava = kava.partition("]")
@@ -2435,7 +2427,10 @@ def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,dat
 	if(tipo == 'pesquisa' and tipo == 'limparcache' and tipo == 'limpartudo'):				
 		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)
 	else:
-		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
+		if mode == 3333 or mode == 3338:
+			u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&tiposelect="+str(senha)+"&fanart="+str(fanart)
+		else:
+			u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
@@ -2807,6 +2802,7 @@ fanart=None
 thumbnail=None
 stream_id=None
 duration=None
+tiposelect=None
 
 try: duration=urllib.unquote_plus(params["duration"])
 except: pass
@@ -2870,6 +2866,9 @@ try : thumbnail=urllib.unquote_plus(params["thumbnail"])
 except: pass
 try : data_user=urllib.unquote_plus(params["data_user"])
 except: pass
+try : tiposelect=urllib.unquote_plus(params["tiposelect"])
+except: pass
+
 
 
 
@@ -2908,12 +2907,12 @@ elif mode==117: download(url, name, temporada, episodio, serieNome)
 elif mode==1000: abrirDefinincoes()
 elif mode==2000: abrirNada()
 elif mode==3000: abrirDefinincoesMesmo()
-elif mode==3333: abrim3u2(url)
+elif mode==3333: abrim3u2(url,tiposelect)
 #elif mode==3333: abrim3u2(url,data_user)
 elif mode==3335: execute_ainfo(url)
 elif mode==3336: security_check(url)
 elif mode==3337: detect_modification(url)
-elif mode==3338: stream_video(name,url,iconimage)
+elif mode==3338: stream_video(name,url,iconimage,tiposelect)
 elif mode==3339: get_myaccount(name,url,iconimage)
 elif mode==3340: run_cronjob(name,url,iconimage,thumbnail,fanart)
 elif mode==3334: PlayUrl(name,url,iconimage)

@@ -20,13 +20,14 @@ import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base
 import htmlentitydefs
 from cPacker import cPacker
 from t0mm0.common.net import Net
-from bs4 import BeautifulSoup
 import jsunpacker
 from AADecoder import AADecoder
 from JsParser import JsParser
 from JJDecoder import JJDecoder
+from cPacker import cPacker
 from png import Reader as PNGReader
 from HTMLParser import HTMLParser
+import time
 
 def clean(text):
     command={'&#8220;':'"','&#8221;':'"', '&#8211;':'-','&amp;':'&','&#8217;':"'",'&#8216;':"'"}
@@ -64,10 +65,16 @@ class RapidVideo():
 
 	def getMediaUrl(self):
 		try:
-			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+			sourceCode = self.net.http_GET(self.url, headers=self.headers).decode('unicode_escape')
 		except:
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content
 
+		videoUrl = ''
+		sPattern = '<input type="hidden" value="(\d+)" name="block">'
+		aResult1 = self.parse(sourceCode,sPattern)
+		if (aResult1[0] == True):
+			sourceCode = self.net.http_GET(self.url, data='confirm.x=74&confirm.y=35&block=1', headers=self.headers)
+		
 		sPattern =  '"file":"([^"]+)","label":"([0-9]+)p.+?"'
 		aResult = self.parse(sourceCode, sPattern)
 		try:
@@ -75,7 +82,6 @@ class RapidVideo():
 			#log(self.legenda)
 		except:
 			self.legenda = ''
-		videoUrl = ''
 		if aResult[0]:
 			links = []
 			qualidades = []
@@ -237,113 +243,121 @@ class OpenLoad():
 			'Accept-Language': 'en-US,en;q=0.8',
 			'Referer': url}
 
-	#Código atualizado a partir de: https://gitlab.com/iptvplayer-for-e2 
-	def decodeK(self, k, p0, p1, p2):
-		y = ord(k[0]);
-		e = y - p1
-		d = max(2, e)
-		e = min(d, len(k) - p0 - 2)
-		t = k[e:e + p0]
-		h = 0
-		g = []
-		while h < len(t):
-			f = t[h:h+3]
-			g.append(int(f, 0x8))
-			h += 3
-		v = k[0:e] + k[e+p0:]
-		p = []
+	#Código atualizado a partir de: https://github.com/Kodi-vStream/venom-xbmc-addons/ 
+	def ASCIIDecode(self, string):
+    
 		i = 0
-		h = 0
-		while h < len(v):
-			B = v[h:h + 2]
-			C = v[h:h + 3]
-			D = v[h:h + 4]
-			f = int(B, 0x10)
-			h += 0x2
+		l = len(string)
+		ret = ''
+		while i < l:
+			c =string[i]
+			if string[i:(i+2)] == '\\x':
+				c = chr(int(string[(i+2):(i+4)],16))
+				i+=3
+			if string[i:(i+2)] == '\\u':
+				cc = int(string[(i+2):(i+6)],16)
+				if cc > 256:
+					#ok c'est de l'unicode, pas du ascii
+					return ''
+				c = chr(cc)
+				i+=5     
+			ret = ret + c
+			i = i + 1
 
-			if (i % 3) == 0:
-				f = int(C, 8)
-				h += 1
-			elif i % 2 == 0 and i != 0 and ord(v[i-1]) < 0x3c:
-				f = int(D, 0xa)
-				h += 2
-			    
-			A = g[i % p2]
-			f = f ^ 0xd5;
-			f = f ^ A;
-			p.append( chr(f) )
-			i += 1
-		return "".join(p)
+		return ret
+
+
+	def SubHexa(self, g):
+		return g.group(1) + self.Hexa(g.group(2))
+    
+	def Hexa(self, string):
+		return str(int(string, 0))
+
+	def parseInt(self, sin):
+		return int(''.join([c for c in re.split(r'[,.]',str(sin))[0] if c.isdigit()])) if re.match(r'\d+', str(sin), re.M) and not callable(sin) else None
+
+	def CheckCpacker(self, str):
+
+		sPattern = '(\s*eval\s*\(\s*function(?:.|\s)+?{}\)\))'
+		aResult = re.findall(sPattern,str)
+		if (aResult):
+			str2 = aResult[0]
+			if not str2.endswith(';'):
+				str2 = str2 + ';'
+			try:
+				str = cPacker().unpack(str2)
+				print('Cpacker encryption')
+			except:
+				pass
+
+		return str
+	    
+	def CheckJJDecoder(self, str):
+
+		sPattern = '([a-z]=.+?\(\)\)\(\);)'
+		aResult = re.findall(sPattern,str)
+		if (aResult):
+			print('JJ encryption')
+			return JJDecoder(aResult[0]).decode()
+
+		return str
+    
+	def CheckAADecoder(self, str):
+		aResult = re.search('([>;]\s*)(ﾟωﾟ.+?\(\'_\'\);)', str,re.DOTALL | re.UNICODE)
+		if (aResult):
+			print('AA encryption')
+			tmp = aResult.group(1) + AADecoder(aResult.group(2)).decode()
+			return str[:aResult.start()] + tmp + str[aResult.end():]
+
+		return str
+    
+	def CleanCode(self, code,Coded_url):
+		#extract complete code
+		r = re.search(r'type="text\/javascript">(.+?)<\/script>', code,re.DOTALL)
+		if r:
+			code = r.group(1)
+
+		#1 er decodage
+		code = self.ASCIIDecode(code)
+
+		#fh = open('c:\\html2.txt', "w")
+		#fh.write(code)
+		#fh.close()
+
+		#extract first part
+		P3 = "^(.+?)}\);\s*\$\(\"#videooverlay"
+		r = re.search(P3, code,re.DOTALL)
+		if r:
+			code = r.group(1)
+		else:
+			log('er1')
+			return False
+		    
+		#hack a virer dans le futur
+		P8 = '\$\(document\).+?\(function\(\){'
+		code= re.sub(P8,'\n',code)
+		P4 = 'if\(!_[0-9a-z_\[\(\'\)\]]+,document[^;]+\)\){'
+		code = re.sub(P4,'if (false) {',code)
+
+		#hexa convertion
+		code = re.sub('([^_])(0x[0-9a-f]+)',self.SubHexa,code)
+		 
+		#Saut de ligne
+		#code = code.replace(';',';\n')
+		code = code.replace('case','\ncase')
+		code = code.replace('}','\n}\n')
+		code = code.replace('{','{\n')
+
+		#tab
+		code = code.replace('\t','')
+
+		#hack
+		code = code.replace('!![]','true')
+
+		return code
+	def __replaceSpecialCharacters(self, sString):
+		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
 	
-	def getAllItemsBeetwenMarkers(self, data, marker1, marker2, withMarkers=True, caseSensitive=True):
-		itemsTab = []
-		if caseSensitive:
-			sData = data
-		else:
-			sData = data.lower()
-			marker1 = marker1.lower()
-			marker2 = marker2.lower()
-		idx1 = 0
-		while True:
-			idx1 = sData.find(marker1, idx1)
-			if -1 == idx1: return itemsTab
-			idx2 = sData.find(marker2, idx1 + len(marker1))
-			if -1 == idx2: return itemsTab
-			tmpIdx2 = idx2 + len(marker2) 
-			if withMarkers:
-				idx2 = tmpIdx2
-			else:
-				idx1 = idx1 + len(marker1)
-			itemsTab.append(data[idx1:idx2])
-			idx1 = tmpIdx2
-		return itemsTab
-	def rgetDataBeetwenMarkers2(self, data, marker1, marker2, withMarkers=True, caseSensitive=True):
-		if caseSensitive:
-			sData = data
-		else:
-			sData = data.lower()
-			marker1 = marker1.lower()
-			marker2 = marker2.lower()
-		idx1 = len(data)
-
-		idx1 = sData.rfind(marker1, 0, idx1)
-		if -1 == idx1: return False, ''
-		idx2 = sData.rfind(marker2, 0, idx1)
-		if -1 == idx2: return False, ''
-
-		if withMarkers:
-			return True, data[idx2:idx1+len(marker1)]
-		else:
-			return True, data[idx2+len(marker2):idx1]
-	def getSearchGroups(self, data, pattern, grupsNum=1, ignoreCase=False):
-		tab = []
-		if ignoreCase:
-			match = re.search(pattern, data, re.IGNORECASE)
-		else:
-			match = re.search(pattern, data)
-
-		for idx in range(grupsNum):
-			try:    value = match.group(idx + 1)
-			except Exception: value = ''
-			tab.append(value)
-		return tab
-	def getDataBeetwenMarkers(self, data, marker1, marker2, withMarkers=True, caseSensitive=True):
-		if caseSensitive:
-			idx1 = data.find(marker1)
-		else:
-			idx1 = data.lower().find(marker1.lower())
-		if -1 == idx1: return False, ''
-		if caseSensitive:
-			idx2 = data.find(marker2, idx1 + len(marker1))
-		else:
-			idx2 = data.lower().find(marker2.lower(), idx1 + len(marker1))
-		if -1 == idx2: return False, ''
-
-		if withMarkers:
-			idx2 = idx2 + len(marker2)
-		else:
-			idx1 = idx1 + len(marker1)
-		return True, data[idx1:idx2]
 	def parserOPENLOADIO(self, urlF):
 		try:
 			req = urllib2.Request(urlF, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0'})
@@ -366,9 +380,9 @@ class OpenLoad():
 			if (aResult[0]):
 				sHtmlContent2 = aResult[1][0]
 			code = ''
-			maxboucle = 3
+			maxboucle = 4
 			sHtmlContent3 = sHtmlContent2
-			while (('window.r' not in sHtmlContent3) and (maxboucle > 0)):
+			while (maxboucle > 0):
 				sHtmlContent3 = self.CheckCpacker(sHtmlContent3)
 				sHtmlContent3 = self.CheckJJDecoder(sHtmlContent3)
 				sHtmlContent3 = self.CheckAADecoder(sHtmlContent3)
@@ -377,33 +391,32 @@ class OpenLoad():
 			if not (code):
 				#log("No Encoded Section Found. Deleted?")
 				raise ResolverError('No Encoded Section Found. Deleted?')
-			aResult = self.parse(code, "window.r='([^']+)';")
-			if(aResult[0]):
-				ID = aResult[1][0]
-
 			
-			tab = [(0x24, 0x37, 0x7), (0x1e, 0x34, 0x6)]
-			orgData = self.getDataBeetwenMarkers(code, '$(document)', '}});')[1].decode('string_escape')
-			p0 = self.getDataBeetwenMarkers(orgData, "splice", ';')[1]
-			p0 = self.getSearchGroups(p0, "\,(0x[0-9a-fA-F]+?)\)")[0]
-			p1 = self.getDataBeetwenMarkers(orgData, "'#'", 'continue;')[1]
-			p1 = self.getSearchGroups(p1, "\,(0x[0-9a-fA-F]+?)\)")[0]
-			p2 = self.rgetDataBeetwenMarkers2(orgData, '^=0x', 'var ')[1]
-			p2 = self.getSearchGroups(p2, "\,(0x[0-9a-fA-F]+?)\)")[0]
-			
-			tab.insert(0, (int(p0, 16), int(p1, 16), int(p2, 16)))
-			dec = ''
-			for item in tab:
-				dec = self.decodeK(TabUrl[0][1], item[0], item[1], item[2])
-				if dec != '': break
-			if not(dec):
-				#log("No Encoded Section Found. Deleted?")
+			Coded_url = ''
+			for i in TabUrl:
+				if len(i[1]) > 30:
+					Coded_url = i[1]
+					Item_url = '#'+ i[0]
+			if not(Coded_url):
 				raise ResolverError('No Encoded Section Found. Deleted?')
 
-			
-	  
-			api_call = "https://openload.co/stream/" + dec + "?mime=true" 
+			code = self.CleanCode(code, Coded_url)
 
+			xbmc.executebuiltin("Notification(%s,%s,%s)" % ("MrPiracy", "A Descomprimir Openload...", 15000))
+			JP = JsParser()
+			Liste_var = []
+			JP.AddHackVar(Item_url, Coded_url)
+
+			try:
+				JP.ProcessJS(code, Liste_var)
+				url = JP.GetVarHack("#streamurl")
+			except:
+				raise ResolverError('No Encoded Section Found. Deleted?')
+
+			if not(url):
+				raise ResolverError('No Encoded Section Found. Deleted?')
+			api_call =  "https://openload.co/stream/" + url + "?mime=true"
+			
 			if 'KDA_8nZ2av4/x.mp4' in api_call:
 				#log('Openload.co resolve failed')
 				raise ResolverError('Openload.co resolve failed')
@@ -413,18 +426,61 @@ class OpenLoad():
 				raise ResolverError('pigeon url : ' + api_call)
 			
 			return api_call
-		except Exception as e:
-			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
-		except ResolverError:
-			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
+		#ResolverError, 
+		except (Exception, ResolverError):
+			try:
+				media_id = self.getId()
+				#log("API OPENLOAD")
+				video_url = self.__check_auth(media_id)
+				if not video_url:
+					video_url = self.__auth_ip(media_id)
+				
+				if video_url:
+					return video_url
+				else:
+					raise ResolverError("Sem autorização do Openload")
+			except ResolverError:
+				self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
+	
+	def _api_get_url(self, url):
+		
+		result = self.net.http_GET(url).content
+		
+		js_result = json.loads(result)
+		if js_result['status'] != 200:
+			raise ResolverError(js_result['status'], js_result['msg'])
+		return js_result
+	def __auth_ip(self, media_id):
+		js_data = self._api_get_url('https://api.openload.co/1/streaming/info')
+		pair_url = js_data.get('result', {}).get('auth_url', '')
+		if pair_url:
+			pair_url = pair_url.replace('\/', '/')
+			header = "Autorização do Openload"
+			line1 = "Para visualizar este video, é necessaria autorização"
+			line2 = "Acede ao link em baixo para permitires acesso ao video:"
+			line3 = "[B][COLOR blue]%s[/COLOR][/B] e clica em 'Pair'" % (pair_url)
+			with CountdownDialog(header, line1, line2, line3) as cd:
+				return cd.start(self.__check_auth, [media_id])
+	
+	def __check_auth(self, media_id):
+		try:
+			js_data = self._api_get_url('https://api.openload.co/1/streaming/get?file=%s' % media_id)
+		except ResolverError as e:
+			status, msg = e
+			if status == 403:
+				return
+			else:
+				raise ResolverError(msg)	
 
+
+		return js_data.get('result', {}).get('url')
 	def getId(self):
 		#return self.url.split('/')[-1]
 		try:
 			try:
-				return re.compile('https\:\/\/openload\.co\/embed\/(.+?)').findall(self.url)[0]
+				return re.compile('https\:\/\/openload\.co\/embed\/(.+)\/').findall(self.url)[0]
 			except:
-				return re.compile('https\:\/\/openload\.co\/embed\/(.+?)\/').findall(self.url)[0]
+				return re.compile('https\:\/\/openload\.co\/embed\/(.+)').findall(self.url)[0]
 		except:
 			return re.compile('https\:\/\/openload.co\/f\/(.+?)\/').findall(self.url)[0]
 
@@ -462,136 +518,24 @@ class OpenLoad():
 		return url
 
 	def parse(self, sHtmlContent, sPattern, iMinFoundValue = 1):
-		sHtmlContent = self.replaceSpecialCharacters(str(sHtmlContent))
+		sHtmlContent = self.__replaceSpecialCharacters(str(sHtmlContent))
 		aMatches = re.compile(sPattern, re.IGNORECASE).findall(sHtmlContent)
 		if (len(aMatches) >= iMinFoundValue):
 			return True, aMatches
 		return False, aMatches
-	def replaceSpecialCharacters(self, sString):
-		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
-
+	
 	def parseInt(self, sin):
 		return int(''.join([c for c in re.split(r'[,.]',str(sin))[0] if c.isdigit()])) if re.match(r'\d+', str(sin), re.M) and not callable(sin) else None
-
-	def GetOpenloadUrl(self, url, referer):
-		if 'openload.co/stream' in url:
-
-			headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11', 'Referer':referer }
-
-			req = urllib2.Request(url,None,headers)
-			res = urllib2.urlopen(req)
-			finalurl = res.geturl()
-
-			if 'KDA_8nZ2av4/x.mp4' in finalurl:
-				print('pigeon url : ' + url)
-				finalurl = ''
-			if 'Content-Length' in res.info():
-				if res.info()['Content-Length'] == '33410733':
-					print('pigeon url : ' + url)
-					finalurl = ''
-			if url == finalurl:
-				print('Bloquage')
-				finalurl = ''
-
-			return finalurl
-		return url
-
-	def CheckCpacker(self, str):
-		sPattern = '(\s*eval\s*\(\s*function(?:.|\s)+?{}\)\))'
-		aResult = self.parse(str, sPattern)
-		if (aResult[0]):
-			str2 = aResult[1][0]
-			if not str2.endswith(';'):
-				str2 = str2 + ';'
-			try:
-				str = cPacker().unpack(str2)
-			except:
-				pass
-		return str
-	def CheckJJDecoder(self, str):
-		sPattern = '([a-z]=.+?\(\)\)\(\);)'
-		aResult = self.parse(str, sPattern)
-		if (aResult[0]):
-			return JJDecoder(aResult[1][0]).decode()
-		return str
-	def CheckAADecoder(self, str):
-		sPattern = '[>;]\s*(ﾟωﾟ.+?\(\'_\'\);)'
-		aResult = re.search(sPattern, str,re.DOTALL | re.UNICODE)
-		if (aResult):
-			tmp = AADecoder(aResult.group(1)).decode()
-			return str[:aResult.start()] + tmp + str[aResult.end():]			
-		return str
-	def getMediaUrlOld(self):
-
-		try:
-			ticket = 'https://api.openload.co/1/file/dlticket?file=%s' % self.id
-			result = self.net.http_GET(ticket).content
-			jsonResult = json.loads(result)
-
-			if jsonResult['status'] == 200:
-				fileUrl = 'https://api.openload.co/1/file/dl?file=%s&ticket=%s' % (self.id, jsonResult['result']['ticket'])
-				captcha = jsonResult['result']['captcha_url']
-
-				print "CAPTCHA: "
-				print self.id
-				captcha.replace('\/', '/')
-				print captcha
-
-				if captcha:
-					captchaResponse = self.getCaptcha(captcha.replace('\/', '/'))
-
-					if captchaResponse:
-						fileUrl += '&captcha_response=%s' % urllib.quote(captchaResponse)
-
-				xbmc.sleep(jsonResult['result']['wait_time'] * 1000)
-
-				result = self.net.http_GET(fileUrl).content
-				jsonResult = json.loads(result)
-
-				if jsonResult['status'] == 200:
-					return jsonResult['result']['url'] + '?mime=true'  #really?? :facepalm:
-				else:
-					self.messageOk('Live!t-TV', "FILE: "+jsonResult['msg'])
-
-			else:
-
-				self.messageOk('Live!t-TV', "TICKET: "+jsonResult['msg'])
-				return False
-		except:
-			self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
-
-	def getCaptcha(self, image):
-		try:
-			image = xbmcgui.ControlImage(450, 0, 300, 130, image)
-			dialog = xbmcgui.WindowDialog()
-			dialog.addControl(image)
-			dialog.show()
-			xbmc.sleep(3000)
-
-			letters = xbmc.Keyboard('', 'Escreva as letras na imagem', False)
-			letters.doModal()
-
-			if(letters.isConfirmed()):
-				result = letters.getText()
-				if result == '':
-					self.messageOk('Live!t-TV', 'Tens de colocar o texto da imagem para aceder ao video.')
-				else:
-					return result
-			else:
-				self.messageOk('Live!t-TV', 'Erro no Captcha')
-		finally:
-			dialog.close()
 
 	def getSubtitle(self):
 		pageOpenLoad = self.net.http_GET(self.url, headers=self.headers).content
 
 		try:
-			subtitle = re.compile('<track\s+kind="captions"\s+src="(.+?)"').findall(pageOpenLoad)[0]
+			subtitle = re.compile('<script.+?>\s+var\s+suburl\s+=\s+"(.+?)";').findall(pageOpenLoad)[0]
 		except:
 			subtitle = ''
 		#return self.site + subtitle
 		return subtitle
-
 
 class VideoMega():
 
@@ -671,3 +615,70 @@ class Vidzi():
 
 	def getSubtitle(self):
 		return self.subtitle
+		
+#tknorris code: https://github.com/tknorris/script.module.urlresolver/
+
+class CountdownDialog(object):
+    __INTERVALS = 5
+    
+    def __init__(self, heading, line1='', line2='', line3='', active=True, countdown=60, interval=5):
+        self.heading = heading
+        self.countdown = countdown
+        self.interval = interval
+        self.line3 = line3
+        if active:
+            #if xbmc.getCondVisibility('Window.IsVisible(progressdialog)'):
+            #    pd = ProgressDialog()
+            #else:
+            pd = xbmcgui.DialogProgress()
+            if not self.line3: line3 = 'Expires in: %s seconds' % (countdown)
+            pd.create(self.heading, line1, line2, line3)
+            pd.update(100)
+            self.pd = pd
+        else:
+            self.pd = None
+
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        if self.pd is not None:
+            self.pd.close()
+            del self.pd
+    
+    def start(self, func, args=None, kwargs=None):
+        if args is None: args = []
+        if kwargs is None: kwargs = {}
+        result = func(*args, **kwargs)
+        if result:
+            return result
+        
+        if self.pd is not None:
+            start = time.time()
+            expires = time_left = self.countdown
+            interval = self.interval
+            while time_left > 0:
+                for _ in range(CountdownDialog.__INTERVALS):
+                    xbmc.sleep(interval * 1000 / CountdownDialog.__INTERVALS)
+                    if self.is_canceled(): return
+                    time_left = expires - int(time.time() - start)
+                    if time_left < 0: time_left = 0
+                    progress = time_left * 100 / expires
+                    line3 = 'Expires in: %s seconds' % (time_left) if not self.line3 else ''
+                    self.update(progress, line3=line3)
+                    
+                result = func(*args, **kwargs)
+                if result:
+                    return result
+    
+    def is_canceled(self):
+        if self.pd is None:
+            return False
+        else:
+            return self.pd.iscanceled()
+        
+    def update(self, percent, line1='', line2='', line3=''):
+        if self.pd is not None:
+            self.pd.update(percent, line1, line2, line3)
+class ResolverError(Exception):
+    pass
