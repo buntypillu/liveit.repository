@@ -68,7 +68,7 @@ __ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
 __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
 _ICON_ = __ADDON_FOLDER__ + '/icon.png'
 __SKIN__ = 'v2'
-__SITE__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvUEhQLw==')
+__SITEBD__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvUEhQLw==')
 __SITEAddon__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvQWRkb24v')
 __EPG__ = __ADDON__.getSetting("lista_epg")
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
@@ -79,9 +79,9 @@ headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0)
 __PASTA_DADOS__ = Addon(__ADDON_ID__).get_profile().decode("utf-8")
 __PASTA_FILMES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaFilmes'))
 __PASTA_SERIES__ = xbmc.translatePath(__ADDON__.getSetting('bibliotecaSeries'))
-__SITEAPI__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sLw==')
-__SITEFILMES__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sL2FwaS8=')
-__SITEFILMES2__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
+__API__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sLw==')
+__API_SITE__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sL2FwaS8=')
+__SITE__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
 
 ###################################################################################
 #							  Iniciar Addon										  #
@@ -168,7 +168,7 @@ def menu():
 				check_login['menus'].append(menus1)
 				menus3['nome'] = "Pesquisa"
 				menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
-				menus3['link'] = __SITEFILMES__
+				menus3['link'] = __API_SITE__
 				menus3['tipo'] = "pesquisa"
 				menus3['senha'] = ""
 				menus3['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
@@ -262,7 +262,7 @@ def login():
 		net.set_cookies(__COOKIE_FILE__)
 		dados = {'username': __ADDON__.getSetting("login_name"), 'password': __ADDON__.getSetting("login_password")}
 		
-		codigo_fonte = net.http_POST(__SITE__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
+		codigo_fonte = net.http_POST(__SITEBD__+'LoginAddon2.php',form_data=dados,headers=__HEADERS__).content
 		elems = ET.fromstring(codigo_fonte)
 		for child in elems:
 			if(child.tag == 'sucesso'):
@@ -356,7 +356,7 @@ def login2():
 	try:
 		post = {'username': __ADDON__.getSetting('email'), 'password': __ADDON__.getSetting('password'),'grant_type': 'password', 'client_id': 'kodi', 'client_secret':'pyRmmKK3cbjouoDMLXNtt2eGkyTTAG' }
 		
-		resultado = abrir_url(__SITEFILMES__+'login', post=json.dumps(post), header=headers)
+		resultado = abrir_url(__API_SITE__+'login', post=json.dumps(post), header=headers)
 		
 		if resultado == 'DNS':
 			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
@@ -368,7 +368,7 @@ def login2():
 		headersN = headers
 		headersN['Authorization'] = 'Bearer %s' % token
 		
-		resultado = abrir_url(__SITEFILMES__+'me', header=headersN)
+		resultado = abrir_url(__API_SITE__+'me', header=headersN)
 		resultado = json.loads(resultado)
 		try:
 			username = resultado['username'].decode('utf-8')
@@ -1396,30 +1396,30 @@ def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 def menuFilmes(iconimage,fanart):
 	evento = getEventos()
 	if evento:
-		addDir2('[B]'+evento+'[/B]', __SITEFILMES__+'evento/1', 111, 'filmes', iconimage, 1, None, None, fanart)
+		addDir2('[B]'+evento+'[/B]', __API_SITE__+'evento/1', 111, 'filmes', iconimage, 1, None, None, fanart)
 		addDir2(' ', '', 0, '', os.path.join(__ART_FOLDER__, __SKIN__, 'nada.png'), 1, None, None, fanart)
-	addDir2('Todos os Filmes', __SITEFILMES__+'filmes', 111, 'filmes', iconimage, 1, None, None, fanart)
-	addDir2('Filmes em Destaque',  __SITEFILMES__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
-	addDir2('Filmes por Ano', __SITEFILMES__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
-	addDir2('Filmes por Genero', __SITEFILMES__+'filmes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
+	addDir2('Todos os Filmes', __API_SITE__+'filmes', 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes em Destaque',  __API_SITE__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes por Ano', __API_SITE__+'filmes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Filmes por Genero', __API_SITE__+'filmes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
 def menuSeries(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todas as Series', __SITEFILMES__+'series', 123, 'series', iconimage, 1, None, None, fanart)
-	addDir2('Series em Destaque',  __SITEFILMES__+'series/destaque', 123, 'series', iconimage, 1, None, None, fanart)
-	addDir2('Series por Ano', __SITEFILMES__+'series/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
-	addDir2('Series por Genero', __SITEFILMES__+'series/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
+	addDir2('Todas as Series', __API_SITE__+'series', 123, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Series em Destaque',  __API_SITE__+'series/destaque', 123, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Series por Ano', __API_SITE__+'series/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Series por Genero', __API_SITE__+'series/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
 def menuAnimes(iconimage,fanart):
 	database = Database.isExists()
-	addDir2('Todos os Animes', __SITEFILMES__+'animes', 123, 'animes', iconimage, 1, None, None, fanart)
-	addDir2('Animes em Destaque',  __SITEFILMES__+'animes/destaque', 123, 'animes', iconimage, 1, None, None, fanart)
-	addDir2('Animes por Ano', __SITEFILMES__+'animes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
-	addDir2('Animes por Genero', __SITEFILMES__+'animes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
+	addDir2('Todos os Animes', __API_SITE__+'animes', 123, 'animes', iconimage, 1, None, None, fanart)
+	addDir2('Animes em Destaque',  __API_SITE__+'animes/destaque', 123, 'animes', iconimage, 1, None, None, fanart)
+	addDir2('Animes por Ano', __API_SITE__+'animes/ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
+	addDir2('Animes por Genero', __API_SITE__+'animes/categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
 	vista_menu()
 
@@ -1460,12 +1460,14 @@ def filmes(url, pagina):
 		except:
 			nome = i['nome_ingles'].encode('utf-8')
 		if 'http' not in i['foto']:
-			i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+			i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
+			i['foto'] = i['foto'].replace('PT','')
 		
 		nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
-		urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
+		urlnoo = __API_SITE__+'filme/'+str(i['id_video'])
 		fotooo = i['foto']
-		fanarttt = __SITEFILMES2__+i['background']
+		i['background'] = i['background'].replace('PT','')
+		fanarttt = __API__+i['background']
 		addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
 		
 	current = resultado['meta']['pagination']['current_page']
@@ -1508,14 +1510,19 @@ def series(url):
 		except:
 			nome = i['nome_ingles'].encode('utf-8')
 		if 'http' not in i['foto']:
-			i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+			i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
+			i['foto'] = i['foto'].replace('PT','')
 		if i['visto'] == 1:
 			visto=True
 		else:
 			visto=False
 		
+		
 		nomeee = pt+br+removerAcentos(nome)+' ('+i['ano']+')'
-		addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_video']), 114, 'temporadas', i['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+i['background'],visto=visto)
+		fotooo = i['foto']
+		i['background'] = i['background'].replace('PT','')
+		fanarttt = __API__+i['background']
+		addDir2(nomeee, __API_SITE__+tipo+'/'+str(i['id_video']), 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 	
 	current = resultado['meta']['pagination']['current_page']
 	total = resultado['meta']['pagination']['total_pages']
@@ -1535,7 +1542,7 @@ def getSeasons(url):
 	resultado = json.loads(resultado)
 	j=1
 	while j <= resultado['temporadas']:
-		addDir2("[B]Temporada[/B] "+str(j), url+'/temporada/'+str(j), 115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(j)+'.png'),poster=__SITEFILMES2__+resultado['background'])
+		addDir2("[B]Temporada[/B] "+str(j), url+'/temporada/'+str(j), 115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(j)+'.png'),poster=__SITE__+resultado['background'])
 		j+=1
 	
 	vista_temporadas()
@@ -1552,7 +1559,7 @@ def getEpisodes(url):
 	elif 'anime' in url:
 		tipo = 'anime'
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
-	resultadoS = abrir_url(__SITEFILMES__+tipo+'/'+url.split('/')[5], header=headers)
+	resultadoS = abrir_url(__API_SITE__+tipo+'/'+url.split('/')[5], header=headers)
 	resultadoS = json.loads(resultadoS)
 	for i in resultado['data']:
 		if i['URL'] == '' and i['URL2'] == '':
@@ -1589,18 +1596,23 @@ def getEpisodes(url):
 		
 		imagem = ''
 		if i['imagem'] == 1:
-			imagem = __SITEFILMES2__+'images/series/'+i['IMBD']+'.jpg'
+			imagem = __API__+'images/series/'+i['IMBD']+'.jpg'
 		elif i['imagem'] == 0:
-			imagem = __SITEFILMES2__+'images/capas/'+i['imdbSerie']+'.jpg'
-			
+			imagem = __API__+'images/capas/'+i['imdbSerie']+'.jpg'
+		
+		imagem = imagem.replace('PT','')
+		i['background'] = i['background'].replace('PT','')
+		fanarttt = __API__+i['background']
+		
 		nomeee = pt+br+final+semLegenda+'[COLOR '+cor+'][B]Episodio '+str(i['episodio'])+'[/B][/COLOR] '+removerAcentos(nome)
-		addVideo(nomeee, __SITEFILMES__+tipo+'/'+str(i['id_serie'])+'/episodio/'+str(i['id_episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, __SITEFILMES2__+i['background'])
+		
+		addVideo(nomeee, __API_SITE__+tipo+'/'+str(i['id_serie'])+'/episodio/'+str(i['id_episodio']), 113, imagem, visto, 'episodio', i['temporada'], i['episodio'], infoLabels, fanarttt)
 	
 	vista_episodios()
 
 def getGeneros(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
-	resultado = abrir_url(__SITEFILMES__+'categorias', header=headers)
+	resultado = abrir_url(__API_SITE__+'categorias', header=headers)
 	if resultado == 'DNS':
 		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
 		return False
@@ -1625,7 +1637,7 @@ def categorias(url):
 	
 	for i in resultadoa["data"]:
 		if 'filme' in url:
-			resultado = abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
+			resultado = abrir_url(__API_SITE__+'filme/'+str(i['id_video']), header=headers)
 			resultado = json.loads(resultado)
 			categoria = resultado['categoria1']
 			if resultado['categoria2'] != '':
@@ -1638,7 +1650,7 @@ def categorias(url):
 			except:
 				nome = resultado['nome_ingles'].encode('utf-8')
 			if 'http' not in resultado['foto']:
-				resultado['foto'] = __SITEFILMES__+'images/capas/'+resultado['foto'].split('/')[-1]
+				resultado['foto'] = __API__+'images/capas/'+resultado['foto'].split('/')[-1]
 			pt = ''
 			br = ''
 			if 'Brasileiro' in categoria:
@@ -1653,9 +1665,13 @@ def categorias(url):
 			
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot':resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'IMDBNumber': resultado['IMBD'] }
 			nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
-			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
+			urlnoo = __API_SITE__+'filme/'+str(resultado['id_video'])
+			
 			fotooo = resultado['foto']
-			fanarttt = __SITEFILMES2__+resultado['background']
+			fotooo = fotooo.replace('PT','')
+			resultado['background'] = resultado['background'].replace('PT','')
+			fanarttt = __API__+resultado['background']
+			
 			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'player', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
 		elif 'serie' in url or 'anime' in url:
 			cor = "white"
@@ -1663,7 +1679,7 @@ def categorias(url):
 				tipo = 'serie'
 			elif 'anime' in url:
 				tipo = 'anime'
-			resultado = abrir_url(__SITEFILMES__+tipo+'/'+str(i['id_video']), header=headers)
+			resultado = abrir_url(__API_SITE__+tipo+'/'+str(i['id_video']), header=headers)
 			resultado = json.loads(resultado)
 			categoria = resultado['categoria1']
 			if resultado['categoria2'] != '':
@@ -1683,15 +1699,20 @@ def categorias(url):
 			except:
 				nome = resultado['nome_ingles'].encode('utf-8')
 			if 'http' not in resultado['foto']:
-				resultado['foto'] = __SITEFILMES__+'images/capas/'+resultado['foto'].split('/')[-1]
+				resultado['foto'] = __API_SITE__+'images/capas/'+resultado['foto'].split('/')[-1]
 			visto = False
 			if resultado['visto'] == 1:
 				visto=True
 			
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot': resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'Code': resultado['IMBD'] }
 			
+			fotooo = resultado['foto']
+			fotooo = fotooo.replace('PT','')
+			resultado['background'] = resultado['background'].replace('PT','')
+			fanarttt = __API__+resultado['background']
+			
 			nomeee = pt+br+removerAcentos(nome)+' ('+i['ano']+')'
-			addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', resultado['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+resultado['background'],visto=visto)
+			addDir2(nomeee, __API_SITE__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 	
 	current = resultadoa['meta']['pagination']['current_page']
 	total = resultadoa['meta']['pagination']['total_pages']
@@ -1703,11 +1724,28 @@ def categorias(url):
 	vista_filmesSeries()
 
 def getYears(url):
-	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
-	conteudo = abrir_url(__SITEFILMES2__+'filmes.php', header=headers)
-	match = re.compile('\?anos=.+?\">\s+<img.+?>\s+(.+?)<\/').findall(conteudo)
-	
-	for i in match:
+	anos = [
+			'2017',
+			'2016',
+			'2015',
+			'2014',
+			'2013',
+			'2012',
+			'2011',
+			'2010',
+			'2009',
+			'2008',
+			'2007',
+			'2006',
+			'2000-2005',
+			'1990-1999',
+			'1980-1989',
+			'1970-1979',
+			'1960-1969',
+			'1950-1959',
+			'1900-1949'
+		]
+	for i in anos:
 		addDir2(i, url+'/'+i, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'))
 		
 	vista_menu()
@@ -1722,7 +1760,7 @@ def anos(url):
 	
 	for i in resultadoa["data"]:
 		if 'filme' in url:
-			resultado = abrir_url(__SITEFILMES__+'filme/'+str(i['id_video']), header=headers)
+			resultado = abrir_url(__API_SITE__+'filme/'+str(i['id_video']), header=headers)
 			resultado = json.loads(resultado)
 			categoria = resultado['categoria1']
 			if resultado['categoria2'] != '':
@@ -1749,13 +1787,17 @@ def anos(url):
 			except:
 				nome = resultado['nome_ingles'].encode('utf-8')
 			if 'http' not in resultado['foto']:
-				resultado['foto'] = __SITEFILMES2__+'images/capas/'+resultado['foto'].split('/')[-1]
+				resultado['foto'] = __API__+'images/capas/'+resultado['foto'].split('/')[-1]
 	
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot':resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'IMDBNumber': resultado['IMBD'] }
 			nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
-			urlnoo = __SITEFILMES__+'filme/'+str(resultado['id_video'])
+			urlnoo = __API_SITE__+'filme/'+str(resultado['id_video'])
+			
 			fotooo = resultado['foto']
-			fanarttt = __SITEFILMES2__+resultado['background']
+			fotooo = fotooo.replace('PT','')
+			resultado['background'] = resultado['background'].replace('PT','')
+			fanarttt = __API__+resultado['background']
+			
 			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'player', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
 		elif 'serie' in url or 'anime' in url:
 			cor = "white"
@@ -1763,7 +1805,7 @@ def anos(url):
 				tipo = 'serie'
 			elif 'anime' in url:
 				tipo = 'anime'
-			resultado = abrir_url(__SITEFILMES__+tipo+'/'+str(i['id_video']), header=headers)
+			resultado = abrir_url(__API_SITE__+tipo+'/'+str(i['id_video']), header=headers)
 			resultado = json.loads(resultado)
 			categoria = resultado['categoria1']
 			if resultado['categoria2'] != '':
@@ -1783,15 +1825,20 @@ def anos(url):
 			except:
 				nome = resultado['nome_ingles'].encode('utf-8')
 			if 'http' not in resultado['foto']:
-				resultado['foto'] = __SITEFILMES2__+'images/capas/'+resultado['foto'].split('/')[-1]
+				resultado['foto'] = __API__+'images/capas/'+resultado['foto'].split('/')[-1]
 			if resultado['visto'] == 1:
 				visto=True
 			else:
 				visto=False
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot': resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'Code': resultado['IMBD'] }
 			
+			fotooo = resultado['foto']
+			fotooo = fotooo.replace('PT','')
+			resultado['background'] = resultado['background'].replace('PT','')
+			fanarttt = __API__+resultado['background']
+			
 			nomeee = pt+br+removerAcentos(nome)+' ('+i['ano']+')'
-			addDir2(nomeee, __SITEFILMES__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', resultado['foto'], tipo='serie', infoLabels=infoLabels,poster=__SITEFILMES2__+resultado['background'],visto=visto)
+			addDir2(nomeee, __API_SITE__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 	
 	current = resultadoa['meta']['pagination']['current_page']
 	total = resultadoa['meta']['pagination']['total_pages']
@@ -1805,7 +1852,7 @@ def anos(url):
 def getEventos():
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	
-	resultado = abrir_url(__SITEFILMES__+'eventos', header=headers)
+	resultado = abrir_url(__API_SITE__+'eventos', header=headers)
 	resultado = json.loads(resultado)
 	try:
 		if resultado['codigo'] == 204:
@@ -1943,11 +1990,11 @@ def getStreamLegenda(resultado):
 	legenda = ''
 	stream = ''
 	if '://' in resultado['legenda'] or resultado['legenda'] == '':
-		legenda = __SITEAPI__+'subs/%s.srt' % resultado['IMBD']
+		legenda = __API__+'subs/%s.srt' % resultado['IMBD']
 	elif resultado['legenda'] != '':
 		if not '.srt' in resultado['legenda']:
 			resultado['legenda'] = resultado['legenda']+'.srt'
-		legenda = __SITEAPI__+'subs/%s' % resultado['legenda']
+		legenda = __API__+'subs/%s' % resultado['legenda']
 	try:
 		if resultado['semlegenda'] == 1:
 			legenda = ''
@@ -2009,16 +2056,16 @@ def pesquisa(url,servuss):
 		tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes'])
 		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
 		if tipo == 0:
-			url = __SITEFILMES__+'filmes/pesquisa'
+			url = __API_SITE__+'filmes/pesquisa'
 			ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
 		elif tipo == 1:
-			url = __SITEFILMES__+'series/pesquisa'
+			url = __API_SITE__+'series/pesquisa'
 			ficheiro = os.path.join(__PASTA_DADOS__,'series_pesquisa.liveit')
 		elif tipo == 2:
-			url = __SITEFILMES__+'animes/pesquisa'
+			url = __API_SITE__+'animes/pesquisa'
 			ficheiro = os.path.join(__PASTA_DADOS__,'animes_pesquisa.liveit')
 		elif tipo == 3 or  tipo == 4 or tipo == 5:
-			url = __SITE__+'search.php'
+			url = __SITEBD__+'search.php'
 			if tipo == 3:
 				tabela = 'canais_kodi'
 				ficheiro = os.path.join(__PASTA_DADOS__,'canais.liveit')
@@ -2205,16 +2252,16 @@ def pesquisa(url,servuss):
 							pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 						cor = "white"
 						if 'http' not in i['foto']:
-							i['foto'] = __SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+							i['foto'] = __SITE__+'images/capas/'+i['foto'].split('/')[-1]
 						if 'PT' in i['IMBD']:
 							i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
 							pt = '[B]PT: [/B]'
 						visto = False
 						
 						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
-						urlnoo = __SITEFILMES__+'filme/'+str(i['id_video'])
+						urlnoo = __API_SITE__+'filme/'+str(i['id_video'])
 						fotooo = i['foto']
-						fanarttt = __SITEFILMES2__+i['background']
+						fanarttt = __SITE__+i['background']
 						addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
 				elif tipo == 1 or tipo == 2:
 					for i in resultado['data']:
@@ -2239,16 +2286,16 @@ def pesquisa(url,servuss):
 						except:
 							nome = i['nome_ingles'].encode('utf-8')
 						if 'http' not in i['foto']:
-							i['foto'] =__SITEFILMES2__+'images/capas/'+i['foto'].split('/')[-1]
+							i['foto'] =__SITE__+'images/capas/'+i['foto'].split('/')[-1]
 						if tipo == 1:
 							link = 'serie'
 						elif tipo == 2:
 							link = 'anime'
 						visto=False	
 						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
-						urlnoo = __SITEFILMES__+link+'/'+str(i['id_video'])
+						urlnoo = __API_SITE__+link+'/'+str(i['id_video'])
 						fotooo = i['foto']
-						fanarttt = __SITEFILMES2__+i['background']
+						fanarttt = __SITE__+i['background']
 						addDir2(nomeee, urlnoo, 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 
 				current = resultado['meta']['pagination']['current_page']
@@ -2294,9 +2341,9 @@ def download(url,name, temporada,episodio,serieNome):
 	else:
 		if tipo > 0:
 			if tipo == 1:
-				resultadoa = abrir_url(__SITEFILMES__+'serie/'+id_video, header=headers)
+				resultadoa = abrir_url(__API_SITE__+'serie/'+id_video, header=headers)
 			elif tipo == 2:
-				resultadoa = abrir_url(__SITEFILMES__+'anime/'+id_video, header=headers)
+				resultadoa = abrir_url(__API_SITE__+'anime/'+id_video, header=headers)
 			resultadoa = json.loads(resultadoa)
 			if not xbmcvfs.exists(os.path.join(folder,'series')):
 				xbmcvfs.mkdirs(os.path.join(folder,'series'))
@@ -2397,10 +2444,12 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 
 	infoLabelsAux["overlay"] = overlay
 	infoLabelsAux["playcount"] = playcount
-
+	
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	liz.setProperty('fanart_image',poster)
 	liz.setInfo( type="Video", infoLabels=infoLabelsAux)
+	liz.setProperty('fanart_image', poster)
+	liz.setArt({'fanart': poster})
+	
 	
 	if not serieNome:
 		serieNome = ''
@@ -2553,7 +2602,7 @@ def play_mult_canal(arg, icon, nome):
 		net = Net()
 		net.set_cookies(__COOKIE_FILE__)
 		dados = {'url': urlchama[1], 'canal': urlchama[0]}
-		codigo_fonte = net.http_POST(__SITE__+'searchurl.php',form_data=dados,headers=__HEADERS__).content
+		codigo_fonte = net.http_POST(__SITEBD__+'searchurl.php',form_data=dados,headers=__HEADERS__).content
 		elems = ET.fromstring(codigo_fonte)
 		for child in elems:
 			if(child.tag == 'info'):
