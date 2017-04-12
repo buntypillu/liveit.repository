@@ -1542,7 +1542,7 @@ def getSeasons(url):
 	resultado = json.loads(resultado)
 	j=1
 	while j <= resultado['temporadas']:
-		addDir2("[B]Temporada[/B] "+str(j), url+'/temporada/'+str(j), 115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(j)+'.png'),poster=__SITE__+resultado['background'])
+		addDir2("[B]Temporada[/B] "+str(j), url+'/temporada/'+str(j), 115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(j)+'.png'),poster=__API__+resultado['background'])
 		j+=1
 	
 	vista_temporadas()
@@ -2252,7 +2252,7 @@ def pesquisa(url,servuss):
 							pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 						cor = "white"
 						if 'http' not in i['foto']:
-							i['foto'] = __SITE__+'images/capas/'+i['foto'].split('/')[-1]
+							i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
 						if 'PT' in i['IMBD']:
 							i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
 							pt = '[B]PT: [/B]'
@@ -2261,7 +2261,7 @@ def pesquisa(url,servuss):
 						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
 						urlnoo = __API_SITE__+'filme/'+str(i['id_video'])
 						fotooo = i['foto']
-						fanarttt = __SITE__+i['background']
+						fanarttt = __API__+i['background']
 						addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
 				elif tipo == 1 or tipo == 2:
 					for i in resultado['data']:
@@ -2286,7 +2286,7 @@ def pesquisa(url,servuss):
 						except:
 							nome = i['nome_ingles'].encode('utf-8')
 						if 'http' not in i['foto']:
-							i['foto'] =__SITE__+'images/capas/'+i['foto'].split('/')[-1]
+							i['foto'] =__API__+'images/capas/'+i['foto'].split('/')[-1]
 						if tipo == 1:
 							link = 'serie'
 						elif tipo == 2:
@@ -2295,7 +2295,7 @@ def pesquisa(url,servuss):
 						nomeee = pt+removerAcentos(nome)+' ('+i['ano']+')'
 						urlnoo = __API_SITE__+link+'/'+str(i['id_video'])
 						fotooo = i['foto']
-						fanarttt = __SITE__+i['background']
+						fanarttt = __API__+i['background']
 						addDir2(nomeee, urlnoo, 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 
 				current = resultado['meta']['pagination']['current_page']
