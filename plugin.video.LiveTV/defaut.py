@@ -1260,8 +1260,6 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 				if total2 > 1:
 					rtmp = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+pesqyo[1]
 				
-				__ALERTA__(AddonTitle, 'Url: '+pesqyo[1])
-				
 				if grup == nome:
 					programa = ''
 					if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
@@ -2751,6 +2749,8 @@ def returnestilo(estilonovo):
 		__estilagem__ = "Container.SetViewMode(503)"
 	elif estilonovo == "Media Info 3":
 		__estilagem__ = "Container.SetViewMode(515)"
+		
+	__estilagem__ ="Container.SetViewMode(55)"
 	return __estilagem__
 	
 def vista_Canais():
