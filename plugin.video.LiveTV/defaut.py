@@ -150,15 +150,48 @@ def menu():
 					'tipo': '',
 					'senha': ''
 					}
-					_listauser = check_login['user']['lista']
-					andmelink = _listauser+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
-					menus2['nome'] = "Ver Informacao da Conta"
-					menus2['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-					menus2['link'] = andmelink
-					menus2['tipo'] = "estado"
-					menus2['senha'] = ""
-					menus2['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-					check_login['menus'].append(menus2)
+					#_listauser = check_login['user']['lista']
+					#andmelink = _listauser+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
+					#menus2['nome'] = "Ver Informacao da Conta"
+					#menus2['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
+					#menus2['link'] = andmelink
+					#menus2['tipo'] = "estado"
+					#menus2['senha'] = ""
+					#menus2['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
+					#check_login['menus'].append(menus2)
+				
+				
+				#menus4['nome'] = "Limpar Cache"
+				#menus4['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
+				#menus4['link'] = 'adsfsdfsd'
+				#menus4['tipo'] = "limparcache"
+				#menus4['senha'] = ""
+				#menus4['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
+				#check_login['menus'].append(menus4)
+				#menus5['nome'] = "Limpar Tudo Gravado"
+				#menus5['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
+				#menus5['link'] = 'sdfsdfsd'
+				#menus5['tipo'] = "limpartudo"
+				#menus5['senha'] = ""
+				#menus5['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
+				#check_login['menus'].append(menus5)
+				
+				menus5['nome'] = "Definições"
+				menus5['logo'] = __SITEAddon__+"Imagens/definicoes.png"
+				menus5['link'] = 'sdfsdfsd'
+				menus5['tipo'] = "definicoes"
+				menus5['senha'] = ""
+				menus5['fanart'] = __SITEAddon__+"Imagens/definicoes_fanart.png"
+				check_login['menus'].append(menus5)
+				
+				#menus3['nome'] = "Pesquisa"
+				#menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
+				#menus3['link'] = __API_SITE__
+				#menus3['tipo'] = "pesquisa"
+				#menus3['senha'] = ""
+				#menus3['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
+				#check_login['menus'].append(menus3)
+				
 				menus1['nome'] = "Novidades"
 				menus1['logo'] = check_login['info']['logo2']
 				menus1['link'] = check_login['info']['link2']
@@ -166,27 +199,7 @@ def menu():
 				menus1['senha'] = ""
 				menus1['fanart'] = __SITEAddon__+"Imagens/novidades_fanart.png"
 				check_login['menus'].append(menus1)
-				menus3['nome'] = "Pesquisa"
-				menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
-				menus3['link'] = __API_SITE__
-				menus3['tipo'] = "pesquisa"
-				menus3['senha'] = ""
-				menus3['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
-				check_login['menus'].append(menus3)
-				menus4['nome'] = "Limpar Cache"
-				menus4['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-				menus4['link'] = 'adsfsdfsd'
-				menus4['tipo'] = "limparcache"
-				menus4['senha'] = ""
-				menus4['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-				check_login['menus'].append(menus4)
-				menus5['nome'] = "Limpar Tudo Gravado"
-				menus5['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-				menus5['link'] = 'sdfsdfsd'
-				menus5['tipo'] = "limpartudo"
-				menus5['senha'] = ""
-				menus5['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-				check_login['menus'].append(menus5)
+				
 				Menu_inicial(check_login,False,'')
 			elif check_login['sucesso']['resultado'] == 'utilizador':
 				__ALERTA__(AddonTitle, 'Utilizador incorreto.')
@@ -351,6 +364,16 @@ def login():
 
 	return informacoes
 
+def definicoes(url,tipouser,servuser):
+	if tipouser != 'Teste' and servuser != 'Teste':
+		andmelink = url+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
+		addDir('Ver Informacao da Conta', andmelink, None, 3335, 'Lista',__SITEAddon__+"Imagens/estadomembro.png",'','','','',__SITEAddon__+"Imagens/estado_fanart.png")
+	else:
+		addDir('Conta de Teste', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	addDir('Limpar Cache', 'ytyty', None, 5000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+	addDir('Limpar Toda a Cache', 'sdfsdf', None, 6000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+	addDir('Definições Addon', 'sdfsdf', None, 3000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+
 def login2():
 	resultado = False
 	try:
@@ -446,6 +469,14 @@ def buildLiveit(tipologia):
 			else:
 				__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 
+def abrirVideoClube(url,_tipouser):
+	addDir('Filmes',url,None,21,'Miniatura',__SITEAddon__+'Imagens/filme2.png','Filme','','','',__SITEAddon__+'Imagens/filmes_fanart.png')					
+	addDir('Séries',url,None,20,'Miniatura',__SITEAddon__+'Imagens/serie1.png','Serie','','','',__SITEAddon__+'Imagens/series_fanart.png')
+	addDir('Animes',url,None,24,'Miniatura',__SITEAddon__+'Imagens/anime.png','Filme','','','',__SITEAddon__+'Imagens/series_fanart.png')
+	
+	if _tipouser != 'Teste':
+		addDir('Pesquisa',__API_SITE__,None,120,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'pesquisa','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+
 def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
 	_servuser = men['user']['servidor']
@@ -517,29 +548,18 @@ def Menu_inicial(men,build,tipo):
 			tipo = menu['tipo']
 			senha = menu['senha']
 			fanart = menu['fanart']
-			if nome != 'TVs - Desporto' and nome != 'Adultos - Desporto':
-				if tipo == 'Adulto' :
-					addDir(nome,link,senha,3,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'patrocinadores' or tipo == 'novidades'):
+			if tipo != 'Filme' and tipo != 'Serie':
+				if tipo == 'patrocinadores' or tipo == 'novidades':
 					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'Anime':
+					addDir(nome,'adsfsdfsd',None,28,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif tipo == 'tvarchive':
 					if _tipouser != 'Teste' and _servuser != 'Teste':
 						addDir(nome,_listauser,None,25,'Miniatura',logo,'','','','',fanart)
-				elif tipo == 'Anime':
-					addDir(nome,link,None,24,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'Filme':
-					if _tipouser != 'Teste':
-						addDir(nome,_listauser,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-					else:
-						addDir(nome,link,None,21,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'Serie':
-					addDir(nome,link,None,20,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'limparcache'):
-					addDir(nome, link, None, 5000, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'limpartudo'):
-					addDir(nome, link, None, 6000, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif(tipo == 'estado' and _tipouser != 'Teste'):
-					addDir(nome, link, None, 3335, 'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'definicoes':
+					addDir(nome,_listauser,None,27,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+				elif tipo == 'videoclube':
+					addDir(nome,_listauser,None,28,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'pesquisa' and _tipouser != 'Teste'):
 					if _tipouser != 'Teste':
 						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
@@ -1237,6 +1257,13 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 				descri = ''
 				_fanart = ''
 				
+				pesqyo = rtmp.split('https://www.youtube.com/watch?v=')
+				total2 = len(pesqyo)
+				if total2 > 1:
+					rtmp = 'plugin://plugin.video.youtube/?path=/root/video&action=play_video&videoid='+pesqyo[1]
+				
+				__ALERTA__(AddonTitle, 'Url: '+pesqyo[1])
+				
 				if grup == nome:
 					programa = ''
 					if tippoo == 'Desporto' or tippoo == 'Crianca' or tippoo == 'Canal' or tippoo == 'Documentario' or tippoo == 'Musica' or tippoo == 'Filme' or tippoo == 'Noticia' or tippoo == 'TVs':
@@ -1461,12 +1488,13 @@ def filmes(url, pagina):
 			nome = i['nome_ingles'].encode('utf-8')
 		if 'http' not in i['foto']:
 			i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
-			i['foto'] = i['foto'].replace('PT','')
+			#i['foto'] = i['foto'].replace('PT','')
 		
 		nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
 		urlnoo = __API_SITE__+'filme/'+str(i['id_video'])
 		fotooo = i['foto']
-		i['background'] = i['background'].replace('PT','')
+		#i['background'] = i['background'].replace('PT','')
+		i['background'] = 'images/background/'+i['IMBD']+'.jpg'
 		fanarttt = __API__+i['background']
 		addVideo(nomeee, urlnoo, 113, fotooo,visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=i['trailer'])
 		
@@ -1511,7 +1539,7 @@ def series(url):
 			nome = i['nome_ingles'].encode('utf-8')
 		if 'http' not in i['foto']:
 			i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
-			i['foto'] = i['foto'].replace('PT','')
+			#i['foto'] = i['foto'].replace('PT','')
 		if i['visto'] == 1:
 			visto=True
 		else:
@@ -1520,7 +1548,8 @@ def series(url):
 		
 		nomeee = pt+br+removerAcentos(nome)+' ('+i['ano']+')'
 		fotooo = i['foto']
-		i['background'] = i['background'].replace('PT','')
+		#i['background'] = i['background'].replace('PT','')
+		i['background'] = 'images/background/'+i['IMBD']+'.jpg'
 		fanarttt = __API__+i['background']
 		addDir2(nomeee, __API_SITE__+tipo+'/'+str(i['id_video']), 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 	
@@ -1600,8 +1629,9 @@ def getEpisodes(url):
 		elif i['imagem'] == 0:
 			imagem = __API__+'images/capas/'+i['imdbSerie']+'.jpg'
 		
-		imagem = imagem.replace('PT','')
-		i['background'] = i['background'].replace('PT','')
+		#imagem = imagem.replace('PT','')
+		#i['background'] = i['background'].replace('PT','')
+		i['background'] = 'images/background/'+i['IMBD']+'.jpg'
 		fanarttt = __API__+i['background']
 		
 		nomeee = pt+br+final+semLegenda+'[COLOR '+cor+'][B]Episodio '+str(i['episodio'])+'[/B][/COLOR] '+removerAcentos(nome)
@@ -1658,18 +1688,19 @@ def categorias(url):
 			if 'Portu' in categoria:
 				pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 			cor = "white"
-			if 'PT' in i['IMBD']:
-				i['IMBD'] = re.compile('(.+?)PT').findall(i['IMBD'])[0]
+			if 'PT' in resultado['IMBD']:
+				resultado['IMBD'] = re.compile('(.+?)PT').findall(resultado['IMBD'])[0]
 				pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
 			visto = False
 			
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot':resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'IMDBNumber': resultado['IMBD'] }
-			nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+			nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+resultado['ano']+')[/COLOR]'
 			urlnoo = __API_SITE__+'filme/'+str(resultado['id_video'])
 			
 			fotooo = resultado['foto']
-			fotooo = fotooo.replace('PT','')
-			resultado['background'] = resultado['background'].replace('PT','')
+			#fotooo = fotooo.replace('PT','')
+			#resultado['background'] = resultado['background'].replace('PT','')
+			resultado['background'] = 'images/background/'+resultado['IMBD']+'.jpg'
 			fanarttt = __API__+resultado['background']
 			
 			addVideo(nomeee, urlnoo, 113, fotooo,visto, 'player', 0, 0, infoLabels, fanarttt, trailer=resultado['trailer'])
@@ -1707,11 +1738,12 @@ def categorias(url):
 			infoLabels = {'Title': resultado['nome_ingles'], 'Year': resultado['ano'], 'Genre': categoria, 'Plot': resultado['descricao_video'], 'Cast':resultado['atores'].split(','), 'Trailer': resultado['trailer'], 'Director': resultado['diretor'], 'Rating': resultado['imdbRating'], 'Code': resultado['IMBD'] }
 			
 			fotooo = resultado['foto']
-			fotooo = fotooo.replace('PT','')
-			resultado['background'] = resultado['background'].replace('PT','')
+			#fotooo = fotooo.replace('PT','')
+			#resultado['background'] = resultado['background'].replace('PT','')
+			resultado['background'] = 'images/background/'+resultado['IMBD']+'.jpg'
 			fanarttt = __API__+resultado['background']
 			
-			nomeee = pt+br+removerAcentos(nome)+' ('+i['ano']+')'
+			nomeee = pt+br+removerAcentos(nome)+' ('+resultado['ano']+')'
 			addDir2(nomeee, __API_SITE__+tipo+'/'+str(resultado['id_video']), 114, 'temporadas', fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
 	
 	current = resultadoa['meta']['pagination']['current_page']
@@ -2041,6 +2073,7 @@ def pesquisa(url,servuss):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	tabela = ''
 	strPesquisa = ''
+	ficheiro = ''
 	if 'filmes' in url:
 		ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
 		tipo = 0
@@ -2079,11 +2112,12 @@ def pesquisa(url,servuss):
 				tabela = 'programas_kodi'
 				ficheiro = os.path.join(__PASTA_DADOS__,'programas.liveit')
 		
-		if xbmcvfs.exists(ficheiro):
-			f = open(ficheiro, "r")
-			texto = f.read()
-			teclado.setDefault(texto)
-		teclado.doModal()
+		if ficheiro != '':
+			if xbmcvfs.exists(ficheiro):
+				f = open(ficheiro, "r")
+				texto = f.read()
+				teclado.setDefault(texto)
+			teclado.doModal()
 
 		if teclado.isConfirmed():
 			strPesquisa = teclado.getText()
@@ -2102,12 +2136,12 @@ def pesquisa(url,servuss):
 			else:
 				resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	else:
-		if xbmcvfs.exists(ficheiro):
-			f = open(ficheiro, "r")
-			texto = f.read()
-		dados = {'pesquisa': texto}
-		
-		resultado = abrir_url(url,post=json.dumps(dados), header=headers)
+		if ficheiro != '':
+			if xbmcvfs.exists(ficheiro):
+				f = open(ficheiro, "r")
+				texto = f.read()
+			dados = {'pesquisa': texto}
+			resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	
 	if strPesquisa != '':
 		if resultado == 'DNS':
@@ -2755,53 +2789,57 @@ def abrirDefinincoesMesmo():
 	vista_menu()
 
 def vista_menu():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('menuView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 def vista_filmesSeries():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('filmesSeriesView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 
 def vista_temporadas():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('temporadasView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 def vista_episodios():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('episodiosView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 ############################################################################################################
 #												GET PARAMS												 #
@@ -2935,6 +2973,8 @@ elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,se
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==25: listatvarchive(str(url))
+elif mode==27: definicoes(str(url),tipo_user,servidor_user)
+elif mode==28: abrirVideoClube(str(url),tipo_user)
 elif mode==26: listatvarchivecanais(str(name),stream_id,str(url),duration,iconimage,fanart)
 #elif mode==22: menuSeries()
 #elif mode==23: menuFilmes()

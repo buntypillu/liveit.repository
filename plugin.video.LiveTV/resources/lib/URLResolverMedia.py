@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math, string
+import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math, string, socket
 import htmlentitydefs
 from cPacker import cPacker
 from t0mm0.common.net import Net
@@ -62,18 +62,51 @@ class RapidVideo():
 
 	def getId(self):
 		return urlparse.urlparse(self.url).path.split("/")[-1]
+	def verify_cb(self, conn, cert, errnum, depth, ok):
+		certsubject = crypto.X509Name(cert.get_subject())
+		commonname = certsubject.commonName
+		print('Got certificate: ' + commonname)
+		return ok
+	def abrir(self, url):
+		ctx = SSL.Context(SSL.SSLv23_METHOD)
+		ctx.set_options(SSL.OP_NO_SSLv2)
+		ctx.set_options(SSL.OP_NO_SSLv3)
+		ctx.set_verify(SSL.VERIFY_PEER, verify_cb)  # Demand a certificate
+		ctx.use_privatekey_file(os.path.join(os.curdir, 'client.pkey'))
+		ctx.use_certificate_file(os.path.join(os.curdir, 'client.cert'))
+		ctx.load_verify_locations(os.path.join(os.curdir, 'CA.cert'))
+		sock = SSL.Connection(ctx, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+		sock.connect((url, 80))
+		coisas = ''
+		while 1:
+			line = sys.stdin.readline()
+			if line == '':
+				break
+			try:
+				sock.send(line)
+				coisas = sock.recv(1024).decode('utf-8')
+				
+			except SSL.Error:
+				print('Connection died unexpectedly')
+				break
 
+
+		sock.shutdown()
+		sock.close()
+		return coisas
+		"""req = urllib2.Request(url, headers=self.headers)
+		response = urllib2.urlopen(req,context=context)
+		link=response.read()
+
+		response.close()
+		return link"""
 	def getMediaUrl(self):
 		try:
-			sourceCode = self.net.http_GET(self.url, headers=self.headers).decode('unicode_escape')
+			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
 		except:
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content
 
 		videoUrl = ''
-		sPattern = '<input type="hidden" value="(\d+)" name="block">'
-		aResult1 = self.parse(sourceCode,sPattern)
-		if (aResult1[0] == True):
-			sourceCode = self.net.http_GET(self.url, data='confirm.x=74&confirm.y=35&block=1', headers=self.headers)
 		
 		sPattern =  '"file":"([^"]+)","label":"([0-9]+)p.+?"'
 		aResult = self.parse(sourceCode, sPattern)
@@ -402,7 +435,7 @@ class OpenLoad():
 
 			code = self.CleanCode(code, Coded_url)
 
-			xbmc.executebuiltin("Notification(%s,%s,%s)" % ("MrPiracy", "A Descomprimir Openload...", 15000))
+			xbmc.executebuiltin("Notification(%s,%s,%s)" % ("Live!t-TV", "A Descomprimir Openload...", 15000))
 			JP = JsParser()
 			Liste_var = []
 			JP.AddHackVar(Item_url, Coded_url)
@@ -561,7 +594,7 @@ class VideoMega():
 		if match:
 			return match.group(1) + '|User-Agent=%s' % (self.headers)
 		else:
-			self.messageOk('MrPiracy.xyz', 'Video nao encontrado.')
+			self.messageOk('Live!t-TV', 'Video nao encontrado.')
 
 class Vidzi():
 	def __init__(self, url):
