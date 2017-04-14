@@ -552,14 +552,12 @@ def Menu_inicial(men,build,tipo):
 				if tipo == 'patrocinadores' or tipo == 'novidades':
 					addDir(nome,link,None,1,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif tipo == 'Anime':
-					addDir(nome,'adsfsdfsd',None,28,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
+					addDir(nome,_listauser,None,28,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif tipo == 'tvarchive':
 					if _tipouser != 'Teste' and _servuser != 'Teste':
 						addDir(nome,_listauser,None,25,'Miniatura',logo,'','','','',fanart)
 				elif tipo == 'definicoes':
 					addDir(nome,_listauser,None,27,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
-				elif tipo == 'videoclube':
-					addDir(nome,_listauser,None,28,'Miniatura',logo,tipo,_tipouser,_servuser,'',fanart)
 				elif(tipo == 'pesquisa' and _tipouser != 'Teste'):
 					if _tipouser != 'Teste':
 						addDir(nome,link,None,120,'Lista',logo,tipo,_tipouser,_servuser,'',fanart)
@@ -896,7 +894,7 @@ def stream_video(name,url,image,tiposelect):
 			addLinkCanalLista(shou,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'))
 	
 	xbmcplugin.setContent(int(sys.argv[1]) ,"episodes")
-	xbmc.executebuiltin("Container.SetViewMode(503)")
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 
 def get_myaccount(name,url,image):
 	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
@@ -922,7 +920,7 @@ def get_myaccount(name,url,image):
 			addLinkCanalLista(pealkiri,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
 	
 	xbmcplugin.setContent( int(sys.argv[1]) ,"movies" )
-	xbmc.executebuiltin('Container.SetViewMode(515)')
+	xbmc.executebuiltin('Container.SetViewMode(55)')
 
 def addLinkCanalLista(title,url,thumbnail,plot,fanart, isPlayable=True, folder=False):
 	ok=True
@@ -2504,7 +2502,7 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 #								FUNCOES JA FEITAS								 #
 ###################################################################################
 def abrirNada():
-	xbmc.executebuiltin("Container.SetViewMode(51)")
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	
 def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,data_user,fanart,pasta=True,total=1):
 	if(tipo == 'pesquisa' and tipo == 'limparcache' and tipo == 'limpartudo'):				
@@ -2756,28 +2754,30 @@ def returnestilo(estilonovo):
 	return __estilagem__
 	
 def vista_Canais():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('canaisView')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 def vista_Canais_Lista():
+	xbmc.executebuiltin("Container.SetViewMode(55)")
 	opcao = __ADDON__.getSetting('canaisView2')
-	if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
-	elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
-	elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
-	elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
-	elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
-	elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
-	elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
-	elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
+	#if opcao == '0': xbmc.executebuiltin("Container.SetViewMode(50)")
+	#elif opcao == '1': xbmc.executebuiltin("Container.SetViewMode(51)")
+	#elif opcao == '2': xbmc.executebuiltin("Container.SetViewMode(500)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(509)")
+	#elif opcao == '3': xbmc.executebuiltin("Container.SetViewMode(508)")
+	#elif opcao == '4': xbmc.executebuiltin("Container.SetViewMode(504)")
+	#elif opcao == '5': xbmc.executebuiltin("Container.SetViewMode(503)")
+	#elif opcao == '6': xbmc.executebuiltin("Container.SetViewMode(515)")
+	#elif opcao == '7': xbmc.executebuiltin("Container.SetViewMode(55)")
 
 def abrirDefinincoes():
 	__ADDON__.openSettings()
