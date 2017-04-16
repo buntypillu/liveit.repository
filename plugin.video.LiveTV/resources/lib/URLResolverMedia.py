@@ -62,53 +62,20 @@ class RapidVideo():
 
 	def getId(self):
 		return urlparse.urlparse(self.url).path.split("/")[-1]
-	def verify_cb(self, conn, cert, errnum, depth, ok):
-		certsubject = crypto.X509Name(cert.get_subject())
-		commonname = certsubject.commonName
-		print('Got certificate: ' + commonname)
-		return ok
-	def abrir(self, url):
-		ctx = SSL.Context(SSL.SSLv23_METHOD)
-		ctx.set_options(SSL.OP_NO_SSLv2)
-		ctx.set_options(SSL.OP_NO_SSLv3)
-		ctx.set_verify(SSL.VERIFY_PEER, verify_cb)  # Demand a certificate
-		ctx.use_privatekey_file(os.path.join(os.curdir, 'client.pkey'))
-		ctx.use_certificate_file(os.path.join(os.curdir, 'client.cert'))
-		ctx.load_verify_locations(os.path.join(os.curdir, 'CA.cert'))
-		sock = SSL.Connection(ctx, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
-		sock.connect((url, 80))
-		coisas = ''
-		while 1:
-			line = sys.stdin.readline()
-			if line == '':
-				break
-			try:
-				sock.send(line)
-				coisas = sock.recv(1024).decode('utf-8')
-				
-			except SSL.Error:
-				print('Connection died unexpectedly')
-				break
-
-
-		sock.shutdown()
-		sock.close()
-		return coisas
-		"""req = urllib2.Request(url, headers=self.headers)
-		response = urllib2.urlopen(req,context=context)
-		link=response.read()
-
-		response.close()
-		return link"""
 	def getMediaUrl(self):
 		try:
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
 		except:
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content
 
-		videoUrl = ''
 		
-		sPattern =  '"file":"([^"]+)","label":"([0-9]+)p.+?"'
+		videoUrl = ''
+		sPattern = '<input type="hidden" value="(\d+)" name="block">'
+		aResult1 = self.parse(sourceCode,sPattern)
+		if (aResult1[0] == True):
+			sourceCode = self.net.http_POST(self.url, 'confirm.x=74&confirm.y=35&block=1', headeres=self.headers)
+
+		sPattern =  '"file":"([^"]+)","label":"([0-9]+)p.+?'
 		aResult = self.parse(sourceCode, sPattern)
 		try:
 			self.legenda = "https://www.raptu.com%s"%re.compile('"file":"([^"]+)","label":".+?","kind":"captions"').findall(sourceCode)[0]
@@ -338,7 +305,7 @@ class OpenLoad():
 	def CheckAADecoder(self, str):
 		aResult = re.search('([>;]\s*)(ﾟωﾟ.+?\(\'_\'\);)', str,re.DOTALL | re.UNICODE)
 		if (aResult):
-			print('AA encryption')
+			#print('AA encryption')
 			tmp = aResult.group(1) + AADecoder(aResult.group(2)).decode()
 			return str[:aResult.start()] + tmp + str[aResult.end():]
 
@@ -367,9 +334,12 @@ class OpenLoad():
 			return False
 		    
 		#hack a virer dans le futur
+		code = code.replace('!![]','true')
 		P8 = '\$\(document\).+?\(function\(\){'
 		code= re.sub(P8,'\n',code)
 		P4 = 'if\(!_[0-9a-z_\[\(\'\)\]]+,document[^;]+\)\){'
+		code = re.sub(P4,'if (false) {',code)
+		P4 = 'if\(+\'toString\'[^;]+document[^;]+\){'
 		code = re.sub(P4,'if (false) {',code)
 
 		#hexa convertion
@@ -390,7 +360,7 @@ class OpenLoad():
 		return code
 	def __replaceSpecialCharacters(self, sString):
 		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
-	
+
 	def parserOPENLOADIO(self, urlF):
 		try:
 			req = urllib2.Request(urlF, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0'})
@@ -448,12 +418,12 @@ class OpenLoad():
 
 			if not(url):
 				raise ResolverError('No Encoded Section Found. Deleted?')
-			api_call =  "https://openload.co/stream/" + url + "?mime=true"
-			
+			api_call =  "https://openload.co/stream/" + url + "?mime=true" 
+
 			if 'KDA_8nZ2av4/x.mp4' in api_call:
 				#log('Openload.co resolve failed')
 				raise ResolverError('Openload.co resolve failed')
-			if dec == api_call:
+			if url == api_call:
 				#log('pigeon url : ' + api_call)
 				api_call = ''
 				raise ResolverError('pigeon url : ' + api_call)
@@ -474,7 +444,7 @@ class OpenLoad():
 					raise ResolverError("Sem autorização do Openload")
 			except ResolverError:
 				self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
-	
+		
 	def _api_get_url(self, url):
 		
 		result = self.net.http_GET(url).content
@@ -564,7 +534,7 @@ class OpenLoad():
 		pageOpenLoad = self.net.http_GET(self.url, headers=self.headers).content
 
 		try:
-			subtitle = re.compile('<script.+?>\s+var\s+suburl\s+=\s+"(.+?)";').findall(pageOpenLoad)[0]
+			subtitle = re.compile('<track\s+kind="captions"\s+src="(.+?)"').findall(pageOpenLoad)[0]
 		except:
 			subtitle = ''
 		#return self.site + subtitle
