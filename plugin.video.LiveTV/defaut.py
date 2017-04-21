@@ -2510,7 +2510,10 @@ def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,dat
 		if mode == 3333 or mode == 3338:
 			u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&tiposelect="+str(senha)+"&fanart="+str(fanart)
 		else:
-			u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
+			if tipo_user == 'Teste' and servidor_user == 'Teste':
+				u=sys.argv[0]+"?url="+str(url)+"&mode="+str(mode)+"&name="+str(name)+"&senha="+str(senha)+"&estilo="+str(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
+			else:
+				u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
