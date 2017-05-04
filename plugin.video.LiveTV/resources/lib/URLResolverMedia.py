@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math, string, socket
+import json, re, xbmc, urllib, xbmcgui, os, sys, pprint, urlparse, urllib2, base64, math, string, socket, xbmcaddon
 import htmlentitydefs
 from cPacker import cPacker
 from t0mm0.common.net import Net
@@ -29,30 +29,35 @@ from png import Reader as PNGReader
 from HTMLParser import HTMLParser
 import time
 
+import HTMLParser
+
+try:
+    import ssl
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+except:
+    pass
+
+__ADDON_ID__	= xbmcaddon.Addon().getAddonInfo("id")
+__ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
+AddonTitle = __ADDON__.getAddonInfo('name')
+
 def clean(text):
     command={'&#8220;':'"','&#8221;':'"', '&#8211;':'-','&amp;':'&','&#8217;':"'",'&#8216;':"'"}
     regex = re.compile("|".join(map(re.escape, command.keys())))
     return regex.sub(lambda mo: command[mo.group(0)], text)
 
-def __ALERTA__(text1="",text2="",text3=""):
-    if text3=="": xbmcgui.Dialog().ok(text1,text2)
-    elif text2=="": xbmcgui.Dialog().ok("",text1)
-    else: xbmcgui.Dialog().ok(text1,text2,text3)
-
 def log(msg, level=xbmc.LOGNOTICE):
 	level = xbmc.LOGNOTICE
-	print('[LIVEIT]: %s' % (msg))
-	xbmc.log('[LIVEIT]: %s' % (msg), level)
-	
+	print(AddonTitle+': %s' % (msg))
+
 	try:
 		if isinstance(msg, unicode):
 			msg = msg.encode('utf-8')
-		xbmc.log('[LIVEIT]: %s' % (msg), level)
+		xbmc.log(AddonTitle+': %s' % (msg), level)
 	except Exception as e:
 		try:
 			a=1
 		except: pass  
-
 class RapidVideo():
 	def __init__(self, url):
 		self.url = url
@@ -62,12 +67,25 @@ class RapidVideo():
 
 	def getId(self):
 		return urlparse.urlparse(self.url).path.split("/")[-1]
+	def abrirRapidVideo(self, url):
+		headers = { 'User-Agent' : 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' }
+		req = urllib2.Request('https://ooops.rf.gd/url.php?url=' + url, headers=headers)
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		return link
+
 	def getMediaUrl(self):
 		try:
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
 		except:
-			sourceCode = self.net.http_GET(self.url, headers=self.headers).content
-
+			headers = { 'User-Agent' : 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' }
+			req = urllib2.Request('https://ooops.rf.gd/url.php?url=' + self.url, headers=headers)
+			response = urllib2.urlopen(req)
+			sourceCode=response.read()
+			response.close()
+			html_parser = HTMLParser.HTMLParser()
+			sourceCode = html_parser.unescape(sourceCode)
 		
 		videoUrl = ''
 		sPattern = '<input type="hidden" value="(\d+)" name="block">'
@@ -305,7 +323,7 @@ class OpenLoad():
 	def CheckAADecoder(self, str):
 		aResult = re.search('([>;]\s*)(ﾟωﾟ.+?\(\'_\'\);)', str,re.DOTALL | re.UNICODE)
 		if (aResult):
-			#print('AA encryption')
+			print('AA encryption')
 			tmp = aResult.group(1) + AADecoder(aResult.group(2)).decode()
 			return str[:aResult.start()] + tmp + str[aResult.end():]
 
@@ -405,7 +423,7 @@ class OpenLoad():
 
 			code = self.CleanCode(code, Coded_url)
 
-			xbmc.executebuiltin("Notification(%s,%s,%s)" % ("Live!t-TV", "A Descomprimir Openload...", 15000))
+			xbmc.executebuiltin("Notification(%s,%s,%s)" % (AddonTitle, "A Descomprimir Openload, aguarde!", 15000))
 			JP = JsParser()
 			Liste_var = []
 			JP.AddHackVar(Item_url, Coded_url)
@@ -433,7 +451,7 @@ class OpenLoad():
 		except (Exception, ResolverError):
 			try:
 				media_id = self.getId()
-				#log("API OPENLOAD")
+				log("API OPENLOAD")
 				video_url = self.__check_auth(media_id)
 				if not video_url:
 					video_url = self.__auth_ip(media_id)
@@ -443,7 +461,7 @@ class OpenLoad():
 				else:
 					raise ResolverError("Sem autorização do Openload")
 			except ResolverError:
-				self.messageOk('Live!t-TV', 'Ocorreu um erro a obter o link. Escolha outro servidor.')
+				self.messageOk(AddonTitle, 'Ocorreu um erro a obter o link. Escolha outro servidor.')
 		
 	def _api_get_url(self, url):
 		
@@ -540,6 +558,7 @@ class OpenLoad():
 		#return self.site + subtitle
 		return subtitle
 
+
 class VideoMega():
 
 	def __init__(self, url):
@@ -564,7 +583,7 @@ class VideoMega():
 		if match:
 			return match.group(1) + '|User-Agent=%s' % (self.headers)
 		else:
-			self.messageOk('Live!t-TV', 'Video nao encontrado.')
+			self.messageOk(AddonTitle, 'Video nao encontrado.')
 
 class Vidzi():
 	def __init__(self, url):
@@ -586,7 +605,7 @@ class Vidzi():
 		sourceCode = self.net.http_GET(self.getNewHost(), headers=self.headers).content
 
 		if '404 Not Found' in sourceCode:
-			self.messageOk('Live!t-TV', 'Ficheiro nao encontrado ou removido. Escolha outro servidor.')
+			self.messageOk(AddonTitle, 'Ficheiro nao encontrado ou removido. Escolha outro servidor.')
 
 		match = re.search('file\s*:\s*"([^"]+)', sourceCode)
 		if match:
@@ -613,12 +632,12 @@ class Vidzi():
 				if stream:
 					return stream.group(1)
 
-		self.messageOk('Live!t-TV', 'Video nao encontrado. Escolha outro servidor')
+		self.messageOk(AddonTitle, 'Video nao encontrado. Escolha outro servidor')
 
 
 	def getSubtitle(self):
 		return self.subtitle
-		
+
 #tknorris code: https://github.com/tknorris/script.module.urlresolver/
 
 class CountdownDialog(object):

@@ -1899,7 +1899,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	
 	resultado = json.loads(resultado)
 	infolabels = dict()
-
+	coiso = ''
 	pastaData = ''
 	if 'filme' in url:
 		infolabels['Code'] = resultado['IMBD']
@@ -1908,17 +1908,19 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 		nome = resultado['nome_ingles']
 		temporada = 0
 		episodio = 0
+		coiso = 'filme'
 	else:
 		idVideo = resultado['id_serie']
 		nome = resultado['nome_episodio']
 		temporada = resultado['temporada']
 		episodio = resultado['episodio']
+		coiso = 'outro'
 
 	mensagemprogresso = xbmcgui.DialogProgress()
 	mensagemprogresso.create(AddonTitle, u'Abrir emissão','Por favor aguarde...')
 	mensagemprogresso.update(25, "", u'Obter video e legenda', "")
 
-	stream, legenda, ext_g = getStreamLegenda(resultado)
+	stream, legenda, ext_g = getStreamLegenda(resultado, coiso=coiso)
 
 	mensagemprogresso.update(50, "", u'Prepara-te, vai começar!', "")
 
@@ -1949,7 +1951,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 			xbmc.sleep(5000)
 			#player_mr.trackerTempo()
 
-def getStreamLegenda(resultado):
+def getStreamLegenda(resultado, coiso=None):
 	i = 0
 	servidores = []
 	titulos = []
@@ -2059,6 +2061,12 @@ def getStreamLegenda(resultado):
 		stream = rapid.getMediaUrl()
 		legenda = rapid.getLegenda()
 	
+	if coiso == 'filme':
+		legenda = legendaAux
+		if resultado['IMBD'] not in legenda:
+			legenda = self.API+'subs/%s.srt' % resultado['IMBD']
+		if legenda == '':
+			legenda = legendaAux
 	return stream, legenda, ext_g
 
 
