@@ -29,6 +29,7 @@
       <setting id="episodiosView" type="enum" label="Vista de episodios" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
     </category>-->
 	<category label="Filmes e Séries">
+		<setting id="qualidadeFilmes" type="enum" label="Qualidade para os Filmes" values="HD|DVD|SD" default="2"/>
         <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="true"/>
     </category>
 </settings>

@@ -71,6 +71,7 @@ __SKIN__ = 'v2'
 __SITEBD__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvUEhQLw==')
 __SITEAddon__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvQWRkb24v')
 __EPG__ = __ADDON__.getSetting("lista_epg")
+__Qualidade__ = __ADDON__.getSetting('qualidadeFilmes')
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
 __COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
@@ -2126,7 +2127,7 @@ def pesquisa(url,servuss):
 
 		if teclado.isConfirmed():
 			strPesquisa = teclado.getText()
-			dados = {'pesquisa': strPesquisa}
+			dados = {'pesquisa': strPesquisa, 'qualidade': __Qualidade__}
 			try:
 				f = open(ficheiro, mode="w")
 				f.write(strPesquisa)
@@ -2145,7 +2146,7 @@ def pesquisa(url,servuss):
 			if xbmcvfs.exists(ficheiro):
 				f = open(ficheiro, "r")
 				texto = f.read()
-			dados = {'pesquisa': texto}
+			dados = {'pesquisa': texto, 'qualidade': __Qualidade__}
 			resultado = abrir_url(url,post=json.dumps(dados), header=headers)
 	
 	if strPesquisa != '':
