@@ -1467,6 +1467,9 @@ def filmes(url, pagina):
 		pt = ''
 		cor = "white"
 		br = ''
+		semLegenda = ''
+		if i['legenda'] == "semlegenda":
+			semLegenda = '[COLOR red][B]S/ LEGENDA [/B][/COLOR]'
 		if 'Brasileiro' in categoria:
 			br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
 		if 'Portu' in categoria:
@@ -1487,7 +1490,7 @@ def filmes(url, pagina):
 			i['foto'] = __API__+'images/capas/'+i['foto'].split('/')[-1]
 			#i['foto'] = i['foto'].replace('PT','')
 		
-		nomeee = '[COLOR '+cor+']'+pt+br+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
+		nomeee = '[COLOR '+cor+']'+pt+br+semLegenda+removerAcentos(nome)+' ('+i['ano']+')[/COLOR]'
 		urlnoo = __API_SITE__+'filme/'+str(i['id_video'])
 		fotooo = i['foto']
 		#i['background'] = i['background'].replace('PT','')
@@ -1957,66 +1960,131 @@ def getStreamLegenda(resultado, coiso=None):
 	servidores = []
 	titulos = []
 	nome = ''
+	
 	if resultado['URL'] != '':
 		i+=1
-		servidores.append(resultado['URL'])
 		if 'openload' in resultado['URL']:
 			nome = "OpenLoad"
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'vidzi' in resultado['URL']:
 			nome = 'Vidzi'
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'google' in resultado['URL'] or 'cloud.mail.ru' in resultado['URL']:
 			nome = AddonTitle
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'uptostream.com' in resultado['URL']:
 			nome = 'UpToStream'
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'rapidvideo.com' in resultado['URL'] or 'raptu' in resultado['URL']:
-			nome = 'RapidVideo'
-		titulos.append('Servidor #%s: %s' % (i, nome))
+			nome = 'Raptu'
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidoza.net' in resultado['URL']:
+			nome = 'Vidoza'
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'streamango.' in resultado['URL']:
+			nome = 'Streamango'
+			servidores.append(resultado['URL'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 	if resultado['URL2'] != '':
 		i+=1
-		servidores.append(resultado['URL2'])
 		if 'openload' in resultado['URL2']:
 			nome = "OpenLoad"
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'vidzi' in resultado['URL2']:
 			nome = 'Vidzi'
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'google' in resultado['URL2'] or 'cloud.mail.ru' in resultado['URL2']:
 			nome = AddonTitle
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'uptostream.com' in resultado['URL2']:
 			nome = 'UpToStream'
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 		elif 'rapidvideo.com' in resultado['URL2'] or 'raptu' in resultado['URL2']:
-			nome = 'RapidVideo'
-		titulos.append('Servidor #%s: %s' % (i, nome))
+			nome = 'Raptu'
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidoza.net' in resultado['URL2']:
+			nome = 'Vidoza'
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'streamango.' in resultado['URL2']:
+			nome = 'Streamango'
+			servidores.append(resultado['URL2'])
+			titulos.append('Servidor #%s: %s' % (i, nome))
 	try:
 		if resultado['URL3'] != '':
 			i+=1
-			servidores.append(resultado['URL3'])
 			if 'openload' in resultado['URL3']:
 				nome = "OpenLoad"
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'vidzi' in resultado['URL3']:
 				nome = 'Vidzi'
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'google' in resultado['URL3'] or 'cloud.mail.ru' in resultado['URL3']:
 				nome = AddonTitle
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'uptostream.com' in resultado['URL3']:
 				nome = 'UpToStream'
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'rapidvideo.com' in resultado['URL3'] or 'raptu' in resultado['URL3']:
-				nome = 'RapidVideo'
-			titulos.append('Servidor #%s: %s' % (i, nome))
+				nome = 'Raptu'
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidoza.net' in resultado['URL3']:
+				nome = 'Vidoza'
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'streamango.' in resultado['URL3']:
+				nome = 'Streamango'
+				servidores.append(resultado['URL3'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
 		pass
 	try:
 		if resultado['URL4'] != '':
 			i+=1
-			servidores.append(resultado['URL4'])
 			if 'openload' in resultado['URL4']:
 				nome = "OpenLoad"
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'vidzi' in resultado['URL4']:
 				nome = 'Vidzi'
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'google' in resultado['URL4'] or 'cloud.mail.ru' in resultado['URL4']:
 				nome = AddonTitle
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'uptostream.com' in resultado['URL4']:
 				nome = 'UpToStream'
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 			elif 'rapidvideo.com' in resultado['URL4'] or 'raptu' in resultado['URL4']:
-				nome = 'RapidVideo'
-			titulos.append('Servidor #%s: %s' % (i, nome))
+				nome = 'Raptu'
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidoza.net' in resultado['URL4']:
+				nome = 'Vidoza'
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'streamango.' in resultado['URL4']:
+				nome = 'Streamango'
+				servidores.append(resultado['URL4'])
+				titulos.append('Servidor #%s: %s' % (i, nome))
 	except:
 		pass
 	legenda = ''
@@ -2041,9 +2109,9 @@ def getStreamLegenda(resultado, coiso=None):
 		servidor = 0
 	
 	if 'vidzi' in servidores[servidor]:
-		vidzi = URLResolverMedia.Vidzi(servidores[servidor])
-		stream = vidzi.getMediaUrl()
-		legenda = vidzi.getSubtitle()
+			vidzi = URLResolverMedia.Vidzi(servidores[servidor])
+			stream = vidzi.getMediaUrl()
+			legenda = vidzi.getSubtitle()
 	elif 'uptostream.com' in servidores[servidor]:
 		stream = URLResolverMedia.UpToStream(servidores[servidor]).getMediaUrl()
 	elif 'server.mrpiracy.win' in servidores[servidor]:
@@ -2051,7 +2119,7 @@ def getStreamLegenda(resultado, coiso=None):
 	elif 'openload' in servidores[servidor]:
 		stream = URLResolverMedia.OpenLoad(servidores[servidor]).getMediaUrl()
 		legenda = URLResolverMedia.OpenLoad(servidores[servidor]).getSubtitle()
-		if not '.vtt' in legenda:
+		if not '.vtt' in legenda or legenda == '':
 			legenda = legendaAux
 	elif 'drive.google.com/' in servidores[servidor]:
 		stream, ext_g = URLResolverMedia.GoogleVideo(servidores[servidor]).getMediaUrl()
@@ -2061,13 +2129,22 @@ def getStreamLegenda(resultado, coiso=None):
 		rapid = URLResolverMedia.RapidVideo(servidores[servidor])
 		stream = rapid.getMediaUrl()
 		legenda = rapid.getLegenda()
+	elif 'vidoza.net' in servidores[servidor]:
+		vidoz = URLResolverMedia.Vidoza(servidores[servidor])
+		stream = vidoz.getMediaUrl()
+		legenda = vidoz.getLegenda()
+	elif 'streamango.' in servidores[servidor]:
+		streaman = URLResolverMedia.Streamango(servidores[servidor])
+		stream = streaman.getMediaUrl()
+		legenda = streaman.getLegenda()
 	
 	if coiso == 'filme':
 		legenda = legendaAux
 		if resultado['IMBD'] not in legenda:
 			legenda = self.API+'subs/%s.srt' % resultado['IMBD']
-		if legenda == '':
-			legenda = legendaAux
+	
+	if legenda == '':
+		legenda = legendaAux
 	return stream, legenda, ext_g
 
 

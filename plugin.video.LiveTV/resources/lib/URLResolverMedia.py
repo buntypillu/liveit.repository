@@ -58,6 +58,150 @@ def log(msg, level=xbmc.LOGNOTICE):
 		try:
 			a=1
 		except: pass  
+class Streamango():
+	def __init__(self, url):
+		self.url = url
+		self.net = Net()
+		self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0"}
+		self.legenda = ''
+
+	def getId(self):
+		return urlparse.urlparse(self.url).path.split("/")[-2]
+	def abrirStreamango(self, url):
+		headers = { 'User-Agent' : 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' }
+		req = urllib2.Request('https://ooops.rf.gd/url.php?url=' + url, headers=headers)
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		return link
+	def decode(self, encoded, code):
+		#from https://github.com/jsergio123/script.module.urlresolver - kodi vstream
+		_0x59b81a = ""
+		k = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+		k = k[::-1]
+
+		count = 0
+
+		for index in range(0, len(encoded) - 1):
+			while count <= len(encoded) - 1:
+				_0x4a2f3a = k.index(encoded[count])
+				count += 1
+				_0x29d5bf = k.index(encoded[count])
+				count += 1
+				_0x3b6833 = k.index(encoded[count])
+				count += 1
+				_0x426d70 = k.index(encoded[count])
+				count += 1
+
+				_0x2e4782 = ((_0x4a2f3a << 2) | (_0x29d5bf >> 4))
+				_0x2c0540 = (((_0x29d5bf & 15) << 4) | (_0x3b6833 >> 2))
+				_0x5a46ef = ((_0x3b6833 & 3) << 6) | _0x426d70
+				_0x2e4782 = _0x2e4782 ^ code
+
+				_0x59b81a = str(_0x59b81a) + chr(_0x2e4782)
+
+				if _0x3b6833 != 64:
+					_0x59b81a = str(_0x59b81a) + chr(_0x2c0540)
+				if _0x3b6833 != 64:
+					_0x59b81a = str(_0x59b81a) + chr(_0x5a46ef)
+
+		return _0x59b81a
+
+	def getMediaUrl(self):
+		sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+		
+		videoUrl = ''
+		resultado = re.search('''srces\.push\({type:"video/mp4",src:\w+\('([^']+)',(\d+)''', sourceCode)
+
+		if resultado:
+			source = self.decode(resultado.group(1), int(resultado.group(2)))
+			if source:
+				source = "http:%s" % source if source.startswith("//") else source
+				source = source.split("/")
+				if not source[-1].isdigit():
+					source[-1] = re.sub('[^\d]', '', source[-1])
+				videoUrl = "/".join(source)
+
+		return videoUrl
+			
+		"""r1 = re.search("srces\.push\({type:\"video/mp4\",src:\w+\('([^']+)',(\d+)", sourceCode)
+		if (r1):
+			videoUrl = self.decode(r1.group(1), int(r1.group(2)))
+			videoUrl = 'http:' + videoUrl
+			
+		return videoUrl"""
+
+		
+	def parse(self, sHtmlContent, sPattern, iMinFoundValue = 1):
+		sHtmlContent = self.replaceSpecialCharacters(str(sHtmlContent))
+		aMatches = re.compile(sPattern, re.IGNORECASE).findall(sHtmlContent)
+		if (len(aMatches) >= iMinFoundValue):
+			return True, aMatches
+		return False, aMatches
+	def getLegenda(self):
+		return self.legenda
+	def replaceSpecialCharacters(self, sString):
+		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
+
+
+class Vidoza():
+	def __init__(self, url):
+		self.url = url
+		self.net = Net()
+		self.headers = {"User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3"}
+		self.legenda = ''
+
+	def getId(self):
+		return urlparse.urlparse(self.url).path.split("/")[-1]
+	def abrirVidoza(self, url):
+		headers = { 'User-Agent' : 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' }
+		req = urllib2.Request('https://ooops.rf.gd/url.php?url=' + url, headers=headers)
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		return link
+	
+
+	def getMediaUrl(self):
+		sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+		
+		
+		videoUrl = ''
+
+		sPattern =  'file:"([^"]+)",label:"([0-9]+)p.+?'
+		aResult = self.parse(sourceCode, sPattern)
+		
+		self.legenda = ''
+		if aResult[0]:
+			links = []
+			qualidades = []
+			for aEntry in aResult[1]:
+				links.append(aEntry[0])
+				if aEntry[1] == '2160':
+					qualidades.append('4K')
+				else:
+					qualidades.append(aEntry[1]+'p')
+
+			if len(links) == 1:
+				videoUrl = links[0]
+			elif len(links) > 1:
+				qualidade = xbmcgui.Dialog().select('Escolha a qualidade', qualidades)
+				videoUrl = links[qualidade]
+		videoUrl = videoUrl+'|%s' % '&'.join(['%s=%s' % (key, urllib.quote_plus(self.headers[key])) for key in self.headers])
+		log(videoUrl)
+		return videoUrl
+	def getLegenda(self):
+		return self.legenda
+	def parse(self, sHtmlContent, sPattern, iMinFoundValue = 1):
+		sHtmlContent = self.replaceSpecialCharacters(str(sHtmlContent))
+		aMatches = re.compile(sPattern, re.IGNORECASE).findall(sHtmlContent)
+		if (len(aMatches) >= iMinFoundValue):
+			return True, aMatches
+		return False, aMatches
+	def replaceSpecialCharacters(self, sString):
+		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
+
+
 class RapidVideo():
 	def __init__(self, url):
 		self.url = url
@@ -74,18 +218,22 @@ class RapidVideo():
 		link=response.read()
 		response.close()
 		return link
+	
 
 	def getMediaUrl(self):
 		try:
+			#sourceCode = self.abrirRapidVideo(self.url).decode('unicode_escape')
 			sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
+			
 		except:
+			#sourceCode = self.abrirRapidVideo(self.url)
 			headers = { 'User-Agent' : 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' }
-			req = urllib2.Request('https://ooops.rf.gd/url.php?url=' + self.url, headers=headers)
-			response = urllib2.urlopen(req)
-			sourceCode=response.read()
-			response.close()
+			sourceCode = controlo.abrir_url('https://ooops.rf.gd/url.php?url=' + self.url, header=headers)
 			html_parser = HTMLParser.HTMLParser()
 			sourceCode = html_parser.unescape(sourceCode)
+			
+			#sourceCode = self.net.http_GET(self.url, headers=self.headers).content
+	
 		
 		videoUrl = ''
 		sPattern = '<input type="hidden" value="(\d+)" name="block">'
@@ -118,7 +266,7 @@ class RapidVideo():
 
 				qualidade = xbmcgui.Dialog().select('Escolha a qualidade', qualidades)
 				videoUrl = links[qualidade]
-
+		
 		return videoUrl
 	def getLegenda(self):
 		return self.legenda
@@ -144,8 +292,10 @@ class CloudMailRu():
 		ext = re.compile('<meta name=\"twitter:image\" content=\"(.+?)\"/>').findall(conteudo)[0]
 		streamAux = clean(ext.split('/')[-1])
 		extensaoStream = clean(streamAux.split('.')[-1])
-		token = re.compile('"tokens"\s*:\s*{\s*"download"\s*:\s*"([^"]+)').findall(conteudo)[0]
-		mediaLink = re.compile('"weblink_get"\s*:\s*\[.+?"url"\s*:\s*"([^"]+)').findall(conteudo)[0]
+		match = re.search('tokens"\s*:\s*{\s*"download"\s*:\s*"([^"]+)"', conteudo)
+		token = match.group(1)
+		match2 = re.search('cldmail\.ru\/([^"]+)', conteudo)
+		mediaLink = "https://cloclo21." + match2.group(0)
 		videoUrl = '%s/%s?key=%s' % (mediaLink, self.getId(), token)
 		return videoUrl, extensaoStream
 
@@ -389,7 +539,7 @@ class OpenLoad():
 			except: pass
 
 			TabUrl = []
-			sPattern = '<span id="([^"]+)">([^<>]+)<\/span>'
+			sPattern = '<span style="".+?id="([^"]+)">([^<]+)<\/span>'
 			aResult = self.parse(html, sPattern)
 			if (aResult[0]):
 				TabUrl = aResult[1]
@@ -428,9 +578,13 @@ class OpenLoad():
 			Liste_var = []
 			JP.AddHackVar(Item_url, Coded_url)
 
+			url = None
 			try:
 				JP.ProcessJS(code, Liste_var)
-				url = JP.GetVarHack("#streamurl")
+				for name in ['#streamurl', '#streamuri', '#streamurj']:
+					if JP.IsVar(JP.HackVars, name):
+						url = JP.GetVarHack(name)
+						break
 			except:
 				raise ResolverError('No Encoded Section Found. Deleted?')
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.LiveTV" name="Live!t" provider-name="Live!t" version="8.6.2">
+<addon id="plugin.video.LiveTV" name="Live!t" provider-name="Live!t" version="8.6.5">
   <requires>
     <import addon="xbmc.python" version="2.14.0"/>
 	<import addon="script.module.urlresolver" version="1.0.0"/>
@@ -24,8 +24,8 @@
 	<language>pt</language>
     <platform>all</platform>
     <license>Live!t 2.0</license>
-    <forum>https://www.facebook.com/liveittv/</forum>
-    <website>http://liveitkodi.com/aquisicao/</website>
+    <forum>https://www.facebook.com/livekodi/</forum>
+    <website>http://liveitkodi.com/liveit/</website>
     <email>liveitkodi@gmail.com</email>
 	<assets>
 		   <icon>resources/img/v2/icon.png</icon>
