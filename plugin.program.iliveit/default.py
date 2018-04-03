@@ -67,7 +67,7 @@ def abrirDefinincoesMesmo():
 
 def loginAgora():
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
-		__ALERTA__('Live!t TV', 'Precisa de definir o seu Utilizador e Senha')
+		__ALERTA__('Live!t', 'Precisa de definir o seu Utilizador e Senha')
 		abrirDefinincoesMesmo()
 	else:
 		try:
@@ -94,30 +94,30 @@ def loginAgora():
 							servid = d.text
 			
 			if sucesso == 'utilizador':
-				__ALERTA__('Live!t TV', 'Utilizador incorreto.')
+				__ALERTA__('Live!t', 'Utilizador incorreto.')
 				__ADDON__.openSettings()
 				addDir2('Entrar novamente', 'url', None, None, 'Miniatura', base_server+'/Addon/Imagens/retroceder.png','','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				xbmc.executebuiltin("Container.SetViewMode(50)")
 			elif sucesso == 'senha':
-				__ALERTA__('Live!t TV', 'Senha incorreta.')
+				__ALERTA__('Live!t', 'Senha incorreta.')
 				__ADDON__.openSettings()
 				addDir2('Entrar novamente', 'url', None, None, 'Miniatura', base_server+'/Addon/Imagens/retroceder.png','','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
 				xbmc.executebuiltin("Container.SetViewMode(50)")
 			elif sucesso == 'ativo':
-				__ALERTA__('Live!t TV', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
+				__ALERTA__('Live!t', 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
 				xbmc.executebuiltin("Container.SetViewMode(50)")
 			elif sucesso == 'yes':
 				if servid == '':
-					__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente mais tarde.')
+					__ALERTA__('Live!t', 'Não foi possível abrir a página. Por favor tente novamente mais tarde.')
 				elif servid == 'Teste':
-					__ALERTA__('Live!t TV', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
+					__ALERTA__('Live!t', 'O seu utilizador é um servidor de teste. Logo não pode instalar a Build. Adquira um pack através do site: http://liveitkodi.com/Aquisicao e após isso terá a sua conta e pode instalar a build.')
 				else:
 					xbmc.executebuiltin('Notification(%s, %s, %i, %s)'%('Live!t-TV','Secção Iniciada: '+nomeus, 8000, _ICON_))
 					CATEGORIES()
 			else:
-				__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+				__ALERTA__('Live!t', 'Não foi possível abrir a página. Por favor tente novamente.')
 		except:
-			__ALERTA__('Live!t TV', 'Não foi possível abrir a página. Por favor tente novamente.')
+			__ALERTA__('Live!t', 'Não foi possível abrir a página. Por favor tente novamente.')
 
 def addDir2(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,data_user,fanart,pasta=True,total=1):
 	ok=True
