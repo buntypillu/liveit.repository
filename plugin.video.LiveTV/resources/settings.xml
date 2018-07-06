@@ -15,7 +15,8 @@
 	  <setting label="Buffering" type="text" id="bbcBitRateMax" default="800" values="800|1500|2200|3700" visible="false"/>
 	  <setting id="ip_addr" type="text" label="30156" default="127.0.0.1" visible="false"/>
 	  <setting id="aceporta" type="text" label="30157" default="62062" visible="false"/>
-   </category>
+	  <setting id="makeGroups" type="text" label="30036" default="true" visible="false"/>
+	</category>
    <category label="Download">
     	<setting label="Pasta para download:" type="lsep" />
     	<setting label="" type="folder" id="pastaDownloads" source="auto" option="writeable" default="Escolha a pasta para Download" enable="!eq(-2,false)"/>
@@ -31,5 +32,10 @@
 	<category label="Filmes e Séries">
 		<setting id="qualidadeFilmes" type="enum" label="Qualidade para os Filmes" values="HD|DVD|SD" default="2"/>
         <setting id="trailer-filmes" type="bool" label="Procurar Trailers para Filmes" default="true"/>
+		<setting label="[B][COLOR yellow]Ordem Filmes / Séries[/COLOR][/B]" type="text" />
+		<setting id="cOrdNCF" type="enum" label="Ordem dos filmes" lvalues="Data|Título" default="0" />
+		<setting id="cOrdNCS" type="enum" label="Ordem dos séries/anime/desenhos" lvalues="Data|Título" default="0" />
+		<setting id="Cat" label="Cat" type="text" default="0" visible="false" />
+		<setting label="" type="sep" />
     </category>
 </settings>

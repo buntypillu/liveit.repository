@@ -47,7 +47,6 @@ global vanemalukk
 global version
 global mode
 
-AddonTitle = "Live!t TV"
 mode = 3333
 version = ""
 kasutajanimi = ""
@@ -59,9 +58,14 @@ televisioonilink = ""
 filmilink = ""
 andmelink = ""
 
+_LIILL_ = "aHR0cDovL2xpdmVpdGtvZGkuY29tL1BIUC92YWxpZGF0ZUFQUC5waHA="
 __ADDON_ID__	= xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
+
+#AddonTitle = "Live!t"
+AddonTitle = __ADDON__.getAddonInfo("name")
+
 __ADDON_FOLDER__	= __ADDON__.getAddonInfo('path')
 __SETTING__	= xbmcaddon.Addon().getSetting
 __ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
@@ -84,6 +88,17 @@ __API__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sLw==')
 __API_SITE__ = base64.urlsafe_b64decode('aHR0cDovL21wYXBpLm1sL2FwaS8=')
 __SITE__ = base64.urlsafe_b64decode('aHR0cDovL21ycGlyYWN5LmdxLw==')
 
+Cat = __ADDON__.getSetting("Cat")
+cOrdNCF = __ADDON__.getSetting("cOrdNCF")
+cOrdNCS = __ADDON__.getSetting("cOrdNCS")
+Clista=[ "todos", "acao", "animacao", "aventura", "comedia", "drama", "fantasia", "ficcao-cientifica", "romance", "suspense", "terror"]
+Clista3=["Sem filtro (Mostrar Todos)","Ação", "Animação", "Aventura", "Comédia", "Drama", "Fantasia", "Ficção-Científica", "Romance", "Suspense", "Terror"]
+
+def setViewS():
+	xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+def setViewM():
+	xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+
 ###################################################################################
 #							  Iniciar Addon										  #
 ###################################################################################
@@ -99,129 +114,100 @@ def menu():
 		abrirDefinincoes()
 		
 	else:
-		check_login = login()
-		database = Database.isExists()
-		if check_login['user']['nome'] != '':
-			if check_login['sucesso']['resultado'] == 'yes':
-				menus = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-				menus1 = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-				menus3 = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-				menus4 = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-				menus5 = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-				if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
-					if check_login['user']['dias'] == '5' or check_login['user']['dias'] == '4' or check_login['user']['dias'] == '3' or check_login['user']['dias'] == '2' or check_login['user']['dias'] == '1':
-						__ALERTA__(AddonTitle, 'Faltam '+check_login['user']['dias']+' dias para o servico expirar.')
-					if check_login['user']['dias'] == '0':
-						__ALERTA__(AddonTitle, 'É hoje que o seu serviço expira. Faça a sua Renovação. Caso não faça irá ficar Inactivo Hoje.')
-				if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
-					menus2 = {
-					'nome': '',
-					'logo': '',
-					'link': '',
-					'tipo': '',
-					'senha': ''
-					}
-					#_listauser = check_login['user']['lista']
-					#andmelink = _listauser+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
-					#menus2['nome'] = "Ver Informacao da Conta"
-					#menus2['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-					#menus2['link'] = andmelink
-					#menus2['tipo'] = "estado"
-					#menus2['senha'] = ""
-					#menus2['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-					#check_login['menus'].append(menus2)
-				
-				
-				#menus4['nome'] = "Limpar Cache"
-				#menus4['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-				#menus4['link'] = 'adsfsdfsd'
-				#menus4['tipo'] = "limparcache"
-				#menus4['senha'] = ""
-				#menus4['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-				#check_login['menus'].append(menus4)
-				#menus5['nome'] = "Limpar Tudo Gravado"
-				#menus5['logo'] = __SITEAddon__+"Imagens/estadomembro.png"
-				#menus5['link'] = 'sdfsdfsd'
-				#menus5['tipo'] = "limpartudo"
-				#menus5['senha'] = ""
-				#menus5['fanart'] = __SITEAddon__+"Imagens/estado_fanart.png"
-				#check_login['menus'].append(menus5)
-				
-				menus5['nome'] = "Definições"
-				menus5['logo'] = __SITEAddon__+"Imagens/definicoes.png"
-				menus5['link'] = 'sdfsdfsd'
-				menus5['tipo'] = "definicoes"
-				menus5['senha'] = ""
-				menus5['fanart'] = __SITEAddon__+"Imagens/definicoes_fanart.png"
-				check_login['menus'].append(menus5)
-				
-				#menus3['nome'] = "Pesquisa"
-				#menus3['logo'] = os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png')
-				#menus3['link'] = __API_SITE__
-				#menus3['tipo'] = "pesquisa"
-				#menus3['senha'] = ""
-				#menus3['fanart'] = os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')
-				#check_login['menus'].append(menus3)
-				
-				menus1['nome'] = "Novidades"
-				menus1['logo'] = check_login['info']['logo2']
-				menus1['link'] = check_login['info']['link2']
-				menus1['tipo'] = "novidades"
-				menus1['senha'] = ""
-				menus1['fanart'] = __SITEAddon__+"Imagens/novidades_fanart.png"
-				check_login['menus'].append(menus1)
-				
-				Menu_inicial(check_login,False,'')
-			elif check_login['sucesso']['resultado'] == 'utilizador':
-				__ALERTA__(AddonTitle, 'Utilizador incorreto.')
-				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
-				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-				vista_menu()
-			elif check_login['sucesso']['resultado'] == 'senha':
-				__ALERTA__(AddonTitle, 'Senha incorreta.')
-				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
-				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-				vista_menu()
-			elif check_login['sucesso']['resultado'] == 'ativo':
-				__ALERTA__(AddonTitle, 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
-				vista_menu()
-			else:
-				__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
-				vista_menu()
+		check_login2 = loginpainel()
+		if check_login2['user']['Erro'] != '':
+			__ALERTA__(AddonTitle, check_login2['user']['Erro'])
 		else:
-			addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
-			addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
-			vista_menu()
+			check_login = login()
+			database = Database.isExists()
+			if check_login['user']['nome'] != '':
+				if check_login['sucesso']['resultado'] == 'yes':
+					menus = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					menus1 = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					menus3 = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					menus4 = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					menus5 = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
+						if check_login['user']['dias'] == '5' or check_login['user']['dias'] == '4' or check_login['user']['dias'] == '3' or check_login['user']['dias'] == '2' or check_login['user']['dias'] == '1':
+							__ALERTA__(AddonTitle, 'Faltam '+check_login['user']['dias']+' dias para o servico expirar.')
+						if check_login['user']['dias'] == '0':
+							__ALERTA__(AddonTitle, 'É hoje que o seu serviço expira. Faça a sua Renovação. Caso não faça irá ficar Inactivo Hoje.')
+					if check_login['datafim']['data'] != "Membro Ativo Sem Doacao!":
+						menus2 = {
+						'nome': '',
+						'logo': '',
+						'link': '',
+						'tipo': '',
+						'senha': ''
+						}
+					
+					menus5['nome'] = "Definições"
+					menus5['logo'] = __SITEAddon__+"Imagens/definicoes.png"
+					menus5['link'] = 'sdfsdfsd'
+					menus5['tipo'] = "definicoes"
+					menus5['senha'] = ""
+					menus5['fanart'] = __SITEAddon__+"Imagens/definicoes_fanart.png"
+					check_login['menus'].append(menus5)
+					
+					menus1['nome'] = "Novidades"
+					menus1['logo'] = check_login['info']['logo2']
+					menus1['link'] = check_login['info']['link2']
+					menus1['tipo'] = "novidades"
+					menus1['senha'] = ""
+					menus1['fanart'] = __SITEAddon__+"Imagens/novidades_fanart.png"
+					check_login['menus'].append(menus1)
+					
+					Menu_inicial(check_login,False,'')
+				elif check_login['sucesso']['resultado'] == 'utilizador':
+					__ALERTA__(AddonTitle, 'Utilizador incorreto.')
+					addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+					addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+					vista_menu()
+				elif check_login['sucesso']['resultado'] == 'senha':
+					__ALERTA__(AddonTitle, 'Senha incorreta.')
+					addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+					addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+					vista_menu()
+				elif check_login['sucesso']['resultado'] == 'ativo':
+					__ALERTA__(AddonTitle, 'O estado do seu Utilizador encontra-se Inactivo. Para saber mais informações entre em contacto pelo email liveitkodi@gmail.com.')
+					vista_menu()
+				else:
+					__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
+					vista_menu()
+			else:
+				addDir('Alterar Definições', 'url', None, 1000, 'Miniatura', __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
+				addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+				vista_menu()
 
 ###################################################################################
 #							  Login Addon										  #
@@ -230,6 +216,57 @@ def minhaConta(data_user,estilo):
 	addDir(data_user, 'url', None, None, estilo, __SITEAddon__+"Imagens/estadomembro.png",'','','','',__SITEAddon__+"Imagens/estado_fanart.png")
 	addDir('Definições', 'url', None, 1000, estilo, __SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 	vista_menu()
+
+def loginpainel():
+	informacoes = {
+		'user' : {
+			'Nome': '',
+			'Acess_Token': '',
+			'DNS': '',
+			'Email': '',
+			'WebSite': '',
+			'VerAPP': '',
+			'LinkAPP': '',
+			'Erro': '',
+			'Melhoramentos': '',
+			'Filmes_app': ''
+		}
+	}
+	try:
+		net = Net()
+		dados = {'nome_app': AddonTitle, 'tipo_app': 'Addon'}
+		codigo_fonte = net.http_POST(base64.b64decode(_LIILL_),form_data=dados,headers=__HEADERS__).content
+		elems = ET.fromstring(codigo_fonte)
+		for child in elems:
+			if(child.tag == 'erro'):
+				informacoes['user']['Erro'] = child.text
+			elif(child.tag == 'validacao'):
+				for d in child:
+					if(d.tag == 'Nome'):
+						informacoes['user']['Nome'] = d.text
+					elif(d.tag == 'Acess_Token'):
+						informacoes['user']['Acess_Token'] = d.text
+					elif(d.tag == 'DNS'):
+						informacoes['user']['DNS'] = d.text
+					elif(d.tag == 'Email'):
+						informacoes['user']['Email'] = d.text
+					elif(d.tag == 'WebSite'):
+						informacoes['user']['WebSite'] = d.text
+					elif(d.tag == 'VerAPP'):
+						informacoes['user']['VerAPP'] = d.text
+					elif(d.tag == 'LinkAPP'):
+						informacoes['user']['LinkAPP'] = d.text
+					elif(d.tag == 'Melhoramentos'):
+						informacoes['user']['Melhoramentos'] = d.text
+					elif(d.tag == 'filmes_app'):
+						informacoes['user']['Filmes_app'] = d.text
+			else:
+				__ALERTA__(AddonTitle, 'Não sei o que estou a ler.')
+	except:
+		__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
+		return informacoes
+
+	return informacoes
 
 def login():
 	informacoes = {
@@ -370,7 +407,7 @@ def definicoes(url,tipouser,servuser):
 		andmelink = url+'panel_api.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")
 		addDir('Ver Informacao da Conta', andmelink, None, 3335, 'Lista',__SITEAddon__+"Imagens/estadomembro.png",'','','','',__SITEAddon__+"Imagens/estado_fanart.png")
 	else:
-		addDir('Conta de Teste', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+		addDir('Conta de Teste', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	addDir('Limpar Cache', 'ytyty', None, 5000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 	addDir('Limpar Toda a Cache', 'sdfsdf', None, 6000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
 	addDir('Definições Addon', 'sdfsdf', None, 3000, 'Lista',__SITEAddon__+"Imagens/definicoes.png",'','','','',__SITEAddon__+"Imagens/definicoes_fanart.png")
@@ -383,7 +420,7 @@ def login2():
 		resultado = abrir_url(__API_SITE__+'login', post=json.dumps(post), header=headers)
 		
 		if resultado == 'DNS':
-			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 			return False
 		resultado = json.loads(resultado)
 		#colocar o loggedin
@@ -448,12 +485,14 @@ def buildLiveit(tipologia):
 					_listauser = check_login2['user']['lista']
 					if tipo_user != 'Teste':
 						filmilink = _listauser+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
-						addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+						addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 					menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
+					#addDir('[COLOR yellow][B][Filmes NetCine.us][/B][/COLOR]',URLNC + "listMovies.php",71,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 				elif(tipologia == 'SeriesLive'):
 					menuSeries(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
+					#addDir('[COLOR yellow][B][Series NetCine.us][/B][/COLOR]',URLNC + "listTVshow.php",60,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'series_fanart.png'))
 				elif(tipologia == 'AnimesLive'):
-					menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')
+					menuAnimes(os.path.join(__ART_FOLDER__, __SKIN__, 'animes.png'),__SITEAddon__+'Imagens/series_fanart.png')			
 		else:
 			check_login = login()
 			if check_login['user']['nome'] != '':
@@ -471,12 +510,25 @@ def buildLiveit(tipologia):
 				__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
 
 def abrirVideoClube(url,_tipouser):
-	addDir('Filmes',url,None,21,'Miniatura',__SITEAddon__+'Imagens/filme2.png','Filme','','','',__SITEAddon__+'Imagens/filmes_fanart.png')					
-	addDir('Séries',url,None,20,'Miniatura',__SITEAddon__+'Imagens/serie1.png','Serie','','','',__SITEAddon__+'Imagens/series_fanart.png')
-	addDir('Animes',url,None,24,'Miniatura',__SITEAddon__+'Imagens/anime.png','Filme','','','',__SITEAddon__+'Imagens/series_fanart.png')
-	
-	if _tipouser != 'Teste':
-		addDir('Pesquisa',__API_SITE__,None,120,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'pesquisa','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	check_login2 = loginpainel()
+	filmes_app = check_login2['user']['Filmes_app'];
+	filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
+	if filmes_app == 0 or filmes_app == '0':
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Filmes do Addon',url,None,21,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Séries do Addon',url,None,20,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		if _tipouser != 'Teste':
+			addDir('Animes do Addon',url,None,24,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'anime.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',__API_SITE__,None,120,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+	elif filmes_app == 1 or filmes_app == '1':
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Filmes do Addon',url,None,71,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Séries do Addon',url,None,60,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		
+		if _tipouser != 'Teste':
+			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',url,None,160,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+	else:
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 
 def Menu_inicial(men,build,tipo):
 	_tipouser = men['user']['tipo']
@@ -828,7 +880,7 @@ def abrim3u2(url,tipose):
 	
 	televisioonilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_live_categories'
 
-	addDir('Atualizar Lista',url,tipose,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	addDir('Atualizar Lista',url,tipose,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	security_check(televisioonilink,tipose)
 
 def security_check(url,tipose):
@@ -841,7 +893,7 @@ def security_check(url,tipose):
 		kanalinimi = base64.b64decode(kanalinimi)
 		kategoorialink = channel.find("playlist_url").text
 		
-		addDir(kanalinimi,kategoorialink,tipose,3338,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+		addDir(kanalinimi,kategoorialink,tipose,3338,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	vista_Canais_Lista()
 
 def detect_modification(url):
@@ -854,7 +906,7 @@ def detect_modification(url):
 		filminimi = base64.b64decode(filminimi)
 		kategoorialink = channel.find("playlist_url").text
 		
-		addDir(filminimi,kategoorialink,None,3339,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+		addDir(filminimi,kategoorialink,None,3339,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	vista_Canais_Lista()
 
 def stream_video(name,url,image,tiposelect):
@@ -1049,13 +1101,6 @@ def vod_channels(channel):
 	video = base64.b64decode(channel)
 	return video
 
-
-
-def PlayUrl(name, url, iconimage=None):
-	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
-	listitem.setInfo(type="Video", infoLabels={ "Title": name })
-	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
-
 ###############################################################################################################
 #													Listar Grupos											 #
 ###############################################################################################################
@@ -1175,7 +1220,7 @@ def listatvarchive(url):
 			logo_tv=O000OOo00oo['stream_icon']
 			duration = O000OOo00oo['tv_archive_duration']
 			
-			addLinkGrupo(nametv,logo_tv,stream_id,url,duration,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'),1)
+			addLinkGrupo(nametv,logo_tv,stream_id,url,duration,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'),1)
 
 def listatvarchivecanais(name,stream_id,url,duration,iconimage,fanart):
 	endereco = url+"/panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_epg&stream_id="+stream_id
@@ -1405,7 +1450,7 @@ def listamenusfilmes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 		database = Database.isExists()
 		if tipo_user != 'Teste':
 			filmilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_vod_categories'
-			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+			addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 		menuFilmes(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
 	else:
 		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
@@ -1454,7 +1499,7 @@ def filmes(url, pagina):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultado = json.loads(resultado)
 	for i in resultado['data']:
@@ -1510,7 +1555,7 @@ def series(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultado = json.loads(resultado)
 	if 'serie' in url:
@@ -1566,7 +1611,7 @@ def getSeasons(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultado = json.loads(resultado)
 	j=1
@@ -1580,7 +1625,7 @@ def getEpisodes(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultado = json.loads(resultado)
 	if 'serie' in url:
@@ -1644,7 +1689,7 @@ def getGeneros(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(__API_SITE__+'categorias', header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultado = json.loads(resultado)
 
@@ -1661,7 +1706,7 @@ def categorias(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultadoa = json.loads(resultado)
 	
@@ -1788,7 +1833,7 @@ def anos(url):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	resultadoa = json.loads(resultado)
 	
@@ -1900,7 +1945,7 @@ def player(name,url,iconimage,temporada,episodio,serieNome):
 	headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	
 	resultado = json.loads(resultado)
@@ -2230,7 +2275,7 @@ def pesquisa(url,servuss):
 	
 	if strPesquisa != '':
 		if resultado == 'DNS':
-			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 			return False
 		
 		if tipo == 3 or  tipo == 4 or tipo == 5:
@@ -2447,7 +2492,7 @@ def download(url,name, temporada,episodio,serieNome):
 
 	resultado = abrir_url(url, header=headers)
 	if resultado == 'DNS':
-		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do addon.')
+		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
 	
 	resultado = json.loads(resultado)
@@ -2456,7 +2501,7 @@ def download(url,name, temporada,episodio,serieNome):
 
 	folder = xbmc.translatePath(__ADDON__.getSetting('pastaDownloads'))
 	if(folder == 'Escolha a pasta para Download'):
-		__ALERTA__(AddonTitle, 'Seleccione uma pasta primeiro no submenu Credênciais ou nas Configurações do Addon.')
+		__ALERTA__(AddonTitle, 'Seleccione uma pasta primeiro no submenu Credênciais ou nas Configurações do __ADDON__.')
 	else:
 		if tipo > 0:
 			if tipo == 1:
@@ -2504,6 +2549,242 @@ def download_legendas(url,path):
 		fh.write(contents)
 		fh.close()
 	return
+
+# ----------------- Inicio
+def Series(): #60
+	try:
+		CategoryOrdem("cOrdNCS")
+		link = common.OpenURL("http://netcine.us/tvshows/page/1/").replace('\n','').replace('\r','')
+		l2 = re.compile("box_movies(.+)").findall(link)
+		link = common.OpenURL("http://netcine.us/tvshows/page/2/").replace('\n','').replace('\r','')
+		l3 = re.compile("box_movies(.+)").findall(link)
+		lista = re.compile("img src\=\"([^\"]+).+?alt\=\"([^\"]+).+?f\=\"([^\"]+)").findall(l2[0]+l3[0])
+		if cOrdNCS=="1":
+			lista = sorted(lista, key=lambda lista: lista[1])
+		for img2,name2,url2 in lista:
+			if name2!="Close":
+				name2 = name2.replace("&#8211;","-").replace("&#038;","&").replace("&#8217;","\'")
+				img2 = re.sub('-120x170.(jpg|png)', r'.\1', img2 )
+				AddDir(name2, url2, 61, img2, img2, isFolder=True)
+	except:
+		__ALERTA__(AddonTitle, 'Servidor em baixo, tente mais tarde.')
+
+def ListSNC(x): #61
+	try:
+		link = common.OpenURL(url).replace('\n','').replace('\r','').replace('<div class="soci">',"class='has-sub'").replace('\t',"")
+		m = re.compile("(.emporada \w+)(.+?class\=\'has-sub\')").findall(link)
+		info2 = re.compile("<h2>Synopsis<\/h2>+.+?[div|p].{0,15}?.+?(.+?)<\/").findall(link)
+		info2 = re.sub('style\=.+?\>', '', info2[0] ) if info2 else " "
+		i=0
+		if "None" in background:
+			for season,epis in m:
+				AddDir("[B]["+season+"][/B]" ,url, 61, iconimage, iconimage, isFolder=True, background=i,info=info2)
+				i+=1
+		else:
+			m2 = re.compile("href\=\"([^\"]+).+?(\d+) - (\d+)").findall( m[int(x)][1] )
+			m3 = re.compile("icon-chevron-right\W+\w\W+([^\<]+)").findall( m[int(x)][1] )
+			for url2,S,E in m2:
+				AddDir("S"+S+"E"+E +" - "+m3[i],url2, 62, iconimage, iconimage, isFolder=False, IsPlayable=True, info=info)
+				i+=1
+	except:
+		__ALERTA__(AddonTitle, 'Servidor em baixo temporadas, tente mais tarde.')
+		
+def ListSNC2(x): #63
+	try:
+		link = common.OpenURL(url).replace('\n','').replace('\r','').replace('<div class="soci">',"class='has-sub'").replace('\t',"")
+		m = re.compile("(.emporada \w+)(.+?class\=\'has-sub\')").findall(link)
+		info2 = re.compile("<h2>Synopsis<\/h2>+.+?[div|p].{0,15}?.+?(.+?)<\/").findall(link)
+		info2 = re.sub('style\=.+?\>', '', info2[0] ) if info2 else " "
+		i=0
+		
+		m2 = re.compile("href\=\"([^\"]+).+?(\d+) - (\d+)").findall( m[int(x)][1] )
+		m3 = re.compile("icon-chevron-right\W+\w\W+([^\<]+)").findall( m[int(x)][1] )
+		for url2,S,E in m2:
+			AddDir("S"+S+"E"+E +" - "+m3[i],url2, 62, iconimage, iconimage, isFolder=False, IsPlayable=True, info=info)
+			i+=1
+	except:
+		__ALERTA__(AddonTitle, 'Servidor em baixo episódios, tente mais tarde.')
+
+def PlayS(): #62
+	try:
+		link = common.OpenURL(url).replace('\n','').replace('\r','')
+		m = re.compile("\"play-.\".+?src=\"([^\"]+)").findall(link)
+		listan = re.compile("\#play-...(\w*)").findall(link)
+		listaf=[]
+		i=0
+		listal=[]
+		for url2 in m:
+			link3 = common.OpenURL(url2).replace('\n','').replace('\r','')
+			m3 = re.compile("src\=.([^\"]+)").findall(link3)
+			for url3 in m3:
+				link4 = common.OpenURL(url3)
+				m4= re.compile("http.+?mp4[^\"]+").findall(link4) 
+				m4 = list(reversed(m4))
+				for url4 in m4:
+					listal.append(url4)
+					dubleg="[COLOR green]HD[/COLOR][/B]" if "ALTO" in url4 else "[COLOR red]SD[/COLOR][/B]"
+					listaf.append("[B][COLOR blue]"+listan[i] +"[/COLOR] "+dubleg)
+			i+=1
+		d = xbmcgui.Dialog().select("Escolha a resolução:", listaf)
+		if d!= -1:
+			PlayUrl(name, listal[d], iconimage, info)
+			#PlayUrl(name, listal[d], iconimage)
+	except:
+		__ALERTA__(AddonTitle, 'Servidor em baixo, tente mais tarde.')
+
+def MoviesNC(): #71
+	AddDir("[COLOR yellow][B][Genero dos Filmes]:[/B] " + Clista3[int(Cat)] +"[/COLOR]", "url" ,80 ,"https://lh5.ggpht.com/gv992ET6R_InCoMXXwIbdRLJczqOHFfLxIeY-bN2nFq0r8MDe-y-cF2aWq6Qy9P_K-4=w300", "https://lh5.ggpht.com/gv992ET6R_InCoMXXwIbdRLJczqOHFfLxIeY-bN2nFq0r8MDe-y-cF2aWq6Qy9P_K-4=w300", isFolder=False)
+	CategoryOrdem("cOrdNCF")
+	try:
+		if Cat=="0":
+			link = common.OpenURL("http://netcine.us/page/1/?mt").replace('\n','').replace('\r','')
+			l2 = re.compile("box_movies(.+)").findall(link)
+			link = common.OpenURL("http://netcine.us/page/2/?mt").replace('\n','').replace('\r','')
+			l3 = re.compile("box_movies(.+)").findall(link)
+			lista = re.compile("img src\=\"([^\"]+).+?alt\=\"([^\"]+).+?f\=\"([^\"]+)").findall(l2[0]+l3[0])
+		else:
+			link = common.OpenURL("http://netcine.us/category/"+Clista[int(Cat)]).replace('\n','').replace('\r','')
+			l2 = re.compile("box_movies(.+)").findall(link)
+			lista = re.compile("img src\=\"([^\"]+).+?alt\=\"([^\"]+).+?f\=\"([^\"]+)").findall(l2[0])
+		if cOrdNCF=="1":
+			lista = sorted(lista, key=lambda lista: lista[1])
+		for img2,name2,url2 in lista:
+			if name2!="Close":
+				name2 = name2.replace("&#8211;","-").replace("&#038;","&").replace("&#8217;","\'")
+				img2 = re.sub('-120x170.(jpg|png)', r'.\1', img2 )
+				AddDir(name2 ,url2, 78, img2, img2, isFolder=True)
+	except urllib2.URLError, e:
+		__ALERTA__(AddonTitle, 'Servidor em baixo, tente mais tarde.')
+
+def ListMoviesNC(): #78
+	try:
+		link = common.OpenURL(url).replace('\n','').replace('\r','')
+		m = re.compile("\"play-.\".+?src=\"([^\"]+)").findall(link)
+		m2 = re.compile("\#play-...(\w*)").findall(link)
+		info2 = re.compile("<h2>Synopsis<\/h2>+.+?[div|p].{0,15}?.+?(.+?)<\/").findall(link)
+		info2 = re.sub('style\=.+?\>', '', info2[0] ) if info2 else ""
+		i=0
+		for name2 in m2:
+			AddDir(name +" [COLOR blue]("+ name2 +")[/COLOR]", m[i], 79, iconimage, iconimage, isFolder=False, IsPlayable=True, info=info2, background=i)
+			i+=1
+	except urllib2.URLError, e:
+		__ALERTA__(AddonTitle, 'Servidor em baixo, tente mais tarde.')
+
+def PlayMNC(): #79
+	try:
+		link = common.OpenURL(url)
+		m = re.compile("src\=.([^\"]+)").findall(link)
+		link2 = common.OpenURL(m[0])
+		m2 = re.compile("http.+?mp4[^\"]+").findall(link2)
+		if m2:
+			m2 = list(reversed(m2))
+			lista =[]
+			for url2 in m2:
+				lista.append( "[B][COLOR green]Qualidade: HD[/COLOR][/B]" if "ALTO" in url2 else "[B][COLOR red]Qualidade: SD[/COLOR][/B]")
+			d = xbmcgui.Dialog().select("Escolha a resolução:", lista)
+			if d!= -1:
+				global background
+				background=background+";;;"+name+";;;NC"
+				PlayUrl(name, m2[d], iconimage, info)
+				#PlayUrl(name, m2[d], iconimage)
+	except urllib2.URLError, e:
+		__ALERTA__(AddonTitle, 'Servidor em baixo, tente mais tarde.')
+
+def Generos(): #80
+	d = xbmcgui.Dialog().select("Escolha o Genero", Clista3)
+	if d != -1:
+		global Cat
+		__ADDON__.setSetting("Cat", str(d) )
+		Cat = d
+		__ADDON__.setSetting("cPage", "0" )
+		__ADDON__.setSetting("cPageleg", "0" )
+		xbmc.executebuiltin("XBMC.Container.Refresh()")
+		
+def CategoryOrdem(x):
+	x2 = __ADDON__.getSetting(eval("x"))
+	name2 = "Data" if x2=="0" else "Título"
+	AddDir("[COLOR blue][B][Organizado por:][/B] "+name2 +" (Clique para alterar)[/COLOR]" , x, 81, "https://lh5.ggpht.com/gv992ET6R_InCoMXXwIbdRLJczqOHFfLxIeY-bN2nFq0r8MDe-y-cF2aWq6Qy9P_K-4=w300", "https://lh5.ggpht.com/gv992ET6R_InCoMXXwIbdRLJczqOHFfLxIeY-bN2nFq0r8MDe-y-cF2aWq6Qy9P_K-4=w300", isFolder=False)
+def CategoryOrdem2(url):
+	x2 = __ADDON__.getSetting(url)
+	x = "0" if x2=="1" else "1"
+	#xbmcgui.Dialog().ok("Escolha a resolução:", x + x2 + url)
+	__ADDON__.setSetting(url, x )
+	xbmc.executebuiltin("XBMC.Container.Refresh()")
+
+def Busca(): # 160
+	AddDir("[COLOR pink][B][Nova Pesquisa][/B][/COLOR]", "" , 160 ,"", isFolder=False)
+	d = xbmcgui.Dialog().input("Pesquisa (poder demorar a carregar os resultados)").replace(" ", "+")
+	if not d:
+		return Categories()
+		sys.exit(int(sys.argv[1]))
+	try:
+		link2 = common.OpenURL("http://netcine.us/?s="+d).replace('\n','').replace('\r','')
+		lista = re.compile("img src\=\"([^\"]+).+?alt\=\"([^\"]+).+?f\=\"([^\"]+)").findall(link2)
+		for img2,name2,url2 in lista:
+			if name2!="Close" and name2!="NetCine":
+				name2 = name2.replace("&#8211;","-").replace("&#038;","&").replace("&#8217;","\'")
+				img2 = re.sub('-120x170.(jpg|png)', r'.\1', img2 )
+				if "tvshows" in url2:
+					AddDir(name2 ,url2, 61, img2, img2, isFolder=True)
+				else:
+					AddDir(name2 ,url2, 78, img2, img2, isFolder=True)
+	except:
+		pass
+
+def AddDir(name, url, mode, iconimage='', logos='', index=-1, move=0, isFolder=True, IsPlayable=False, background=None, cacheMin='0', info='', metah=''):
+	urlParams = {'name': name, 'url': url, 'mode': mode, 'iconimage': iconimage, 'logos': logos, 'cache': cacheMin, 'info': info, 'background': background, 'metah': metah}
+	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage )
+	if metah:
+		liz.setInfo(type="Video", infoLabels=metah)
+		liz.setArt({"thumb": metah['cover_url'], "poster": metah['cover_url'], "banner": metah['cover_url'], "fanart": metah['backdrop_url'] })
+	else:
+		liz.setInfo(type="Video", infoLabels={ "Title": name, "Plot": info })
+		#liz.setProperty("Fanart_Image", logos)
+		liz.setArt({"poster": iconimage, "banner": logos, "fanart": logos })
+	#listMode = 21 # Lists
+	if IsPlayable:
+		liz.setProperty('IsPlayable', 'true')
+	items = []
+	if mode == 1 or mode == 2:
+		items = []
+	if mode == 10:
+		urlParams['index'] = index
+	
+	#u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus(name)+"&mode="+int(mode)+"&move="+int(move)+"&index="+int(index)+"&iconimage="+str(iconimage)+"&logos="+str(logos)+"&cache="+str(cacheMin)+"&info="+str(info)+"&background="+background+"&metah="+str(metah)
+	#u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
+	u = '{0}?{1}'.format(sys.argv[0], urllib.urlencode(urlParams))
+	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u, listitem=liz,isFolder=isFolder)
+	return ok
+
+def GetKeyboardText(title = "", defaultText = ""):
+	keyboard = xbmc.Keyboard(defaultText, title)
+	keyboard.doModal()
+	text = "" if not keyboard.isConfirmed() else keyboard.getText()
+	return text
+
+def Refresh():
+	xbmc.executebuiltin("XBMC.Container.Refresh()")
+
+def PlayUrl(name, url, iconimage=None, info='', sub='', metah=''):
+	if ";;;" in background:
+		b = background.split(";;;")
+	url = re.sub('\.mp4$', '.mp4?play', url)
+	url = common.getFinalUrl(url)
+	#xbmc.log('--- Playing "{0}". {1}'.format(name, url), 2)
+	listitem = xbmcgui.ListItem(path=url)
+	if metah:
+		listitem.setInfo(type="Video", infoLabels=metah)
+	else:
+		listitem.setInfo(type="Video", infoLabels={"mediatype": "video", "Title": name, "Plot": info })
+	if sub!='':
+		listitem.setSubtitles(['special://temp/example.srt', sub ])
+	if iconimage is not None:
+		try:
+			listitem.setArt({'thumb' : iconimage})
+		except:
+			listitem.setThumbnailImage(iconimage)
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+# --------------  FIM NETCINE
 
 def clean(text):
 	command={'&#8220;':'"','&#8221;':'"', '&#8211;':'-','&amp;':'&','&#8217;':"'",'&#8216;':"'"}
@@ -2606,7 +2887,7 @@ def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,dat
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
 	liz.setArt({'fanart': fanart})
-	#liz.setArt({'fanart': os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png')})
+	#liz.setArt({'fanart': os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png')})
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=pasta,totalItems=total)
 	return ok
 	
@@ -2873,7 +3154,7 @@ def vista_Canais_Lista():
 
 def abrirDefinincoes():
 	__ADDON__.openSettings()
-	addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_addon.png'))
+	addDir('Entrar novamente', 'url', None, None, 'Miniatura', __SITEAddon__+"Imagens/retroceder.png",'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	vista_menu()
 
 def abrirDefinincoesMesmo():
@@ -2951,7 +3232,6 @@ def get_params():
 			if (len(splitparams))==2: param[splitparams[0]]=splitparams[1]
 	return param
 
-
 params=get_params()
 url=None
 buildtipo=None
@@ -2982,6 +3262,55 @@ thumbnail=None
 stream_id=None
 duration=None
 tiposelect=None
+background=None
+info=None
+logos=None
+cache=None
+index=None
+move=None
+metah=None
+
+try: 
+	logos=urllib.unquote_plus(params["logos"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	logos = params.get('logos', '')
+
+try: 
+	cache=urllib.unquote_plus(params["cache"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	cache = params.get('cache', '')
+
+try: 
+	index=urllib.unquote_plus(params["index"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	index = params.get('index', '')
+
+try: 
+	move=urllib.unquote_plus(params["move"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	move = params.get('move', '')
+
+try: 
+	metah=urllib.unquote_plus(params["metah"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	metah = params.get('metah', '')
+
+try: 
+	background=urllib.unquote_plus(params["background"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	background = params.get('background', '')
+
+try: 
+	info=urllib.unquote_plus(params["info"])
+except: 
+	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+	info = params.get('info', '')
 
 try: duration=urllib.unquote_plus(params["duration"])
 except: pass
@@ -3049,9 +3378,6 @@ try : tiposelect=urllib.unquote_plus(params["tiposelect"])
 except: pass
 
 
-
-
-
 ###############################################################################################################
 #													MODOS													 #
 ###############################################################################################################
@@ -3068,9 +3394,39 @@ elif mode==25: listatvarchive(str(url))
 elif mode==27: definicoes(str(url),tipo_user,servidor_user)
 elif mode==28: abrirVideoClube(str(url),tipo_user)
 elif mode==26: listatvarchivecanais(str(name),stream_id,str(url),duration,iconimage,fanart)
-#elif mode==22: menuSeries()
-#elif mode==23: menuFilmes()
 elif mode==31: programacao_canal(idCanal)
+elif mode == 32:
+	PlayUrl2(name, url, iconimage)
+elif mode==71:
+	MoviesNC()
+	setViewM()
+elif mode == 60:
+	Series()
+	setViewS()
+elif mode == 61:
+	ListSNC(background)
+	setViewS()
+elif mode == 62:
+	PlayS()
+	setViewS()
+elif mode == 63:
+	ListSNC2(background)
+	setViewS()
+elif mode == 50:
+	Refresh()
+elif mode == 78:
+	ListMoviesNC()
+	setViewS()
+elif mode == 79:
+	PlayMNC()
+	setViewS()
+elif mode == 80:
+	Generos()
+elif mode == 81:
+	CategoryOrdem2(url)
+elif mode == 160:
+	Busca()
+	setViewM()
 elif mode==105: play_mult_canal(url, iconimage, name)
 elif mode==106: play_canal(url, iconimage, name)
 elif mode==110: minhaConta2()
@@ -3096,7 +3452,6 @@ elif mode==3337: detect_modification(url)
 elif mode==3338: stream_video(name,url,iconimage,tiposelect)
 elif mode==3339: get_myaccount(name,url,iconimage)
 elif mode==3340: run_cronjob(name,url,iconimage,thumbnail,fanart)
-elif mode==3334: PlayUrl(name,url,iconimage)
 elif mode==4000: minhaContabuild()
 elif mode==5000: CLEARCACHE()
 elif mode==6000: PURGEPACKAGES()

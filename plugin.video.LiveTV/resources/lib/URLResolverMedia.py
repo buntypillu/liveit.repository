@@ -292,10 +292,8 @@ class CloudMailRu():
 		ext = re.compile('<meta name=\"twitter:image\" content=\"(.+?)\"/>').findall(conteudo)[0]
 		streamAux = clean(ext.split('/')[-1])
 		extensaoStream = clean(streamAux.split('.')[-1])
-		match = re.search('tokens"\s*:\s*{\s*"download"\s*:\s*"([^"]+)"', conteudo)
-		token = match.group(1)
-		match2 = re.search('cldmail\.ru\/([^"]+)', conteudo)
-		mediaLink = "https://cloclo21." + match2.group(0)
+		token = re.compile('"tokens"\s*:\s*{\s*"download"\s*:\s*"([^"]+)').findall(conteudo)[0]
+		mediaLink = re.compile('(https\:\/\/[a-zA-Z0-9\-\.]+cldmail+\.[a-zA-Z]{2,3}\/\S*)"').findall(conteudo)[0]
 		videoUrl = '%s/%s?key=%s' % (mediaLink, self.getId(), token)
 		return videoUrl, extensaoStream
 
