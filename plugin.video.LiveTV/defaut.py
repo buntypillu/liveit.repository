@@ -522,9 +522,10 @@ def abrirVideoClube(url,_tipouser):
 			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',__API_SITE__,None,120,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	elif filmes_app == 1 or filmes_app == '1':
 		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+	elif filmes_app == 2 or filmes_app == '2':
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 		addDir('Filmes do Addon',url,None,71,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 		addDir('Séries do Addon',url,None,60,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
-		
 		if _tipouser != 'Teste':
 			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',url,None,160,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	else:
