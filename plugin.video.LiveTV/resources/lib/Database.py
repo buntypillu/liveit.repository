@@ -9,8 +9,13 @@ except:
 
 import xbmcvfs, os, sys, xbmc
 
+__PASTA_TRAKT__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/trakt/').decode('utf8'))
 __DB_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf8'), 'cachebdlive.db')
-
+__PROGRESSO_FILE__ = os.path.join(__PASTA_TRAKT__, 'progresso.liveit')
+__WATCH_FILMES_FILE__ = os.path.join(__PASTA_TRAKT__, 'watch_filmes.liveit')
+__WATCH_SERIES_FILE__ = os.path.join(__PASTA_TRAKT__, 'watch_series.liveit')
+__FILMES_FILE__ = os.path.join(__PASTA_TRAKT__, 'filmes.liveit')
+__SERIES_FILE__ = os.path.join(__PASTA_TRAKT__, 'series.liveit')
 def isExists():
     if not xbmcvfs.exists(__DB_FILE__):
         createDB()
@@ -18,20 +23,41 @@ def isExists():
     else:
         return "DB nao criada"
 
+def escrever_ficheiro(ficheiro, conteudo):
+    f = open(ficheiro, mode="w")
+    f.write(conteudo)
+    f.close()
 
+def ler_ficheiro(ficheiro):
+    f = open(ficheiro, "r")
+    conteudo =  f.read()
+    f.close()
+    return conteudo
+
+def criarFicheiros():
+    try:
+        os.makedirs(__PASTA_TRAKT__)
+    except:
+        pass
+    escrever_ficheiro(__PROGRESSO_FILE__, '')
+    escrever_ficheiro(__WATCH_SERIES_FILE__, '')
+    escrever_ficheiro(__WATCH_FILMES_FILE__, '')
+    escrever_ficheiro(__SERIES_FILE__, '')
+    escrever_ficheiro(__FILMES_FILE__, '')
 def createDB():
 
     if not xbmcvfs.exists(__DB_FILE__):
         """f = open(__DB_FILE__, 'w')
         f.write('')
         f.close()"""
-
+		
         con, dbcursor = connect()
-
+        dbcursor.execute("CREATE TABLE IF NOT EXISTS trakt (id integer PRIMARY KEY NOT NULL, filmes text, series text, watchlistFilmes text, watchlistSeries text, progresso text, horas text);")
+        """
         dbcursor.execute("CREATE TABLE IF NOT EXISTS episodios (id integer PRIMARY KEY NOT NULL,nome text,plot text,categoria text,actores text,temporada text,episodio text,visto text DEFAULT('nao'),fanart text,poster text,imdb text,tvdb text,aired text,serienome text,traktid text);")
         dbcursor.execute("CREATE TABLE IF NOT EXISTS filmes (id integer PRIMARY KEY NOT NULL,imdb text,nome text,plot text,actores text,categoria text,visto text DEFAULT('nao'),fanart text,poster text,trailer text,ano text,traktid text,slug text);")
         dbcursor.execute("CREATE TABLE IF NOT EXISTS series (id integer PRIMARY KEY NOT NULL,nome text,plot text,imdb text,tvdb text,actores text,categoria text,visto text DEFAULT('nao'),fanart text,poster text,aired text,ano text,traktid text,slug text);")
-        dbcursor.execute("CREATE TABLE IF NOT EXISTS temporadas (id integer PRIMARY KEY NOT NULL,imdb text,tvdb text,fanart text,temporada text,poster text);")
+        dbcursor.execute("CREATE TABLE IF NOT EXISTS temporadas (id integer PRIMARY KEY NOT NULL,imdb text,tvdb text,fanart text,temporada text,poster text);")"""
         con.commit()
 
 def connect():
@@ -43,6 +69,33 @@ def connect():
 def close(conn):
     conn.close()
 
+def insertTraktDB(filmes, series, watchlistFilmes, watchlistSeries, progresso, data):
+    escrever_ficheiro(__PROGRESSO_FILE__, progresso)
+    escrever_ficheiro(__WATCH_SERIES_FILE__, watchlistSeries)
+    escrever_ficheiro(__WATCH_FILMES_FILE__, watchlistFilmes)
+    escrever_ficheiro(__FILMES_FILE__, filmes)
+    escrever_ficheiro(__SERIES_FILE__, series)
+
+def selectProgresso():
+    return ler_ficheiro(__PROGRESSO_FILE__)
+def selectWatchFilmes():
+    return ler_ficheiro(__WATCH_FILMES_FILE__)
+def selectWatchSeries():
+    return ler_ficheiro(__WATCH_SERIES_FILE__)
+def selectFilmes():
+    return ler_ficheiro(__FILMES_FILE__)
+def selectSeries():
+    return ler_ficheiro(__SERIES_FILE__)
+
+def insertTraktDB2(filmes, series, watchlistFilmes, watchlistSeries, progresso, data):
+    con, dbcursor = connect()
+    dbcursor.execute("INSERT OR REPLACE INTO trakt (id, filmes, series, watchlistFilmes, watchlistSeries, progresso, horas) VALUES (?, ?, ?, ?, ?, ?, ?)", (1, filmes, series, watchlistFilmes, watchlistSeries, progresso, data))
+    con.commit()
+
+def selectTraktDB():
+    con, dbcursor = connect()
+    dbcursor.execute("SELECT * FROM trakt WHERE id=1")
+    return dbcursor.fetchone()
 
 def insertFilmeDB(nome, plot, imdb, poster, fanart, trailer, ano, traktid, slug, categoria=None, actores=None):
     if categoria == None:

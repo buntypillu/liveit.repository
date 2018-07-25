@@ -111,25 +111,20 @@ class Streamango():
 		sourceCode = self.net.http_GET(self.url, headers=self.headers).content.decode('unicode_escape')
 		
 		videoUrl = ''
-		resultado = re.search('''srces\.push\({type:"video/mp4",src:\w+\('([^']+)',(\d+)''', sourceCode)
+		resultado = re.search("{type:\"video/mp4\",src:\w+\('([^']+)',(\d+)", sourceCode)
 
 		if resultado:
 			source = self.decode(resultado.group(1), int(resultado.group(2)))
-			if source:
-				source = "http:%s" % source if source.startswith("//") else source
-				source = source.split("/")
-				if not source[-1].isdigit():
-					source[-1] = re.sub('[^\d]', '', source[-1])
-				videoUrl = "/".join(source)
+			
+			if source.endswith('@'):
+				source = source[:-1]
+			source = "http:%s" % source # if source.startswith("//") else source
+			#source = source.split("/")
+			"""if not source[-1].isdigit():
+				source[-1] = re.sub('[^\d]', '', source[-1])
+			videoUrl = "/".join(source)"""
 
-		return videoUrl
-			
-		"""r1 = re.search("srces\.push\({type:\"video/mp4\",src:\w+\('([^']+)',(\d+)", sourceCode)
-		if (r1):
-			videoUrl = self.decode(r1.group(1), int(r1.group(2)))
-			videoUrl = 'http:' + videoUrl
-			
-		return videoUrl"""
+		return source
 
 		
 	def parse(self, sHtmlContent, sPattern, iMinFoundValue = 1):
@@ -168,9 +163,8 @@ class Vidoza():
 		
 		videoUrl = ''
 
-		sPattern =  'file:"([^"]+)",label:"([0-9]+)p.+?'
+		sPattern =  'src: "([^"]+)"[^\}]+label:"([^\']+)"'
 		aResult = self.parse(sourceCode, sPattern)
-		
 		self.legenda = ''
 		if aResult[0]:
 			links = []
@@ -187,8 +181,7 @@ class Vidoza():
 			elif len(links) > 1:
 				qualidade = xbmcgui.Dialog().select('Escolha a qualidade', qualidades)
 				videoUrl = links[qualidade]
-		videoUrl = videoUrl+'|%s' % '&'.join(['%s=%s' % (key, urllib.quote_plus(self.headers[key])) for key in self.headers])
-		log(videoUrl)
+		videoUrl = videoUrl#+'|%s' % '&'.join(['%s=%s' % (key, urllib.quote_plus(self.headers[key])) for key in self.headers])
 		return videoUrl
 	def getLegenda(self):
 		return self.legenda
@@ -432,7 +425,10 @@ class OpenLoad():
 
 		return ret
 
-
+	def __getHost(self):
+		parts = self.url.split('//', 1)
+		host = parts[0]+'//'+parts[1].split('/', 1)[0]
+		return host
 	def SubHexa(self, g):
 		return g.group(1) + self.Hexa(g.group(2))
     
@@ -537,7 +533,7 @@ class OpenLoad():
 			except: pass
 
 			TabUrl = []
-			sPattern = '<span style="".+?id="([^"]+)">([^<]+)<\/span>'
+			sPattern = '<p style=""[^"]+id="([^"]+)">([^<]+)<\/p>'
 			aResult = self.parse(html, sPattern)
 			if (aResult[0]):
 				TabUrl = aResult[1]
@@ -557,6 +553,16 @@ class OpenLoad():
 				sHtmlContent3 = self.CheckAADecoder(sHtmlContent3)
 				maxboucle = maxboucle - 1
 			code = sHtmlContent3
+			
+			id_final = ""
+			sPattern = 'var srclink.*?\/stream\/.*?(#[^\'"]+).*?mime=true'
+			aResult = re.findall(sPattern, code)
+
+			if (aResult):
+				id_final = aResult[0]
+			else:
+				raise ResolverError('No Encoded Section Found. Deleted?')
+
 			if not (code):
 				#log("No Encoded Section Found. Deleted?")
 				raise ResolverError('No Encoded Section Found. Deleted?')
@@ -575,20 +581,18 @@ class OpenLoad():
 			JP = JsParser()
 			Liste_var = []
 			JP.AddHackVar(Item_url, Coded_url)
-
+			JP.ProcessJS(code,Liste_var)
 			url = None
 			try:
-				JP.ProcessJS(code, Liste_var)
-				for name in ['#streamurl', '#streamuri', '#streamurj']:
-					if JP.IsVar(JP.HackVars, name):
-						url = JP.GetVarHack(name)
-						break
+				url = JP.GetVarHack(id_final)
 			except:
 				raise ResolverError('No Encoded Section Found. Deleted?')
+			
 
 			if not(url):
 				raise ResolverError('No Encoded Section Found. Deleted?')
-			api_call =  "https://openload.co/stream/" + url + "?mime=true" 
+			api_call =  self.__getHost()+"/stream/" + url + "?mime=true" 
+			
 
 			if 'KDA_8nZ2av4/x.mp4' in api_call:
 				#log('Openload.co resolve failed')
