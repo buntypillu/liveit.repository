@@ -33,7 +33,11 @@ from resources.lib import URLResolverMedia
 from resources.lib import Trakt
 from resources.lib import Database
 from unicodedata import normalize
-
+try:
+    import ssl
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+except:
+    pass
 ####################################################### CONSTANTES #####################################################
 
 global g_timer
@@ -494,7 +498,7 @@ def loginPesquisa():
 			_tipouser = check_login['user']['tipo']
 			_servuser = check_login['user']['servidor']
 			_nomeuser = check_login['user']['nome']
-			pesquisa('',_servuser)
+			pesquisa('', _servuser)
 
 def buildLiveit(tipologia):
 	if (not __ADDON__.getSetting('login_name') or not __ADDON__.getSetting('login_password')):
@@ -543,7 +547,7 @@ def abrirVideoClube(url,_tipouser):
 		addDir('Séries do Addon',url,None,20,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 		if _tipouser != 'Teste':
 			addDir('Animes do Addon',url,None,24,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'anime.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
-			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',__API_SITE__,None,120,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',__API_SITE__+'pesquisa.php',None,124,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	elif filmes_app == 1 or filmes_app == '1':
 		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	elif filmes_app == 2 or filmes_app == '2':
@@ -1492,15 +1496,17 @@ def menuFilmes(iconimage,fanart):
 	#	addDir2('[B]'+evento+'[/B]', __API_SITE__+'evento/1', 111, 'filmes', iconimage, 1, None, None, fanart)
 	#	addDir2(' ', '', 0, '', os.path.join(__ART_FOLDER__, __SKIN__, 'nada.png'), 1, None, None, fanart)
 	addDir2('Todos os Filmes', __API_SITE__+'filmes.php?qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
-	#addDir2('Filmes em Destaque',  __API_SITE__+'filmes/destaque', 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes em Destaque',  __API_SITE__+'filmes.php?action=destaque&qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes por Ano', __API_SITE__+'filmes.php?action=ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
 	addDir2('Filmes por Genero', __API_SITE__+'filmes.php?action=categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
-
+	addDir2('Filmes por IMDB Raking',  __API_SITE__+'filmes.php?action=imdbRank&qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Filmes Para Crianças',  __API_SITE__+'filmes.php?action=pt&qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
+	
 	vista_menu()
 
 def menuSeries(iconimage,fanart):
 	addDir2('Todas as Series', __API_SITE__+'series.php', 123, 'series', iconimage, 1, None, None, fanart)
-	#addDir2('Series em Destaque',  __API_SITE__+'series/destaque', 123, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Series em Destaque',  __API_SITE__+'series.php?action=destaque', 123, 'series', iconimage, 1, None, None, fanart)
 	addDir2('Series por Ano', __API_SITE__+'series.php?action=ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
 	addDir2('Series por Genero', __API_SITE__+'series.php?action=categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
@@ -1508,7 +1514,7 @@ def menuSeries(iconimage,fanart):
 
 def menuAnimes(iconimage,fanart):
 	addDir2('Todos os Animes', __API_SITE__+'animes.php', 123, 'animes', iconimage, 1, None, None, fanart)
-	#addDir2('Animes em Destaque',  __API_SITE__+'animes/destaque', 123, 'animes', iconimage, 1, None, None, fanart)
+	addDir2('Animes em Destaque',  __API_SITE__+'animes.php?action=destaque', 123, 'animes', iconimage, 1, None, None, fanart)
 	addDir2('Animes por Ano', __API_SITE__+'animes.php?action=ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
 	addDir2('Animes por Genero', __API_SITE__+'animes.php?action=categoria', 118, 'listagemGeneros', os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'), 1, None, None, fanart)
 
@@ -1580,12 +1586,16 @@ def filmes(url, pagina):
 	opcao = __ADDON__.getSetting('marcarVisto')
 	for i in resultado['data']:
 		setFilme(i, vistos, opcao)
+	try: 
+		current = resultado['meta']['current']
+	except: 
+		__ALERTA__(AddonTitle, 'Aguarde pela próxima atualização. Ou tente mais tarde.')
+		return False
 	current = resultado['meta']['current']
 	total = resultado['meta']['total']
-	proximo = ''
 	try: proximo = resultado['meta']['paginacao']['next']
 	except: pass 
-	if current < total:
+	if int(current) < int(total):
 		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 111, 'filmes', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
 	vista_filmesSeries()
 		
@@ -1609,12 +1619,16 @@ def series(url):
 	opcao = __ADDON__.getSetting('marcarVisto')
 	for i in resultado['data']:
 		setSeries(i, vistos, opcao, tipo)
-	proximo = ''
+	try: 
+		current = resultado['meta']['current']
+	except: 
+		__ALERTA__(AddonTitle, 'Aguarde pela próxima atualização. Ou tente mais tarde.')
+		return False
 	current = resultado['meta']['current']
 	total = resultado['meta']['total']
 	try: proximo = resultado['meta']['paginacao']['next']
 	except: pass 
-	if current < total:
+	if int(current) < int(total):
 		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 123, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
 	vista_filmesSeries()
 
@@ -1818,24 +1832,23 @@ def categorias(url):
 	#if resultado == 'DNS':
 	#	__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 	#	return False
-	resultadoa = json.loads(resultado)
+	resultado = json.loads(resultado)
 	vistos = Database.selectFilmes()
 	opcao = __ADDON__.getSetting('marcarVisto')
 	if 'serie' in url:
 		tipo = 'series'
 	elif 'anime' in url:
 		tipo = 'animes'
-	for i in resultadoa["data"]:
+	for i in resultado["data"]:
 		if 'filme' in url:
 			setFilme(i, vistos, opcao)
 		elif 'serie' in url or 'anime' in url:
 			setSeries(i, vistos, opcao, tipo)
-	proximo = ''
-	current = resultadoa['meta']['current']
-	total = resultadoa['meta']['total']
-	try: proximo = resultadoa['meta']['paginacao']['next']
+	current = resultado['meta']['current']
+	total = resultado['meta']['total']
+	try: proximo = resultado['meta']['paginacao']['next']
 	except: pass 
-	if current < total:
+	if int(current) < int(total):
 		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
 	
 	vista_filmesSeries()
@@ -1885,25 +1898,29 @@ def anos(url):
 	if resultado == 'DNS':
 		__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 		return False
-	resultadoa = json.loads(resultado)
+	resultado = json.loads(resultado)
 	vistos = Database.selectFilmes()
 	opcao = __ADDON__.getSetting('marcarVisto')
 	if 'serie' in url:
 		tipo = 'series'
 	elif 'anime' in url:
 		tipo = 'animes'
-	for i in resultadoa["data"]:
+	for i in resultado["data"]:
 		if 'filme' in url:
 			setFilme(i, vistos, opcao)
 		elif 'serie' in url or 'anime' in url:
 			setSeries(i, vistos, opcao, tipo)
 	
-	proximo = ''
-	current = resultadoa['meta']['current']
-	total = resultadoa['meta']['total']
-	try: proximo = resultadoa['meta']['paginacao']['next']
+	try: 
+		current = resultado['meta']['current']
+	except: 
+		__ALERTA__(AddonTitle, 'Aguarde pela próxima atualização. Ou tente mais tarde.')
+		return False
+	current = resultado['meta']['current']
+	total = resultado['meta']['total']
+	try: proximo = resultado['meta']['paginacao']['next']
 	except: pass 
-	if current < total:
+	if int(current) < int(total):
 		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 121, 'anos', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
 	
 	vista_filmesSeries()
@@ -2283,28 +2300,33 @@ def getStreamLegenda(id, tipo, coiso=None):
 	return stream, legenda, ext_g
 
 
-def pesquisa(url,servuss):
+def pesquisaMov(url):
 	codigo_fonte = ''
 	dados = ''
-	net = Net()
-	net.set_cookies(__COOKIE_FILE__)
 	tabela = ''
 	strPesquisa = ''
 	ficheiro = ''
 	site = ''
+	qualidade = ''
 	if 'filmes' in url:
 		ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
 		tipo = 0
+		qualidade = __Qualidade__
 	elif 'series' in url:
 		ficheiro = os.path.join(__PASTA_DADOS__,'series_pesquisa.liveit')
 		tipo = 1
 		site = 'series'
+		qualidade = '2'
 	elif 'animes' in url:
 		ficheiro = os.path.join(__PASTA_DADOS__,'animes_pesquisa.liveit')
 		tipo = 2
 		site = 'animes'
+		qualidade = '2'
 	if 'page' not in url:
-		tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes'])
+		try:
+			tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series', 'Animes'])
+		except:
+			return False
 		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
 		if tipo == 0:
 			url = __API_SITE__+'filmes.php?action=pesquisa'
@@ -2320,27 +2342,93 @@ def pesquisa(url,servuss):
 			ficheiro = os.path.join(__PASTA_DADOS__,'animes_pesquisa.liveit')
 			qualidade = '2'
 			site = 'animes'
-		elif tipo == 3 or  tipo == 4 or tipo == 5:
-			url = __SITEBD__+'search.php'
-			if tipo == 3:
-				tabela = 'canais_kodi'
-				ficheiro = os.path.join(__PASTA_DADOS__,'canais.liveit')
-			elif tipo == 4:
-				tabela = 'praias_kodi'
-				ficheiro = os.path.join(__PASTA_DADOS__,'praias.liveit')
-			elif tipo == 5:
-				tabela = 'radios_kodi'
-				ficheiro = os.path.join(__PASTA_DADOS__,'radios.liveit')
-			else:
-				tabela = 'programas_kodi'
-				ficheiro = os.path.join(__PASTA_DADOS__,'programas.liveit')
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+			teclado.setDefault(texto)
+		teclado.doModal()	
+
+		if teclado.isConfirmed():
+			strPesquisa = teclado.getText()
+			if strPesquisa == '':
+				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
+				addDir2('Alterar Pesquisa', url, 124, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+				return False
+			dados = urllib.urlencode({'texto': strPesquisa, 'qualidade': qualidade})
+			try:
+				f = open(ficheiro, mode="w")
+				f.write(strPesquisa)
+				f.close()
+			except:
+				__ALERTA__(AddonTitle, 'Não gravou o conteudo em '+ficheiro)
+			resultado = abrir_url(url,post=dados, header=headers, cookie=getCookie())
+	else:
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+		dados = urllib.urlencode({'texto': texto, 'qualidade':qualidade})
+		resultado = abrir_url(url,post=dados, header=headers, cookie=getCookie())
+	
+	resultado = json.loads(resultado)
+	try:
+		if resultado['codigo'] == 204:
+			__ALERTA__(AddonTitle, 'Deve Indicar um valor para pesquisa.')
+			return False
+	except:
+		resultado = resultado
+	vistos = Database.selectFilmes()
+	opcao = __ADDON__.getSetting('marcarVisto')
+
+	if resultado['data'] != '':
+		if tipo == 0:
+			for i in resultado['data']:
+				setFilme(i, vistos, opcao)
+		elif tipo == 1 or tipo == 2:
+			for i in resultado['data']:
+				setSeries(i, vistos, opcao, site)
 		
-		if ficheiro != '':
-			if xbmcvfs.exists(ficheiro):
-				f = open(ficheiro, "r")
-				texto = f.read()
-				teclado.setDefault(texto)
-			teclado.doModal()
+		current = resultado['meta']['current']
+		total = resultado['meta']['total']
+		try: proximo = resultado['meta']['paginacao']['next']
+		except: pass 
+		if int(current) < int(total):
+			addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 124, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+		else:
+			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	vista_filmesSeries()
+
+def pesquisa(servuss):
+	codigo_fonte = ''
+	dados = ''
+	net = Net()
+	net.set_cookies(__COOKIE_FILE__)
+	tabela = ''
+	strPesquisa = ''
+	ficheiro = ''
+	url = ''
+	if 'page' not in url:
+		url = __SITEBD__+'search.php'
+		if tipo == 3:
+			tabela = 'canais_kodi'
+			ficheiro = os.path.join(__PASTA_DADOS__,'canais.liveit')
+		elif tipo == 4:
+			tabela = 'praias_kodi'
+			ficheiro = os.path.join(__PASTA_DADOS__,'praias.liveit')
+		elif tipo == 5:
+			tabela = 'radios_kodi'
+			ficheiro = os.path.join(__PASTA_DADOS__,'radios.liveit')
+		else:
+			tabela = 'programas_kodi'
+			ficheiro = os.path.join(__PASTA_DADOS__,'programas.liveit')
+		
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+			teclado.setDefault(texto)
+		teclado.doModal()	
 
 		if teclado.isConfirmed():
 			strPesquisa = teclado.getText()
@@ -2350,171 +2438,133 @@ def pesquisa(url,servuss):
 				f.write(strPesquisa)
 				f.close()
 			except:
-				traceback.print_exc()
 				__ALERTA__(AddonTitle, 'Não gravou o conteudo em '+ficheiro)
-			
-			if strPesquisa == '':
-				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
-				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
-			else:
-				resultado = abrir_url(url,post=dados, header=headers, cookie=getCookie())
-	else:
-		if ficheiro != '':
-			if xbmcvfs.exists(ficheiro):
-				f = open(ficheiro, "r")
-				texto = f.read()
-			dados = urllib.urlencode({'texto': texto, 'qualidade':qualidade})
 			resultado = abrir_url(url,post=dados, header=headers, cookie=getCookie())
+	else:
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+		dados = urllib.urlencode({'texto': texto, 'qualidade':qualidade})
+		resultado = abrir_url(url,post=dados, header=headers, cookie=getCookie())
 	
 	if strPesquisa != '':
 		if resultado == 'DNS':
 			__ALERTA__(AddonTitle, 'Tem de alterar os DNS para poder usufruir do __ADDON__.')
 			return False
 		
-		if tipo == 3 or  tipo == 4 or tipo == 5:
-			xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-			if strPesquisa == '':
-				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
-				addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
-			else:
-				dados = {'searchBox': strPesquisa, 'tabela': tabela}
-				codigo_fonte = net.http_POST(url, form_data=dados, headers=__HEADERS__).content.decode('latin-1').encode("utf-8")
-				informa = {
-						'servidor' : {
-							'nome': '',
-							'serv': ''
-						},
-						'servidores': [],
-						'canais': []
-					}
-				sucesso = 'no'
-				elems = ET.fromstring(codigo_fonte)
-				
-				for childee in elems:
-					if(childee.tag == 'servidores'):
-						servidor = {
-							'nome': '',
-							'link': ''
-						}
-						for gg in childee:	
-							if(gg.tag == 'Nome'):
-								servidor['nome'] = gg.text	
-							elif(gg.tag == 'Servidor'):
-								servidor['link'] = gg.text		
-							informa['servidores'].append(servidor)
-					
-				for servvvv in informa['servidores']:
-					if(servvvv['nome'] == servuss):
-						informa['servidor']['nome'] = servvvv['nome']
-						informa['servidor']['serv'] = servvvv['link']			
-				
-				for child in elems:
-					if(child.tag == 'sucesso'):
-						sucesso = child.text
-					elif(child.tag == 'canais'):
-						canal = {
-							'nome': '',
-							'logo': '',
-							'link': '',
-							'grupo': '',
-							'nomeid': '',
-							'idnovo': ''
-						}
-						adiciona = True
-						pagante = False
-						for g in child:
-							adiciona = True
-							if(g.tag == 'Nome'):
-								canal['nome'] = g.text
-							elif(g.tag == 'Imagem'):
-								canal['logo'] = g.text
-							elif(g.tag == 'Pagante'):
-								if(g.text == 'true'):
-									pagante = True
-							elif(g.tag == 'Url'):
-								urlchama = g.text.split(';')
-								urlnoo = g.text
-								try:
-									if(servuss == 'Servidor1'):
-										urlnoo = urlchama[0]
-									elif(servuss == 'Servidor2'):
-										urlnoo = urlchama[1]
-									elif(servuss == 'Servidor3'):
-										urlnoo = urlchama[2]
-									elif(servuss == 'Servidor4'):
-										urlnoo = urlchama[3]
-									elif(servuss == 'Servidor5'):
-										urlnoo = urlchama[4]
-									elif(servuss == 'Servidor6'):
-										urlnoo = urlchama[5]
-									elif(servuss == 'Servidor7'):
-										urlnoo = urlchama[6]
-									elif(servuss == 'Servidor8'):
-										urlnoo = urlchama[7]
-									
-									if(urlnoo == 'nada'):
-										adiciona = False
-									else:
-										if pagante:
-											canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
-										else:
-											canal['link'] = urlnoo
-								except:
-									canal['link'] = g.text
-							elif(g.tag == 'Grupo'):
-								canal['grupo'] = g.text
-							elif(g.tag == 'NomeID'):
-								canal['nomeid'] = g.text
-							elif(g.tag == 'ID'):
-								canal['idnovo'] = g.text
-						if adiciona:
-							informa['canais'].append(canal)
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+		dados = {'searchBox': strPesquisa, 'tabela': tabela}
+		codigo_fonte = net.http_POST(url, form_data=dados, headers=__HEADERS__).content.decode('latin-1').encode("utf-8")
+		informa = {
+				'servidor' : {
+					'nome': '',
+					'serv': ''
+				},
+				'servidores': [],
+				'canais': []
+			}
+		sucesso = 'no'
+		elems = ET.fromstring(codigo_fonte)
+		
+		for childee in elems:
+			if(childee.tag == 'servidores'):
+				servidor = {
+					'nome': '',
+					'link': ''
+				}
+				for gg in childee:	
+					if(gg.tag == 'Nome'):
+						servidor['nome'] = gg.text	
+					elif(gg.tag == 'Servidor'):
+						servidor['link'] = gg.text		
+					informa['servidores'].append(servidor)
+			
+		for servvvv in informa['servidores']:
+			if(servvvv['nome'] == servuss):
+				informa['servidor']['nome'] = servvvv['nome']
+				informa['servidor']['serv'] = servvvv['link']			
+		
+		for child in elems:
+			if(child.tag == 'sucesso'):
+				sucesso = child.text
+			elif(child.tag == 'canais'):
+				canal = {
+					'nome': '',
+					'logo': '',
+					'link': '',
+					'grupo': '',
+					'nomeid': '',
+					'idnovo': ''
+				}
+				adiciona = True
+				pagante = False
+				for g in child:
+					adiciona = True
+					if(g.tag == 'Nome'):
+						canal['nome'] = g.text
+					elif(g.tag == 'Imagem'):
+						canal['logo'] = g.text
+					elif(g.tag == 'Pagante'):
+						if(g.text == 'true'):
+							pagante = True
+					elif(g.tag == 'Url'):
+						urlchama = g.text.split(';')
+						urlnoo = g.text
+						try:
+							if(servuss == 'Servidor1'):
+								urlnoo = urlchama[0]
+							elif(servuss == 'Servidor2'):
+								urlnoo = urlchama[1]
+							elif(servuss == 'Servidor3'):
+								urlnoo = urlchama[2]
+							elif(servuss == 'Servidor4'):
+								urlnoo = urlchama[3]
+							elif(servuss == 'Servidor5'):
+								urlnoo = urlchama[4]
+							elif(servuss == 'Servidor6'):
+								urlnoo = urlchama[5]
+							elif(servuss == 'Servidor7'):
+								urlnoo = urlchama[6]
+							elif(servuss == 'Servidor8'):
+								urlnoo = urlchama[7]
+							
+							if(urlnoo == 'nada'):
+								adiciona = False
+							else:
+								if pagante:
+									canal['link'] = informa['servidor']['serv']+'live/utilizadorliveit/senhaliveit/'+urlnoo
+								else:
+									canal['link'] = urlnoo
+						except:
+							canal['link'] = g.text
+					elif(g.tag == 'Grupo'):
+						canal['grupo'] = g.text
+					elif(g.tag == 'NomeID'):
+						canal['nomeid'] = g.text
+					elif(g.tag == 'ID'):
+						canal['idnovo'] = g.text
+				if adiciona:
+					informa['canais'].append(canal)
 
-				if sucesso == 'yes':
-					addDir2('Alterar Pesquisa', 'url', 7000, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
-					for cann in informa['canais']:
-						nomee = cann['nome']
-						img = cann['logo']
-						rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
-						grup = cann['grupo']
-						id_it = cann['nomeid']
-						id_p = cann['idnovo']
-						srt_f = ''
-						descri = ''
-						
-						addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
-					
-					vista_Canais()
+		if sucesso == 'yes':
+			addDir2('Alterar Pesquisa', servuss, 120, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+			for cann in informa['canais']:
+				nomee = cann['nome']
+				img = cann['logo']
+				rtmp = cann['link'].replace(' rtmp','rtmp').replace(' rtsp','rtsp').replace(' http','http').replace('utilizadorliveit',__ADDON__.getSetting("login_name")).replace('senhaliveit',__ADDON__.getSetting("login_password"))
+				grup = cann['grupo']
+				id_it = cann['nomeid']
+				id_p = cann['idnovo']
+				srt_f = ''
+				descri = ''
 				
-		else:
-			resultado = json.loads(resultado)
-			try:
-				if resultado['codigo'] == 204:
-					__ALERTA__(AddonTitle, 'Deve Indicar um valor para pesquisa.')
-					return False
-			except:
-				resultado = resultado
-			vistos = Database.selectFilmes()
-			opcao = __ADDON__.getSetting('marcarVisto')
-
-			if resultado['data'] != '':
-				if tipo == 0:
-					for i in resultado['data']:
-						setFilme(i, vistos, opcao)
-				elif tipo == 1 or tipo == 2:
-					for i in resultado['data']:
-						setSeries(i, vistos, opcao, site)
-				
-				current = resultado['meta']['current']
-				total = resultado['meta']['total']
-				try: proximo = resultado['meta']['paginacao']['next']
-				except: pass 
-				if current < total:
-					addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 120, 'pesquisa', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
-				else:
-					xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-				vista_filmesSeries()
-
+				addLink2(nomee,rtmp,'http://liveitkodi.com/Logos/'+img)
+			
+			vista_Canais()
+	else:
+		__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
+		addDir2('Alterar Pesquisa', servuss, 120, '', os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
 
 def download(url,name, temporada,episodio,serieNome):
 	#headers['Authorization'] = 'Bearer %s' % __ADDON__.getSetting('tokenMrpiracy')
@@ -2925,7 +2975,10 @@ def addDir(name,url,senha,mode,estilo,iconimage,tipo,tipo_user,servidor_user,dat
 			if tipo_user == 'Teste' and servidor_user == 'Teste':
 				u=sys.argv[0]+"?url="+str(url)+"&mode="+str(mode)+"&name="+str(name)+"&senha="+str(senha)+"&estilo="+str(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
 			else:
-				u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
+				if mode == 120:
+					u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)
+				else:
+					u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&senha="+str(senha)+"&estilo="+urllib.quote_plus(estilo)+"&tipologia="+str(tipo)+"&tipo_user="+str(tipo_user)+"&servidor_user="+str(servidor_user)+"&data_user="+str(data_user)+"&fanart="+str(fanart)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
 	liz.setProperty('fanart_image', fanart)
@@ -3012,17 +3065,10 @@ def abrir_url(url, post=None, header=None, code=False, erro=False, cookie=None):
 		header['Cookie'] = cookie
 	
 	if post:
-		header['Content-Type'] = 'application/x-www-form-urlencoded'
+		header['Content-Type'] ='application/x-www-form-urlencoded'
 		req = urllib2.Request(url, data=post, headers=header)
 	else:
 		req = urllib2.Request(url, headers=header)
-	
-	try:
-		import ssl
-		context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-	except:
-		pass
-	
 	try:
 		response = urllib2.urlopen(req,context=context)
 	except:
@@ -3031,7 +3077,6 @@ def abrir_url(url, post=None, header=None, code=False, erro=False, cookie=None):
 		except urllib2.HTTPError as response:
 			if erro == True:
 				return str(response.code), "asd"
-	
 	link=response.read()
 	
 	if 'judicial blblblblbl' in link:
@@ -3492,9 +3537,10 @@ elif mode==111: filmes(url, pagina)
 elif mode==123: series(url)
 elif mode==118: getGeneros(url)
 elif mode==119: getYears(url)
-elif mode==120: pesquisa(url,servidor_user)
+elif mode==120: pesquisa(servuser)
 elif mode==121: anos(url)
 elif mode==122: categorias(url)
+elif mode==124: pesquisaMov(url)
 elif mode==113: player(name, url, iconimage, temporada, episodio, serieNome)
 elif mode==114: getSeasons(url)
 elif mode==115: getEpisodes(url)
@@ -3520,13 +3566,12 @@ elif mode==6001: buildLiveit(url)
 if mode==None or url==None or len(url)<1:
 	xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
 else:
-	if mode !=7000 and  mode !=120 and mode !=3333 and mode !=26 and mode !=27: 
+	if mode !=7000 and  mode !=120 or mode != 124 and mode !=3333 and mode !=26 and mode !=27: 
 		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
-	elif mode == 120 or mode == 7000:
-		pesquisa(url,servidor_user)
-		#if mode = 120:
-		#	pesquisa(url,servidor_user)
-		#else:
-		#	loginPesquisa()
+	elif mode == 120 or mode == 7000 or mode == 124:
+		if mode == 120 or mode == 7000:
+			pesquisa(servidor_user)
+		else:
+			pesquisaMov(url)
 	else: 
 		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=True)
