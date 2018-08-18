@@ -10,6 +10,8 @@
 	  <setting id="marcarVisto" type="enum" label="Marcar como Visto" values="Local" default="0"/>
 	  <setting id="email" type="text" default="" enable="false" visible="false"/>
 	  <setting id="password" type="text" default="" option="hidden" enable="false" visible="false"/>
+	  <setting id="client_secret_user" type="text" default="" option="hidden" enable="false" visible="false"/>
+	  <setting id="acess_Token" type="text" default="" option="hidden" enable="false" visible="false"/>
 	  <setting id="tokenMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
       <setting id="refreshMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
 	  <setting id="loggedin" type="text" option="hidden" visible="false" label="" default="" />

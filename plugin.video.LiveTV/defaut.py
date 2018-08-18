@@ -66,7 +66,6 @@ _LIILL_ = "aHR0cDovL2xpdmVpdGtvZGkuY29tL1BIUC92YWxpZGF0ZUFQUC5waHA="
 __ADDON_ID__	= xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__	= xbmcaddon.Addon(__ADDON_ID__)
 __ADDONVERSION__ = __ADDON__.getAddonInfo('version')
-
 #AddonTitle = "Live!t"
 AddonTitle = __ADDON__.getAddonInfo("name")
 
@@ -76,8 +75,8 @@ __ART_FOLDER__	= __ADDON_FOLDER__ + '/resources/img/'
 __FANART__ 		= os.path.join(__ADDON_FOLDER__,'fanart.jpg')
 _ICON_ = __ADDON_FOLDER__ + '/icon.png'
 __SKIN__ = 'v2'
-__SITEBD__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvUEhQLw==')
-__SITEAddon__ = base64.urlsafe_b64decode('aHR0cDovL3d3dy5wY3RlY2tzZXJ2LmNvbS9HcnVwb0tvZGkvQWRkb24v')
+__SITEBD__ = base64.urlsafe_b64decode('aHR0cDovL2xpdmVpdGtvZGkuY29tL1BIUC8=')
+__SITEAddon__ = base64.urlsafe_b64decode('aHR0cDovL2xpdmVpdGtvZGkuY29tL0FkZG9uLw==')
 __EPG__ = __ADDON__.getSetting("lista_epg")
 __Qualidade__ = __ADDON__.getSetting('qualidadeFilmes')
 __FOLDER_EPG__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'epgliveit')
@@ -232,6 +231,7 @@ def loginpainel():
 			'LinkAPP': '',
 			'Erro': '',
 			'Melhoramentos': '',
+			'Client_Secret_User': '',
 			'Filmes_app': ''
 		}
 	}
@@ -249,6 +249,7 @@ def loginpainel():
 						informacoes['user']['Nome'] = d.text
 					elif(d.tag == 'Acess_Token'):
 						informacoes['user']['Acess_Token'] = d.text
+						__ADDON__.setSetting('acess_Token', d.text)
 					elif(d.tag == 'DNS'):
 						informacoes['user']['DNS'] = d.text
 					elif(d.tag == 'Email'):
@@ -267,6 +268,9 @@ def loginpainel():
 						__ADDON__.setSetting('email', d.text)
 					elif(d.tag == 'senha_kodi'):
 						__ADDON__.setSetting('password', d.text)
+					elif(d.tag == 'Client_Secret_User'):
+						informacoes['user']['Client_Secret_User'] = d.text
+						__ADDON__.setSetting('client_secret_user', d.text)
 			else:
 				__ALERTA__(AddonTitle, 'Não sei o que estou a ler.')
 	except:
@@ -422,9 +426,7 @@ def definicoes(url,tipouser,servuser):
 def login2():
 	resultado = False
 	try:
-		#post = {'username': __ADDON__.getSetting('email'), 'password': __ADDON__.getSetting('password'),'grant_type': 'password', 'client_id': 'kodi', 'client_secret':'pyRmmKK3cbjouoDMLXNtt2eGkyTTAG' }
 		post = urllib.urlencode({'username': __ADDON__.getSetting('email'), 'password': __ADDON__.getSetting('password') })
-		#post=json.dumps(post)
 		resultado = abrir_url(__API_SITE__+'login.php', post=post, header=headers)
 		
 		if resultado == 'DNS':
@@ -457,15 +459,6 @@ def login2():
 		__ADDON__.setSetting('refreshMrpiracy', refresh)
 		__ADDON__.setSetting('loggedin', username)
 		
-		#headersN = headers
-		#headersN['Authorization'] = 'Bearer %s' % token
-		#resultado = abrir_url(__API_SITE__+'me', header=headersN)
-		#resultado = json.loads(resultado)
-		
-		#if resultado['email'] == __ADDON__.getSetting('email'):
-		#	__ADDON__.setSetting('tokenMrpiracy', token)
-		#	__ADDON__.setSetting('refreshMrpiracy', refresh)
-		#	__ADDON__.setSetting('loggedin', username)
 		categorias = resultado['categorias']
 		escrever_ficheiro(os.path.join(__PASTA_DADOS__,'categorias.liveit'), str(categorias))
 		return True
@@ -556,6 +549,10 @@ def abrirVideoClube(url,_tipouser):
 		addDir('Séries do Addon',url,None,60,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 		if _tipouser != 'Teste':
 			addDir('[COLOR pink][B]Pesquisa[/B][/COLOR]',url,None,160,'Lista',os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+	elif filmes_app == 4 or filmes_app == '4':
+		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Filmes do Addon',url,None,21111,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
+		addDir('Séries do Addon',url,None,21112,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	else:
 		addDir('Filmes da Lista',filmilink,None,3337,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 
@@ -1463,6 +1460,716 @@ class ThreadWithReturnValue(Thread):
 		return self._return
 
 ############################################################################################################
+#												Addon LIVEIT Filmes e Series							 #
+############################################################################################################
+def devolveresultado(urlnoo):
+	resultado = abrir_url(urlnoo, header=headers)
+	try:
+		resultado = resultado.decode('utf-8')
+	except:
+		resultado = resultado.encode('utf-8')
+	return resultado
+
+def getCategorialive(id,inicio):
+	#cat = ler_ficheiro(os.path.join(__PASTA_DADOS__,'categorias_'+inicio+'.liveit')).replace('"', "'")
+	cat = ler_ficheiro(os.path.join(__PASTA_DADOS__,'categorias_live.liveit')).replace('"', "'")
+	return cat
+
+def getAnoslive(id,inicio):
+	#cat = ler_ficheiro(os.path.join(__PASTA_DADOS__,'anos_'+inicio+'.liveit')).replace('"', "'")
+	cat = ler_ficheiro(os.path.join(__PASTA_DADOS__,'anos_live.liveit')).replace('"', "'")
+	return cat
+
+def loginlili(inicio):
+	resultado = False
+	erros = ""
+	try:
+		urlnoo = __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&addon=1&tipo='+inicio
+		resultado = devolveresultado(urlnoo)
+		escrever_ficheiro(os.path.join(__PASTA_DADOS__,'definicoes_live.liveit'), resultado)
+		resultado = json.loads(resultado)
+		categorias = resultado['grupos']
+		escrever_ficheiro(os.path.join(__PASTA_DADOS__,'categorias_live.liveit'), str(categorias))
+		anos = resultado['anos']
+		escrever_ficheiro(os.path.join(__PASTA_DADOS__,'anos_live.liveit'), str(anos))
+		return True
+	except:
+		__ALERTA__(AddonTitle, 'Não foi possível abrir a página. Por favor tente novamente.')
+		return False
+
+def listamenus_liveit1():
+	check_login = loginlili('inicio_filmes')
+	if check_login == True:
+		menuFilmes2(os.path.join(__ART_FOLDER__, __SKIN__, 'filmes.png'),__SITEAddon__+'Imagens/filmes_fanart.png')
+	else:
+		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
+
+def listamenus_liveit2():
+	check_login = loginlili('inicio_series')
+	if check_login == True:
+		menuSeries2(os.path.join(__ART_FOLDER__, __SKIN__, 'series.png'),__SITEAddon__+'Imagens/series_fanart.png')
+	else:
+		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
+
+def menuFilmes2(iconimage,fanart):
+	addDir2('Todos os Filmes', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=todos&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Todos os Destaques', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=destaques&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Por Ano', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=anos&addon=1', 11118, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Por Categoria', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=categoria&addon=1', 11119, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Por Rating', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=rating&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('Para Crianças', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=kids&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=pesquisa&addon=1', 11120, 'filmes', iconimage, 1, None, None, fanart)
+	vista_menu()
+
+def menuSeries2(iconimage,fanart):
+	addDir2('Todas Series', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=todos&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Todos os Destaques', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=destaques&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Por Ano', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=anos&addon=1', 11118, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Por Categoria', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=categoria&addon=1', 11119, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Por Rating', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=rating&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
+	addDir2('Para Crianças', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=kids&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
+	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=pesquisa&addon=1', 11120, 'series', iconimage, 1, None, None, fanart)
+	vista_menu()
+	
+def filmes2(url):
+	resultado = devolveresultado(url)
+	resultado = json.loads(resultado)
+	for i in resultado['item']:
+		setFilme2(i)
+	
+	current = resultado['paginacao']['atual']
+	total = 0
+	try: total = resultado['paginacao']['total']
+	except: pass
+	try: proximo = base64.b64decode(resultado['paginacao']['seguinte'])
+	except: pass
+	if int(current) < int(total):
+		addDir2('Próxima página ('+str(current)+'/'+str(total)+')', proximo, 11111, 'filmes', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'),1)
+	vista_filmesSeries()
+		
+def series2(url):
+	resultado = devolveresultado(url)
+	resultado = json.loads(resultado)
+	
+	for i in resultado['item']:
+		setSeries2(i)
+	
+	current = resultado['paginacao']['atual']
+	total = 0
+	try: total = resultado['paginacao']['total']
+	except: pass
+	try: proximo = base64.b64decode(resultado['paginacao']['seguinte'])
+	except: pass
+	if int(current) < int(total):
+		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 11112, 'series', os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	vista_filmesSeries()
+	
+	
+def setFilme2(i):
+	categoria = ""
+	try: categoria = base64.b64decode(i['Grupo']).decode('utf-8')
+	except: pass
+	
+	grupo2 = ""
+	try: grupo2 = base64.b64decode(i['Grupo2']).decode('utf-8')
+	except: pass 
+	
+	grupo3 = ""
+	try: grupo3 = base64.b64decode(i['Grupo3']).decode('utf-8')
+	except: pass
+	
+	if grupo2 != "":
+		categoria += ','+grupo2
+	if grupo3 != "":
+		categoria += ','+grupo3
+	
+	pt = ''
+	br = ''
+	semLegenda = ''
+	id_video = i['ID']
+	
+	nome = ''
+	try: nome = base64.b64decode(i['Nome']).decode('utf-8')
+	except: pass
+	
+	nomeen = ''
+	try: nomeen = base64.b64decode(i['NomeEN']).decode('utf-8')
+	except: pass
+	
+	descricao = ''
+	try: descricao = base64.b64decode(i['Descricao']).decode('utf-8')
+	except: pass
+	
+	realizador = ''
+	try: realizador = base64.b64decode(i['Realizador']).decode('utf-8')
+	except: pass
+	
+	actores = ''
+	try: actores = base64.b64decode(i['Actores']).decode('utf-8')
+	except: pass
+	
+	youtube = ''
+	try: youtube = base64.b64decode(i['Youtube']).decode('utf-8')
+	except: pass
+	
+	url1 = ''
+	try: url1 = base64.b64decode(i['Url']).decode('utf-8')
+	except: pass
+	
+	url2 = ''
+	try: url2 = base64.b64decode(i['Url1']).decode('utf-8')
+	except: pass
+	
+	url3 = ''
+	try: url3 = base64.b64decode(i['Url2']).decode('utf-8')
+	except: pass
+	
+	url4 = ''
+	try: url4 = base64.b64decode(i['Url3']).decode('utf-8')
+	except: pass
+	
+	imdb = ''
+	try: imdb = base64.b64decode(i['Imdb']).decode('utf-8')
+	except: pass
+	
+	imagem = ''
+	try: imagem = base64.b64decode(i['Imagem']).decode('utf-8')
+	except: pass
+	
+	legendas = ''
+	try: legendas = base64.b64decode(i['Legendas']).decode('utf-8')
+	except: pass
+	
+	anos = i['AnoNovo']
+	
+	if 'http' not in imagem:
+		imagem = __API__+imagem
+	
+	if legendas == "semlegenda" or i['Legendas'] == "":
+		semLegenda = '[COLOR red][B]S/ LEGENDA [/B][/COLOR]'
+	if 'Brasileiro' in categoria:
+		br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
+	if 'Portu' in categoria:
+		pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+	
+	visto = False
+	cor = 'white'
+	if 'PT' in imdb:
+		imdb = re.compile('(.+?)PT').findall(imdb)[0]
+		pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+	
+	infoLabels = {'Title': nomeen, 'Year': anos, 'Genre': categoria, 'Plot': descricao, 'Cast': actores.split(','), 'Trailer': youtube, 'Director': realizador, 'Rating': i['Rating'], 'IMDBNumber': imdb }
+
+	nomeee = '[COLOR '+cor+']'+pt+br+semLegenda+removerAcentos(nome)+' ('+anos+')[/COLOR]'
+	urlnoo = __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=get_video&addon=1&pesquisa='+str(id_video)
+	fotooo = imagem
+	fanarttt = 'images/background/'+imdb+'.jpg'
+	
+	addVideo(nomeee, urlnoo, 11113, fotooo, visto, 'filme', 0, 0, infoLabels, fanarttt, trailer=youtube)
+
+def getGeneros_live(url, modo):
+	lista = []
+	if modo == 'filmes':
+		lista = getCategorialive('inicio_filmes', modo)
+	else:
+		lista = getCategorialive('inicio_series', modo)
+	
+	for c in ast.literal_eval(lista):
+		if c['ID'] == "0":
+			continue
+		try:
+			cat = base64.b64decode(c['Nome']).decode('utf-8')
+		except:
+			pass
+		
+		urlnovo = url+'&pesquisa='+str(c['ID']);
+		addDir2(cat, urlnovo, 11121, modo, os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+	
+	vista_menu()
+
+def getYears_live(url, modo):
+	lista = []
+	if modo == 'filmes':
+		lista = getAnoslive('inicio_filmes', modo)
+	else:
+		lista = getAnoslive('inicio_series', modo)
+	
+	for c in ast.literal_eval(lista):
+		if c['ID'] == "0":
+			continue
+		try:
+			cat = base64.b64decode(c['Nome']).decode('utf-8')
+		except:
+			pass
+		
+		urlnovo = url+'&pesquisa='+str(c['ID']);
+		addDir2(cat, urlnovo, 11121, modo, os.path.join(__ART_FOLDER__, __SKIN__, 'genero.png'))
+	
+	vista_menu()
+	
+def getInfo_live(url, tipo):
+	resultado = devolveresultado(url)
+	resultado = json.loads(resultado)
+	for i in resultado["item"]:
+		if tipo == 'filmes':
+			setFilme2(i)
+		else:
+			setSeries2(i)
+	
+	current = resultado['paginacao']['atual']
+	total = 0
+	try: total = resultado['paginacao']['total']
+	except: pass
+	try: proximo = base64.b64decode(resultado['paginacao']['seguinte'])
+	except: pass
+	if int(current) < int(total):
+		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 11121, tipo, os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	vista_filmesSeries()
+	
+def pesquisa_live(url, tipolo):
+	codigo_fonte = ''
+	dados = ''
+	tabela = ''
+	strPesquisa = ''
+	ficheiro = ''
+	site = ''
+	qualidade = ''
+	vaipesquisa= ''
+	if tipolo == 'filmes':
+		ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
+		tipo = 0
+		qualidade = __Qualidade__
+	else:
+		ficheiro = os.path.join(__PASTA_DADOS__,'series_pesquisa.liveit')
+		tipo = 1
+		site = 'series'
+	
+	if 'page' not in url:
+		try:
+			tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series'])
+		except:
+			return False
+		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
+		if tipo == 0:
+			ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
+		elif tipo == 1:
+			ficheiro = os.path.join(__PASTA_DADOS__,'series_pesquisa.liveit')
+		
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+			teclado.setDefault(texto)
+		teclado.doModal()	
+
+		if teclado.isConfirmed():
+			strPesquisa = teclado.getText()
+			if strPesquisa == '':
+				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
+				addDir2('Alterar Pesquisa', url, 11120, tipolo, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
+				return False
+			vaipesquisa = strPesquisa
+	else:
+		if xbmcvfs.exists(ficheiro):
+			f = open(ficheiro, "r")
+			texto = f.read()
+			f.close()
+		vaipesquisa = texto
+	
+	resultado = devolveresultado(url+'&pesquisa='+vaipesquisa)
+	resultado = json.loads(resultado)
+	for i in resultado["item"]:
+		if tipolo == 'filmes':
+			setFilme2(i)
+		else:
+			setSeries2(i)
+	
+	current = resultado['paginacao']['atual']
+	total = 0
+	try: total = resultado['paginacao']['total']
+	except: pass
+	try: proximo = base64.b64decode(resultado['paginacao']['seguinte'])
+	except: pass
+	if int(current) < int(total):
+		addDir2('Proxima pagina ('+str(current)+'/'+str(total)+')', proximo, 11120, tipolo, os.path.join(__ART_FOLDER__, __SKIN__, 'proximo.png'))
+	else:
+		xbmcplugin.endOfDirectory(int(sys.argv[1]),cacheToDisc=False)
+	
+	vista_filmesSeries()
+
+def setSeries2(i):
+	categoria = ""
+	try: categoria = base64.b64decode(i['Grupo']).decode('utf-8')
+	except: pass
+	
+	grupo2 = ""
+	try: grupo2 = base64.b64decode(i['Grupo2']).decode('utf-8')
+	except: pass 
+	
+	grupo3 = ""
+	try: grupo3 = base64.b64decode(i['Grupo3']).decode('utf-8')
+	except: pass
+	
+	if grupo2 != "":
+		categoria += ','+grupo2
+	if grupo3 != "":
+		categoria += ','+grupo3
+	
+	id_video = i['ID']
+	
+	nome = ''
+	try: nome = base64.b64decode(i['Nome']).decode('utf-8')
+	except: pass
+	
+	nomeen = ''
+	try: nomeen = base64.b64decode(i['NomeEN']).decode('utf-8')
+	except: pass
+	
+	descricao = ''
+	try: descricao = base64.b64decode(i['Descricao']).decode('utf-8')
+	except: pass
+	
+	realizador = ''
+	try: realizador = base64.b64decode(i['Realizador']).decode('utf-8')
+	except: pass
+	
+	actores = ''
+	try: actores = base64.b64decode(i['Actores']).decode('utf-8')
+	except: pass
+	
+	youtube = ''
+	try: youtube = base64.b64decode(i['Youtube']).decode('utf-8')
+	except: pass
+	
+	imdb = ''
+	try: imdb = base64.b64decode(i['Imdb']).decode('utf-8')
+	except: pass
+	
+	anos = i['AnoNovo']
+	temporadas = i['Temporadas']
+	
+	imagem = ''
+	try: imagem = base64.b64decode(i['Imagem']).decode('utf-8')
+	except: pass
+	
+	visto = False
+	pt = ''
+	br = ''
+	semLegenda = ''
+	if 'Brasileiro' in categoria:
+		br = '[B][COLOR green]B[/COLOR][COLOR yellow]R[/COLOR]: [/B]'
+	if 'Portu' in categoria:
+		pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+	if 'PT' in imdb:
+		pt = '[B][COLOR green]P[/COLOR][COLOR red]T[/COLOR]: [/B]'
+	
+	if 'http' not in imagem:
+		imagem = __API__+imagem
+	
+	urlnoo = __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=temporada&addon=1&serie='+id_video+'&temporada='
+	
+	infoLabels = {'Title': nomeen, 'Year': anos, 'Genre': categoria, 'Plot': descricao, 'Cast': actores.split(','), 'Trailer': youtube, 'Director': realizador, 'Rating': i['Rating'], 'IMDBNumber': imdb }
+	
+	nomeee = pt+br+semLegenda+removerAcentos(nome)+' ('+anos+')'
+	fotooo = imagem
+	fanarttt = __API__+'images/background/'+imdb+'.jpg'
+	addDir2(nomeee, urlnoo, 11114, temporadas, fotooo, tipo='serie', infoLabels=infoLabels,poster=fanarttt,visto=visto)
+	
+	
+def getSeasons2(url, modo):
+	j=int(modo)
+	for i in range(j):
+		addDir2("[B]Temporada[/B] "+str(i+1), url+str(i+1), 11115, 'episodios', os.path.join(__ART_FOLDER__, __SKIN__,'temporadas', 'temporada'+str(i+1)+'.png'))
+	
+	vista_temporadas()
+
+def getEpisodes2(url):
+	resultado = devolveresultado(url)
+	resultado = json.loads(resultado)
+	for i in resultado['item']:
+		pt = ''
+		br = ''
+		final = ''
+		semLegenda = ''
+		
+		visto = False
+		cor = 'white'
+		
+		nome = ''
+		try: nome = base64.b64decode(i['Nome']).decode('utf-8')
+		except: pass
+	
+		imdb = ''
+		try: imdb = base64.b64decode(i['Imdb']).decode('utf-8')
+		except: pass
+		
+		imagem = ''
+		try: imagem = base64.b64decode(i['Imagem']).decode('utf-8')
+		except: pass
+		
+		legendas = ''
+		try: legendas = base64.b64decode(i['Legendas']).decode('utf-8')
+		except: pass
+		
+		anos = i['AnoNovo']
+	
+		if 'http' not in imagem:
+			imagem = __API__+imagem
+	
+		if legendas == "semlegenda" or i['Legendas'] == "":
+			semLegenda = '[COLOR red][B]S/ LEGENDA [/B][/COLOR]'
+		
+		episodio = i['Episodio']
+		temporada = i['Temporada']
+		id_video = i['ID']
+		
+		infoLabels = {'Title': nome, 'Code': imdb, 'Episode': episodio, 'Season': temporada }
+		nomeee = pt+br+final+semLegenda+'[COLOR '+cor+'][B]Episodio '+str(episodio)+'[/B][/COLOR] '+removerAcentos(nome)
+		
+		urlnoo = __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=get_video&addon=1&pesquisa='+str(id_video)
+		fotooo = imagem
+		fanarttt = __API__+'images/background/'+imdb+'.jpg'
+		addVideo(nomeee, urlnoo, 11113, imagem, visto, 'episodio', temporada, episodio, infoLabels, fanarttt)
+	
+	vista_episodios()
+
+def player2(name, url, iconimage, modo, temporada, episodio, tipologi):
+	resultado = devolveresultado(url)
+	resultado = json.loads(resultado)
+	infolabels = dict()
+	pastaData = ''
+	nome = ''
+	idVideo = '0'
+	mensagemprogresso = xbmcgui.DialogProgress()
+	mensagemprogresso.create(AddonTitle, u'Abrir emissão','Por favor aguarde...')
+	mensagemprogresso.update(25, "", u'Obter video e legenda', "")
+
+	stream, legenda, ext_g = getStreamLegenda2(resultado[0],tipologi)
+	if stream == False and legenda == 204:
+		mensagemprogresso.close()
+		__ALERTA__(AddonTitle, 'Algum erro. Tente mais tarde')
+		return False
+	else:
+		mensagemprogresso.update(50, "", u'Prepara-te, vai começar!', "")
+		playlist = xbmc.PlayList(1)
+		playlist.clear()
+		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+
+		listitem.setInfo(type="Video", infoLabels=infolabels)
+		listitem.setProperty('mimetype', 'video/x-msvideo')
+		listitem.setProperty('IsPlayable', 'true')
+		
+		listitem.setPath(path=stream)
+		playlist.add(stream, listitem)
+		xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
+		mensagemprogresso.update(75, "", u'Boa Sessão!!!', "")
+
+		if stream == False:
+			__ALERTA__(AddonTitle, 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
+		else:
+			#__ALERTA__(AddonTitle, 'Stream: '+stream)
+			player_mr = Player.Player(url=url, idFilme=idVideo, pastaData=__PASTA_DADOS__, temporada=temporada, episodio=episodio, nome=name, logo=os.path.join(__ADDON_FOLDER__,'icon.png'))
+			
+			mensagemprogresso.close()
+			player_mr.play(playlist)
+			player_mr.setSubtitles(legenda)
+
+			while player_mr.playing:
+				xbmc.sleep(5000)
+				#player_mr.trackerTempo()
+
+def getStreamLegenda2(tudoinfo,tipooo):
+	resultado = tudoinfo
+	i = 0
+	servidores = []
+	titulos = []
+	nome = ''
+	url1 = ''
+	try: url1 = base64.b64decode(resultado['Url']).decode('utf-8')
+	except: pass
+	url2 = ''
+	try: url2 = base64.b64decode(resultado['Url1']).decode('utf-8')
+	except: pass
+	url3 = ''
+	try: url3 = base64.b64decode(resultado['Url2']).decode('utf-8')
+	except: pass
+	url4 = ''
+	try: url4 = base64.b64decode(resultado['Url3']).decode('utf-8')
+	except: pass
+	
+	if url1 != '':
+		i+=1
+		if 'openload' in url1:
+			nome = "OpenLoad"
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidzi' in url1:
+			nome = 'Vidzi'
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'google' in url1 or 'cloud.mail.ru' in url1:
+			nome = AddonTitle
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'uptostream.com' in url1:
+			nome = 'UpToStream'
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'rapidvideo.com' in url1 or 'raptu' in url1:
+			nome = 'Raptu'
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidoza.net' in url1:
+			nome = 'Vidoza'
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'streamango.' in url1:
+			nome = 'Streamango'
+			servidores.append(url1)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+	if url2 != '':
+		i+=1
+		if 'openload' in url2:
+			nome = "OpenLoad"
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidzi' in url2:
+			nome = 'Vidzi'
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'google' in url2 or 'cloud.mail.ru' in url2:
+			nome = AddonTitle
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'uptostream.com' in url2:
+			nome = 'UpToStream'
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'rapidvideo.com' in url2 or 'raptu' in url2:
+			nome = 'Raptu'
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'vidoza.net' in url2:
+			nome = 'Vidoza'
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+		elif 'streamango.' in url2:
+			nome = 'Streamango'
+			servidores.append(url2)
+			titulos.append('Servidor #%s: %s' % (i, nome))
+	try:
+		if url3 != '':
+			i+=1
+			if 'openload' in url3:
+				nome = "OpenLoad"
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidzi' in url3:
+				nome = 'Vidzi'
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'google' in url3 or 'cloud.mail.ru' in url3:
+				nome = AddonTitle
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'uptostream.com' in url3:
+				nome = 'UpToStream'
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'rapidvideo.com' in url3 or 'raptu' in url3:
+				nome = 'Raptu'
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidoza.net' in url3:
+				nome = 'Vidoza'
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'streamango.' in url3:
+				nome = 'Streamango'
+				servidores.append(url3)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+	except:
+		pass
+	try:
+		if url4 != '':
+			i+=1
+			if 'openload' in url4:
+				nome = "OpenLoad"
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidzi' in url4:
+				nome = 'Vidzi'
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'google' in url4 or 'cloud.mail.ru' in url4:
+				nome = AddonTitle
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'uptostream.com' in url4:
+				nome = 'UpToStream'
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'rapidvideo.com' in url4 or 'raptu' in url4:
+				nome = 'Raptu'
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'vidoza.net' in url4:
+				nome = 'Vidoza'
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+			elif 'streamango.' in url4:
+				nome = 'Streamango'
+				servidores.append(url4)
+				titulos.append('Servidor #%s: %s' % (i, nome))
+	except:
+		pass
+	
+	stream = ''
+	legenda = ''
+	try: legenda = __API__+base64.b64decode(resultado['Legendas']).decode('utf-8')
+	except: pass
+	
+	ext_g = 'coiso'
+	legendaAux = legenda
+	servidor = 0
+	if len(titulos) > 1:
+		servidor = xbmcgui.Dialog().select('Escolha o servidor', titulos)
+	else:
+		servidor = 0
+	
+	if 'vidzi' in servidores[servidor]:
+		vidzi = URLResolverMedia.Vidzi(servidores[servidor])
+		stream = vidzi.getMediaUrl()
+		legenda = vidzi.getSubtitle()
+	elif 'uptostream.com' in servidores[servidor]:
+		stream = URLResolverMedia.UpToStream(servidores[servidor]).getMediaUrl()
+	elif 'server.mrpiracy.win' in servidores[servidor]:
+		stream = servidores[servidor]
+	elif 'openload' in servidores[servidor]:
+		stream = URLResolverMedia.OpenLoad(servidores[servidor]).getMediaUrl()
+		legenda = URLResolverMedia.OpenLoad(servidores[servidor]).getSubtitle()
+		if not '.vtt' in legenda or legenda == '':
+			legenda = legendaAux
+	elif 'drive.google.com/' in servidores[servidor]:
+		stream, ext_g = URLResolverMedia.GoogleVideo(servidores[servidor]).getMediaUrl()
+	elif 'cloud.mail.ru' in servidores[servidor]:
+		stream, ext_g = URLResolverMedia.CloudMailRu(servidores[servidor]).getMediaUrl()
+	elif 'rapidvideo.com' in servidores[servidor] or 'raptu' in servidores[servidor]:
+		rapid = URLResolverMedia.RapidVideo(servidores[servidor])
+		stream = rapid.getMediaUrl()
+		legenda = rapid.getLegenda()
+	elif 'vidoza.net' in servidores[servidor]:
+		vidoz = URLResolverMedia.Vidoza(servidores[servidor])
+		stream = vidoz.getMediaUrl()
+		legenda = vidoz.getLegenda()
+	elif 'streamango.' in servidores[servidor]:
+		streaman = URLResolverMedia.Streamango(servidores[servidor])
+		stream = streaman.getMediaUrl()
+		legenda = streaman.getLegenda()
+	
+	return stream, legenda, ext_g
+
+############################################################################################################
 #												Addon Filmes e Series									  #
 ############################################################################################################
 
@@ -1491,10 +2198,6 @@ def listamenusanimes(nome_nov,url,estilo,tipo,tipo_user,servidor_user,iconimage,
 		__ALERTA__(AddonTitle, 'Erro a fazer login nesta parte. Tente novamente mais tarde.')
 
 def menuFilmes(iconimage,fanart):
-	#evento = getEventos()
-	#if evento:
-	#	addDir2('[B]'+evento+'[/B]', __API_SITE__+'evento/1', 111, 'filmes', iconimage, 1, None, None, fanart)
-	#	addDir2(' ', '', 0, '', os.path.join(__ART_FOLDER__, __SKIN__, 'nada.png'), 1, None, None, fanart)
 	addDir2('Todos os Filmes', __API_SITE__+'filmes.php?qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes em Destaque',  __API_SITE__+'filmes.php?action=destaque&qualidade='+__Qualidade__, 111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Filmes por Ano', __API_SITE__+'filmes.php?action=ano', 119, 'listagemAnos', os.path.join(__ART_FOLDER__, __SKIN__, 'ano.png'), 1, None, None, fanart)
@@ -2947,7 +3650,7 @@ def addVideo(name,url,mode,iconimage,visto,tipo,temporada,episodio,infoLabels,po
 	if not serieNome:
 		serieNome = ''
 
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&temporada="+str(temporada)+"&episodio="+str(episodio)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&serieNome="+urllib.quote_plus(serieNome)
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&temporada="+str(temporada)+"&episodio="+str(episodio)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&serieNome="+urllib.quote_plus(serieNome)+"&tipo="+str(tipo)+"&modo="+str(tipo)
 	ok=True
 	
 	if linkTrailer != "":
@@ -3340,6 +4043,7 @@ url=None
 buildtipo=None
 name=None
 mode=None
+modo=None
 iconimage=None
 link=None
 senha=None
@@ -3353,6 +4057,7 @@ tipo_user=None
 servidor_user=None
 data_user=None
 s_serv=None
+tipo=None
 s_user=None
 s_pass=None
 legenda=None
@@ -3415,6 +4120,9 @@ except:
 	params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 	info = params.get('info', '')
 
+	
+try: tipo=params["tipo"]
+except: pass
 try: duration=urllib.unquote_plus(params["duration"])
 except: pass
 try: stream_id=urllib.unquote_plus(params["stream_id"])
@@ -3426,6 +4134,8 @@ except: pass
 try: estilo=urllib.unquote_plus(params["estilo"])
 except: pass
 try: mode=int(params["mode"])
+except: pass
+try: modo=params["modo"]
 except: pass
 try: iconimage=urllib.unquote_plus(params["iconimage"])
 except: pass
@@ -3537,6 +4247,17 @@ elif mode==111: filmes(url, pagina)
 elif mode==123: series(url)
 elif mode==118: getGeneros(url)
 elif mode==119: getYears(url)
+elif mode==11111: filmes2(url)
+elif mode==11112: series2(url)
+elif mode==11113: player2(name, url, iconimage, modo, temporada, episodio, tipo)
+elif mode==11114: getSeasons2(url, modo)
+elif mode==11115: getEpisodes2(url)
+elif mode==11118: getYears_live(url, modo)
+elif mode==11119: getGeneros_live(url, modo)
+elif mode==11120: pesquisa_live(url, modo)
+elif mode==11121: getInfo_live(url, modo)
+elif mode==21111: listamenus_liveit1()
+elif mode==21112: listamenus_liveit2()
 elif mode==120: pesquisa(servuser)
 elif mode==121: anos(url)
 elif mode==122: categorias(url)
