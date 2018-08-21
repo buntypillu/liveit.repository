@@ -1972,7 +1972,10 @@ def player2(name, url, iconimage, modo, temporada, episodio, tipologi):
 			
 			mensagemprogresso.close()
 			player_mr.play(playlist)
-			player_mr.setSubtitles(legenda)
+			if 'liveit' in legenda:
+				legenda = ''
+			else:
+				player_mr.setSubtitles(legenda)
 
 			while player_mr.playing:
 				xbmc.sleep(5000)
@@ -2007,7 +2010,7 @@ def getStreamLegenda2(tudoinfo,tipooo):
 			nome = 'Vidzi'
 			servidores.append(url1)
 			titulos.append('Servidor #%s: %s' % (i, nome))
-		elif 'google' in url1 or 'cloud.mail.ru' in url1:
+		elif 'google' in url1 or 'cloud.mail.ru' in url1 or '.mp4' in url1 or '.avi' in url1:
 			nome = AddonTitle
 			servidores.append(url1)
 			titulos.append('Servidor #%s: %s' % (i, nome))
@@ -2037,7 +2040,7 @@ def getStreamLegenda2(tudoinfo,tipooo):
 			nome = 'Vidzi'
 			servidores.append(url2)
 			titulos.append('Servidor #%s: %s' % (i, nome))
-		elif 'google' in url2 or 'cloud.mail.ru' in url2:
+		elif 'google' in url2 or 'cloud.mail.ru' in url2 or '.mp4' in url2 or '.avi' in url2:
 			nome = AddonTitle
 			servidores.append(url2)
 			titulos.append('Servidor #%s: %s' % (i, nome))
@@ -2068,7 +2071,7 @@ def getStreamLegenda2(tudoinfo,tipooo):
 				nome = 'Vidzi'
 				servidores.append(url3)
 				titulos.append('Servidor #%s: %s' % (i, nome))
-			elif 'google' in url3 or 'cloud.mail.ru' in url3:
+			elif 'google' in url3 or 'cloud.mail.ru' in url3 or '.mp4' in url3 or '.avi' in url3:
 				nome = AddonTitle
 				servidores.append(url3)
 				titulos.append('Servidor #%s: %s' % (i, nome))
@@ -2101,7 +2104,7 @@ def getStreamLegenda2(tudoinfo,tipooo):
 				nome = 'Vidzi'
 				servidores.append(url4)
 				titulos.append('Servidor #%s: %s' % (i, nome))
-			elif 'google' in url4 or 'cloud.mail.ru' in url4:
+			elif 'google' in url4 or 'cloud.mail.ru' in url4 or '.mp4' in url4 or '.avi' in url4:
 				nome = AddonTitle
 				servidores.append(url4)
 				titulos.append('Servidor #%s: %s' % (i, nome))
@@ -2126,8 +2129,12 @@ def getStreamLegenda2(tudoinfo,tipooo):
 	
 	stream = ''
 	legenda = ''
-	try: legenda = __API__+base64.b64decode(resultado['Legendas']).decode('utf-8')
-	except: pass
+	if 'http' in resultado['Legendas']:
+		try: legenda = base64.b64decode(resultado['Legendas']).decode('utf-8')
+		except: pass
+	else:
+		try: legenda = __API__+base64.b64decode(resultado['Legendas']).decode('utf-8')
+		except: pass
 	
 	ext_g = 'coiso'
 	legendaAux = legenda
