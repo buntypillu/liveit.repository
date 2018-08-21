@@ -2129,12 +2129,18 @@ def getStreamLegenda2(tudoinfo,tipooo):
 	
 	stream = ''
 	legenda = ''
-	if 'http' in resultado['Legendas']:
-		try: legenda = base64.b64decode(resultado['Legendas']).decode('utf-8')
-		except: pass
+	
+	legendanova = ''
+	try:
+		legendanova = base64.b64decode(resultado['Legendas']).decode('utf-8')
+	except:
+		pass
+	
+	if 'http' in legendanova:
+		legenda = legendanova
 	else:
-		try: legenda = __API__+base64.b64decode(resultado['Legendas']).decode('utf-8')
-		except: pass
+		if legendanova != '':
+			legenda = __API__+legendanova
 	
 	ext_g = 'coiso'
 	legendaAux = legenda
@@ -2173,7 +2179,8 @@ def getStreamLegenda2(tudoinfo,tipooo):
 		streaman = URLResolverMedia.Streamango(servidores[servidor])
 		stream = streaman.getMediaUrl()
 		legenda = streaman.getLegenda()
-	
+	else:
+		stream = servidores[servidor]
 	return stream, legenda, ext_g
 
 ############################################################################################################
