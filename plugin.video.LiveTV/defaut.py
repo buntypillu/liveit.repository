@@ -1967,16 +1967,10 @@ def player2(name, url, iconimage, modo, temporada, episodio, tipologi):
 		if stream == False:
 			__ALERTA__(AddonTitle, 'O servidor escolhido não disponível, escolha outro ou tente novamente mais tarde.')
 		else:
-			#__ALERTA__(AddonTitle, 'Stream: '+stream)
 			player_mr = Player.Player(url=url, idFilme=idVideo, pastaData=__PASTA_DADOS__, temporada=temporada, episodio=episodio, nome=name, logo=os.path.join(__ADDON_FOLDER__,'icon.png'))
-			
 			mensagemprogresso.close()
 			player_mr.play(playlist)
-			if 'liveit' in legenda:
-				legenda = ''
-			else:
-				player_mr.setSubtitles(legenda)
-
+			player_mr.setSubtitles(legenda)
 			while player_mr.playing:
 				xbmc.sleep(5000)
 				#player_mr.trackerTempo()
@@ -2129,18 +2123,20 @@ def getStreamLegenda2(tudoinfo,tipooo):
 	
 	stream = ''
 	legenda = ''
-	
 	legendanova = ''
 	try:
 		legendanova = base64.b64decode(resultado['Legendas']).decode('utf-8')
 	except:
 		pass
 	
-	if 'http' in legendanova:
+	if 'liveit' in legendanova:
+		legenda = ''
+	elif 'http' in legendanova:
 		legenda = legendanova
+	elif 'subs/' in legendanova:
+		legenda = __API__+legendanova
 	else:
-		if legendanova != '':
-			legenda = __API__+legendanova
+		legenda = __ADDON__.getSetting("acess_Token")+ "legendas/" +legendanova
 	
 	ext_g = 'coiso'
 	legendaAux = legenda
