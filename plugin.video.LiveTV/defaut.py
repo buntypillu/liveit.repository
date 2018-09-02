@@ -1518,7 +1518,7 @@ def menuFilmes2(iconimage,fanart):
 	addDir2('Por Categoria', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=categoria&addon=1', 11119, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Por Rating', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=rating&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
 	addDir2('Para Crianças', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=kids&addon=1', 11111, 'filmes', iconimage, 1, None, None, fanart)
-	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&genero=pesquisa&addon=1', 11120, 'filmes', iconimage, 1, None, None, fanart)
+	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=filmes&addon=1', 11120, 'filmes', iconimage, 1, None, None, fanart)
 	vista_menu()
 
 def menuSeries2(iconimage,fanart):
@@ -1528,7 +1528,7 @@ def menuSeries2(iconimage,fanart):
 	addDir2('Por Categoria', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=categoria&addon=1', 11119, 'series', iconimage, 1, None, None, fanart)
 	addDir2('Por Rating', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=rating&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
 	addDir2('Para Crianças', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=kids&addon=1', 11112, 'series', iconimage, 1, None, None, fanart)
-	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&genero=pesquisa&addon=1', 11120, 'series', iconimage, 1, None, None, fanart)
+	addDir2('[COLOR pink][B]Pesquisa[/B][/COLOR]', __ADDON__.getSetting("acess_Token")+'PHP/liveit/tugaliveit.php?client_secret='+__ADDON__.getSetting("client_secret_user")+'&tipo=series&addon=1', 11120, 'series', iconimage, 1, None, None, fanart)
 	vista_menu()
 	
 def filmes2(url):
@@ -1734,7 +1734,9 @@ def pesquisa_live(url, tipolo):
 	ficheiro = ''
 	site = ''
 	qualidade = ''
-	vaipesquisa= ''
+	tokenPesquisa= ''
+	resultado = ''
+	tipolopesquisaNovo = '0'
 	if tipolo == 'filmes':
 		ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
 		tipo = 0
@@ -1746,37 +1748,32 @@ def pesquisa_live(url, tipolo):
 	
 	if 'page' not in url:
 		try:
-			tipo = xbmcgui.Dialog().select(u'Onde quer pesquisar?', ['Filmes', 'Series'])
+			tipolopesquisa = xbmcgui.Dialog().select(u'O que pretende pesquisar?', ['Por: NomePT ou Nome EN', 'Por: Realizador','Por: Actor'])
 		except:
 			return False
-		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
-		if tipo == 0:
-			ficheiro = os.path.join(__PASTA_DADOS__,'filmes_pesquisa.liveit')
-		elif tipo == 1:
-			ficheiro = os.path.join(__PASTA_DADOS__,'series_pesquisa.liveit')
 		
-		if xbmcvfs.exists(ficheiro):
-			f = open(ficheiro, "r")
-			texto = f.read()
-			f.close()
-			teclado.setDefault(texto)
-		teclado.doModal()	
-
+		if tipolopesquisa == 0:
+			tipolopesquisaNovo = '0'
+		elif tipo == 1:
+			tipolopesquisaNovo = '1'
+		elif tipo == 2:
+			tipolopesquisaNovo = '2'
+			
+		__ADDON__.setSetting('tokenPesquisa', tipolopesquisaNovo)
+		teclado = xbmc.Keyboard('', 'O que quer pesquisar?')
+		teclado.doModal()
+		
 		if teclado.isConfirmed():
 			strPesquisa = teclado.getText()
 			if strPesquisa == '':
 				__ALERTA__(AddonTitle, 'Insira algo na pesquisa.')
 				addDir2('Alterar Pesquisa', url, 11120, tipolo, os.path.join(__ART_FOLDER__, __SKIN__, 'pesquisa.png'), 0)
 				return False
-			vaipesquisa = strPesquisa
-	else:
-		if xbmcvfs.exists(ficheiro):
-			f = open(ficheiro, "r")
-			texto = f.read()
-			f.close()
-		vaipesquisa = texto
+			else:
+				tokenPesquisa = strPesquisa.replace(" ", "%20")
+				__ADDON__.setSetting('tokenPesquisaTexto', tokenPesquisa)
 	
-	resultado = devolveresultado(url+'&pesquisa='+vaipesquisa)
+	resultado = devolveresultado(url+'&pesquisa='+__ADDON__.getSetting('tokenPesquisaTexto')+'&genero=pesquisa'+__ADDON__.getSetting('tokenPesquisa'))
 	resultado = json.loads(resultado)
 	for i in resultado["item"]:
 		if tipolo == 'filmes':

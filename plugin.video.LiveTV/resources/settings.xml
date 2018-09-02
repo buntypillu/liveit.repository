@@ -13,6 +13,8 @@
 	  <setting id="client_secret_user" type="text" default="" option="hidden" enable="false" visible="false"/>
 	  <setting id="acess_Token" type="text" default="" option="hidden" enable="false" visible="false"/>
 	  <setting id="tokenMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
+	  <setting id="tokenPesquisa" type="text" option="hidden" visible="false" label="" default="" />
+	  <setting id="tokenPesquisaTexto" type="text" option="hidden" visible="false" label="" default="" />
       <setting id="refreshMrpiracy" type="text" option="hidden" visible="false" label="" default="" />
 	  <setting id="loggedin" type="text" option="hidden" visible="false" label="" default="" />
 	  <setting label="Buffering" type="text" id="bbcBitRateMax" default="800" values="800|1500|2200|3700" visible="false"/>
