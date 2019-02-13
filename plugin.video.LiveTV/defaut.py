@@ -895,7 +895,20 @@ def abrim3u(url, datauser):
 		addLinkCanal(name,url,image,id_ip,'')
 	
 	vista_Canais_Lista()
+
+def regex_get_all(text, start_with, end_with):
+	r = re.findall("(?i)(" + start_with + "[\S\s]+?" + end_with + ")", text)
+	return r
 	
+def regex_from_to(text, from_string, to_string, excluding=True):
+	if excluding:
+		try: r = re.search("(?i)" + from_string + "([\S\s]+?)" + to_string, text).group(1)
+		except: r = ''
+	else:
+		try: r = re.search("(?i)(" + from_string + "[\S\s]+?" + to_string + ")", text).group(1)
+		except: r = ''
+	return r
+
 def abrim3u2(url,tipose):
 	version = __ADDONVERSION__
 	kasutajanimi=__ADDON__.getSetting("login_name")
@@ -903,16 +916,17 @@ def abrim3u2(url,tipose):
 	lehekylg=url
 	vanemakood=__ADDON__.getSetting("login_adultos")
 	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
-	
 	televisioonilink = url+'enigma2.php?username='+__ADDON__.getSetting("login_name")+'&password='+__ADDON__.getSetting("login_password")+'&type=get_live_categories'
 
 	addDir('Atualizar Lista',url,tipose,3333,'Miniatura',os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),'','','','',os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'))
 	security_check(televisioonilink,tipose)
 
 def security_check(url,tipose):
-	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
-	u = urllib2.urlopen(request)
-	tree = ET.parse(u)
+	u = urllib2.Request(url,'')
+	u.add_header('Accept', 'application/xml')
+	u.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(u)
+	tree = ET.parse(response)
 	rootElem = tree.getroot()
 	for channel in tree.findall("channel"):
 		kanalinimi = channel.find("title").text
@@ -923,9 +937,11 @@ def security_check(url,tipose):
 	vista_Canais_Lista()
 
 def detect_modification(url):
-	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
-	u = urllib2.urlopen(request)
-	tree = ET.parse(u)
+	u = urllib2.Request(url,'')
+	u.add_header('Accept', 'application/xml')
+	u.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(u)
+	tree = ET.parse(response)
 	rootElem = tree.getroot()
 	for channel in tree.findall("channel"):
 		filminimi = channel.find("title").text
@@ -939,9 +955,12 @@ def stream_video(name,url,image,tiposelect):
 	vanemalukk=__ADDON__.getSetting("login_adultos_sim")
 	if vanemalukk == "true":
 		vanema_lukk(name)
-	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
-	u = urllib2.urlopen(request)
-	tree = ET.parse(u)
+	
+	u = urllib2.Request(url,'')
+	u.add_header('Accept', 'application/xml')
+	u.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(u)
+	tree = ET.parse(response)
 	rootElem = tree.getroot()
 	for channel in tree.findall(sync_data("Y2hhbm5lbA==")):
 		kanalinimi = channel.find(get_live("dGl0bGU=")).text
@@ -980,9 +999,11 @@ def get_myaccount(name,url,image):
 	if vanemalukk == "true":
 		vanema_lukk(name)
 	
-	request = urllib2.Request(url, headers={"Accept" : "application/xml"})
-	u = urllib2.urlopen(request)
-	tree = ET.parse(u)
+	u = urllib2.Request(url,'')
+	u.add_header('Accept', 'application/xml')
+	u.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+	response = urllib2.urlopen(u)
+	tree = ET.parse(response)
 	rootElem = tree.getroot()
 	for channel in tree.findall("channel"):
 		pealkiri = channel.find("title").text
