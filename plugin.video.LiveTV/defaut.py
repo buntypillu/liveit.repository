@@ -50,6 +50,7 @@ global uuendused
 global vanemalukk
 global version
 global mode
+global __EPG__
 
 mode = 3333
 version = ""
@@ -565,7 +566,7 @@ def Menu_inicial(men,build,tipo):
 	_datauser = men['datafim']['data']
 	_epguser = men['user']['epg']
 	tiposelect = men['user']['tipologia']
-	
+	global __EPG__
 	_senhaadultos = __ADDON__.getSetting("login_adultos")
 	_fanart = ''
 	
@@ -967,7 +968,16 @@ def stream_video(name,url,image,tiposelect):
 		kanalinimi = base64.b64decode(kanalinimi)
 		kanalinimi = kanalinimi.partition("[")
 		striimilink = channel.find(get_live("c3RyZWFtX3VybA==")).text
-		striimilink = striimilink.replace('.ts','.'+tiposelect)
+		
+		urlchama = striimilink.split('/')
+		urlnoo = ''
+		try:
+			urlnoo = urlchama[5]
+			urlnoo = urlnoo.replace('ts','')
+			urlnoo = urlnoo.replace('m3u8','')
+		except:
+			pass
+		
 		pilt = channel.find("desc_image").text
 		kava = kanalinimi[1]+kanalinimi[2]
 		kava = kava.partition("]")
@@ -987,9 +997,9 @@ def stream_video(name,url,image,tiposelect):
 		else:
 			kokku = ""
 		if pilt:
-			addLinkCanalLista(shou,striimilink,pilt,kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'))
+			addLinkCanalLista(shou,striimilink,pilt,kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'), urlnoo)
 		else:
-			addLinkCanalLista(shou,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'))
+			addLinkCanalLista(shou,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kokku,os.path.join(__ART_FOLDER__, __SKIN__, 'hometheater.png'), urlnoo)
 	
 	xbmcplugin.setContent(int(sys.argv[1]) ,"episodes")
 	xbmc.executebuiltin("Container.SetViewMode(55)")
@@ -1005,29 +1015,43 @@ def get_myaccount(name,url,image):
 	response = urllib2.urlopen(u)
 	tree = ET.parse(response)
 	rootElem = tree.getroot()
-	for channel in tree.findall("channel"):
+	for channel in tree.findall(sync_data("Y2hhbm5lbA==")):
 		pealkiri = channel.find("title").text
 		pealkiri = base64.b64decode(pealkiri)
 		pealkiri = pealkiri.encode("utf-8")
 		striimilink = channel.find("stream_url").text
+		
+		urlchama = striimilink.split('/')
+		urlnoo = ''
+		try:
+			urlnoo = urlchama[5]
+			urlnoo = urlnoo.replace('ts','')
+			urlnoo = urlnoo.replace('m3u8','')
+		except:
+			pass
+		
 		pilt = channel.find("desc_image").text 
 		kirjeldus = channel.find("description").text
 		if kirjeldus:
 			kirjeldus = base64.b64decode(kirjeldus)
 		if pilt:
-			addLinkCanalLista(pealkiri,striimilink,pilt,kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+			addLinkCanalLista(pealkiri,striimilink,pilt,kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'), urlnoo)
 		else:
-			addLinkCanalLista(pealkiri,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+			addLinkCanalLista(pealkiri,striimilink,os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),kirjeldus,os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'), urlnoo)
 	
 	xbmcplugin.setContent( int(sys.argv[1]) ,"movies" )
 	xbmc.executebuiltin('Container.SetViewMode(55)')
 
-def addLinkCanalLista(title,url,thumbnail,plot,fanart, isPlayable=True, folder=False):
+def addLinkCanalLista(title,url,thumbnail,plot,fanart,idcanal,isPlayable=True, folder=False):
 	ok=True
+	cm=[]
+	if(idcanal != '0001'):
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(title), urllib.quote_plus(url), urllib.quote_plus(thumbnail), idcanal, '')))
 	
 	listitem=xbmcgui.ListItem(title,iconImage=thumbnail,thumbnailImage=thumbnail)
 	info_labels={"Title":title,"FileName":title,"Plot":plot}
 	listitem.setInfo( "video", info_labels )
+	listitem.addContextMenuItems(cm, replaceItems=False)
 	if fanart!="": 
 		listitem.setProperty('fanart_image',fanart)
 		xbmcplugin.setPluginFanart(int(sys.argv[1]),fanart)
@@ -1103,15 +1127,15 @@ def execute_ainfo(url):
 	leavemealone = kasutajaAndmed[get_live("bWF4X2Nvbm5lY3Rpb25z")]
 	polarbears = kasutajaAndmed[sync_data("dXNlcm5hbWU=")]
 	
-	addLinkCanalLista("[COLOR = white]Utilizador: [/COLOR]"+polarbears,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	addLinkCanalLista("[COLOR = white]Utilizador: [/COLOR]"+polarbears,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'),'')
 	
-	addLinkCanalLista("[COLOR = white]Estado: [/COLOR]"+seis,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	addLinkCanalLista("[COLOR = white]Estado: [/COLOR]"+seis,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'),'')
 	
-	addLinkCanalLista("[COLOR = white]Expira: [/COLOR]"+aegub,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	addLinkCanalLista("[COLOR = white]Expira: [/COLOR]"+aegub,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'),'')
 	
-	addLinkCanalLista("[COLOR = white]Conta de Teste: [/COLOR]"+rabbits,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	addLinkCanalLista("[COLOR = white]Conta de Teste: [/COLOR]"+rabbits,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'),'')
 	
-	addLinkCanalLista("[COLOR = white]Maximo de Connec: [/COLOR]"+leavemealone,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'))
+	addLinkCanalLista("[COLOR = white]Maximo de Connec: [/COLOR]"+leavemealone,"",os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'icon.png'),os.path.join(__ART_FOLDER__, __SKIN__, 'theater.png'),'')
 	
 	vista_Canais_Lista()
 
@@ -1255,9 +1279,16 @@ def listar_grupos(nome_nov,url,estilo,tipo,tipo_user,servidor_user,fanart):
 ###############################################################################################################
 
 def listatvarchive(url):
-	endereco = url+"/panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_live_streams"
-	iIiIIIi = urllib2.urlopen(endereco)
-	ooo00OOOooO	= json.load(iIiIIIi)
+	endereco = url+"panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_live_streams"
+	##iIiIIIi = urllib2.urlopen(endereco)##
+	##json.load(iIiIIIi)##
+	req = urllib2.Request(endereco)
+	req.add_header(sync_data("VXNlci1BZ2VudA==") , vod_channels("S29kaSBwbHVnaW4gYnkgTGl2ZSF0"))
+	response = urllib2.urlopen(req)
+	link=response.read()
+	ooo00OOOooO	= json.loads(link.decode('utf8'))
+	response.close()
+	
 	O00OOOoOoo0O = ooo00OOOooO['available_channels']
 	for	O000OOo00oo	in	O00OOOoOoo0O.values():
 		oo0OOo = O000OOo00oo['tv_archive']
@@ -1270,10 +1301,17 @@ def listatvarchive(url):
 			addLinkGrupo(nametv,logo_tv,stream_id,url,duration,os.path.join(__ART_FOLDER__, __SKIN__, 'fundo___ADDON__.png'),1)
 
 def listatvarchivecanais(name,stream_id,url,duration,iconimage,fanart):
-	endereco = url+"/panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_epg&stream_id="+stream_id
-	iIiIIIi	=	urllib2	.urlopen(endereco)
-	iiiI11	=	json.load(iIiIIIi)
-	iiIiI	=	datetime.datetime.utcnow() - datetime.timedelta(days=int(duration))
+	endereco = url+"panel_api.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&action=get_epg&stream_id="+stream_id
+	##iIiIIIi	= urllib2.urlopen(endereco)
+	##iiiI11 = json.load(iIiIIIi)
+	req = urllib2.Request(endereco)
+	req.add_header(sync_data("VXNlci1BZ2VudA==") , vod_channels("S29kaSBwbHVnaW4gYnkgTGl2ZSF0"))
+	response = urllib2.urlopen(req)
+	link=response.read()
+	iiiI11	= json.loads(link.decode('utf8'))
+	response.close()
+	
+	iiIiI = datetime.datetime.utcnow() - datetime.timedelta(days=int(duration))
 	o00oooO0Oo	=calendar.timegm(iiIiI.timetuple())
 	o00oooO0Oo	=int(o00oooO0Oo)
 	o0O0OOO0Ooo	=time.time()
@@ -1293,7 +1331,7 @@ def listatvarchivecanais(name,stream_id,url,duration,iconimage,fanart):
 			IIi = datetime.datetime.fromtimestamp(int(start)).strftime('%d.%m %H:%M')
 			i1Iii1i1I = datetime.datetime.fromtimestamp(int(start)).strftime('%Y-%m-%d:%H:%M')
 			title_tv = IIi + " " + title_tv
-			endereco = url+"/streaming/timeshift.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&stream="+stream_id+"&start="+i1Iii1i1I+"&duration="+str(duracao)
+			endereco = url+"streaming/timeshift.php?username="+__ADDON__.getSetting('login_name')+"&password="+__ADDON__.getSetting('login_password')+"&stream="+stream_id+"&start="+i1Iii1i1I+"&duration="+str(duracao)
 			
 			addLinkCanal(title_tv,endereco,iconimage,'0001','')
 
@@ -1403,6 +1441,7 @@ def listar_canais_url(nome,url,estilo,tipo,tipo_user,servidor_user,fanart,tippoo
 #													EPG													 #
 ###############################################################################################################
 def obter_ficheiro_epg():
+	global __EPG__
 	if not xbmcvfs.exists(__FOLDER_EPG__):
 		xbmcvfs.mkdirs(__FOLDER_EPG__)
 
@@ -1426,6 +1465,7 @@ def getProgramacaoDiaria(idCanal, diahora, codigo):
 
 
 def programacao_canal(idCanal):
+	global __EPG__
 	url = urllib.urlopen(__EPG__)
 	codigo = url.read()
 	url.close
@@ -3732,15 +3772,15 @@ def addLinkCanal(name,url,iconimage,idcanal,id_p):
 	cm=[]
 	
 	if(idcanal != '0001'):
-		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idCanal, id_p)))
+		cm.append(('Ver programação', 'XBMC.RunPlugin(%s?mode=31&name=%s&url=%s&iconimage=%s&idCanal=%s&idffCanal=%s)'%(sys.argv[0],urllib.quote_plus(name), urllib.quote_plus(url), urllib.quote_plus(iconimage), idcanal, id_p)))
 	
 	liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
-	#liz.setProperty('fanart_image', fanart)
-	#liz.setArt({'fanart': fanart})
 	liz.setInfo( type="Video", infoLabels=infoLabelssss)
 	liz.addContextMenuItems(cm, replaceItems=False)
 	liz.setProperty('IsPlayable', 'true')
-	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=3334&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&data_user="+str(idcanal)
+	liz.setProperty('fanart_image', os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_tv.png'))
+	liz.setArt({'fanart': os.path.join(__ART_FOLDER__, __SKIN__, 'fundo_tv.png')})
+	u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=11&name=" + urllib.quote_plus(name) + "&iconimage=" + urllib.quote_plus(iconimage)+"&stream_id="+str(idcanal)+"&data_user="+str(idcanal)
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
 	return ok
 	
@@ -3933,6 +3973,11 @@ def addDir2(name,url,mode,mode2,iconimage,pagina=1,tipo=None,infoLabels=None,pos
 
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 	return ok
+
+def PlayUrl(name, url, iconimage=None):
+	listitem = xbmcgui.ListItem(path=url, thumbnailImage=iconimage)
+	listitem.setInfo(type="Video", infoLabels={ "Title": name })
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 ###################################################################################
 #							  DEFININCOES										  #
@@ -4228,6 +4273,7 @@ elif mode==2: listar_canais_url(str(name),str(url),estilo,tipologia,tipo_user,se
 elif mode==4: buildLiveit(buildtipo)
 elif mode==3: listar_grupos_adultos(str(url),str(senha),estilo,tipologia,tipo_user,servidor_user,fanart)
 elif mode==10: minhaConta(str(name),estilo)
+elif mode==11: PlayUrl(name,url,iconimage)
 elif mode==20: listamenusseries(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==21: listamenusfilmes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
 elif mode==24: listamenusanimes(str(name),str(url),estilo,tipologia,tipo_user,servidor_user,iconimage,fanart)
