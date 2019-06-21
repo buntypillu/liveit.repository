@@ -25,6 +25,8 @@ from bs4 import BeautifulSoup
 
 __ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
 __ADDON__   = xbmcaddon.Addon(__ADDON_ID__)
+icon = __ADDON__.getAddonInfo('icon')
+AddonName = __ADDON__.getAddonInfo("name")
 __TRAKT_API__ = 'http://api-v2launch.trakt.tv'
 __TRAKT_CLIENT__ = base64.urlsafe_b64decode('YjQ4NWY0Y2M5MmY2OWEzNTc0ZjI4NTI0NTE4ZDllMjk1YmNiYjE1ZGYxODlhYjhiNTAyMzI4OGQ5ZjFhYzdmNg==')
 __TRAKT_SECRET__ = base64.urlsafe_b64decode('MmU5ZmQ4NzQ4MTQ1YzgzOTJmNWU4ZWU3OWE3OTBhZmEyZWUwOWFjNGRhOGQxOTgzYzNkZjBiMDdjYWZlMzljMA==')
@@ -65,7 +67,7 @@ def abrir_url(url, post=None, header=None, code=False, erro=False):
 def traktAuth():
     try:
         if not (__ADDON__.getSetting('utilizadorTrakt') == '' or __ADDON__.getSetting('tokenTrakt') == '' or __ADDON__.getSetting('refreshTrakt') == ''):
-            dialog = xbmcgui.Dialog().yesno('Live!t-TV', u'Conta de Trakt já existe!', '', 'Deseja apagar?', u'Não', 'Sim')
+            dialog = xbmcgui.Dialog().yesno(AddonName, u'Conta de Trakt já existe!', '', 'Deseja apagar?', u'Não', 'Sim')
             if dialog:
                 __ADDON__.setSetting('utilizadorTrakt', '')
                 __ADDON__.setSetting('tokenTrakt', '')
@@ -73,7 +75,7 @@ def traktAuth():
             raise Exception()
 
         if __ADDON__.getSetting('utilizadorTrakt') == '' or __ADDON__.getSetting('tokenTrakt') == '' or __ADDON__.getSetting('refreshTrakt') == '':
-            dialog = xbmcgui.Dialog().yesno('Live!t-TV', u'1. Entrar: [COLOR blue]http://trakt.tv/pin/8928[/COLOR]', '2. Se pedido, autorizar o acesso da conta.', '3. Colocar o PIN.', 'Inserir PIN', 'Cancelar')
+            dialog = xbmcgui.Dialog().yesno(AddonName, u'1. Entrar: [COLOR blue]http://trakt.tv/pin/8928[/COLOR]', '2. Se pedido, autorizar o acesso da conta.', '3. Colocar o PIN.', 'Inserir PIN', 'Cancelar')
 
             if dialog:
                 raise Exception()

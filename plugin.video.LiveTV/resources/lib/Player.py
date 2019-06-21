@@ -13,11 +13,16 @@ import sys
 import traceback
 import json
 import Trakt
-import Database
+import Database, xbmcaddon
 from t0mm0.common.net import Net
 
+__ADDON_ID__   = xbmcaddon.Addon().getAddonInfo("id")
+__ADDON__   = xbmcaddon.Addon(__ADDON_ID__)
+icon = __ADDON__.getAddonInfo('icon')
+AddonName = __ADDON__.getAddonInfo("name")
+
 __SITE__ = 'http://mrpiracy.win/'
-__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf-8'), 'cookie.liveittv')
+__COOKIE_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/'+__ADDON_ID__).decode('utf-8'), 'cookie.liveittv')
 __HEADERS__ = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
 __ALERTA__ = xbmcgui.Dialog().ok
 
@@ -69,7 +74,7 @@ class Player(xbmc.Player):
             else:
                 tempoAux = "%02d:%02d" % (minutos, segundos)
 
-            dialog = xbmcgui.Dialog().yesno('Live!t-TV', u'Já começaste a ver antes.', 'Continuas a partir de %s?' % (tempoAux), '', 'Não', 'Sim')
+            dialog = xbmcgui.Dialog().yesno(AddonName, u'Já começaste a ver antes.', 'Continuas a partir de %s?' % (tempoAux), '', 'Não', 'Sim')
             if dialog:
                 self.seekTime(float(tempo))
 
@@ -145,7 +150,7 @@ class Player(xbmc.Player):
             f = open(ficheiro, 'w')
             f.write('')
             f.close()
-            xbmc.executebuiltin("XBMC.Notification(Live!t-TV,"+"Marcado como visto"+","+"6000"+","+ self.logo+")")
+            xbmc.executebuiltin("XBMC.Notification("+AddonName+","+"Marcado como visto"+","+"6000"+","+ self.logo+")")
             xbmc.executebuiltin("Container.Refresh")
         else:
             print "Já foi colocado antes"

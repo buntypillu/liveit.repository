@@ -1,8 +1,8 @@
 import urllib, urllib2, os, io, xbmc, xbmcaddon, xbmcgui, json, re, chardet, shutil, time, hashlib, gzip, xbmcvfs
 from StringIO import StringIO
 
-AddonID = 'plugin.video.LiveTV'
-Addon = xbmcaddon.Addon(AddonID)
+__ADDON_ID__ = xbmcaddon.Addon().getAddonInfo("id")
+Addon = xbmcaddon.Addon(__ADDON_ID__)
 icon = Addon.getAddonInfo('icon')
 AddonName = Addon.getAddonInfo("name")
 

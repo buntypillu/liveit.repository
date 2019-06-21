@@ -21,16 +21,17 @@
 	  <setting id="ip_addr" type="text" label="30156" default="127.0.0.1" visible="false"/>
 	  <setting id="aceporta" type="text" label="30157" default="62062" visible="false"/>
 	  <setting id="makeGroups" type="text" label="30036" default="true" visible="false"/>
-	</category>
+	  <setting id="dns_addon" type="text" visible="false" label="" default=""/>
+   </category>
    <category label="Download">
     	<setting label="Pasta para download:" type="lsep" />
     	<setting label="" type="folder" id="pastaDownloads" source="auto" option="writeable" default="Escolha a pasta para Download" enable="!eq(-2,false)"/>
     </category>
-	<category label="Vistas">
+   <category label="Vistas">
       <setting id="menuView" type="enum" label="Vista de Menu" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
-	  <setting id="canaisView" type="enum" label="Vista de Canais" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
-	  <setting id="canaisView2" type="enum" label="Vista de Canais Lista" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
-      <setting id="filmesSeriesView" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
+	  <setting id="canaisView" type="enum" label="Vista de Grupos" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
+	  <setting id="canaisView2" type="enum" label="Vista de Canais" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
+	  <setting id="filmesSeriesView" type="enum" label="Vista de Filmes e Séries" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
       <setting id="temporadasView" type="enum" label="Vista de temporadas" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
       <setting id="episodiosView" type="enum" label="Vista de episodios" values="Lista|Lista Grande|Miniatura|Fanart|Media Info 1|Media Info 2|Media Info 3|KODI 17.1" default="7"/>
     </category>
@@ -41,6 +42,5 @@
 		<setting id="cOrdNCF" type="enum" label="Ordem dos filmes" lvalues="Data|Título" default="0" />
 		<setting id="cOrdNCS" type="enum" label="Ordem dos séries/anime/desenhos" lvalues="Data|Título" default="0" />
 		<setting id="Cat" label="Cat" type="text" default="0" visible="false" />
-		<setting label="" type="sep" />
     </category>
 </settings>

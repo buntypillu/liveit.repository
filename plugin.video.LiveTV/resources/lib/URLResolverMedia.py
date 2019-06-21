@@ -138,6 +138,36 @@ class Streamango():
 	def replaceSpecialCharacters(self, sString):
 		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
 
+class VeryStream():
+	def __init__(self, url):
+		self.url = url
+		self.net = Net()
+		self.headers = {"User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3"}
+		self.legenda = ''
+	def getMediaUrl(self):
+		req = urllib2.Request(self.url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0'})
+		response = urllib2.urlopen(req)
+		html = response.read()
+		response.close()
+		try: html = html.encode('utf-8')
+		except: pass
+
+		TabUrl = []
+		sPattern = 'id="videolink">([^"]+)<\/p>'
+		aResult = self.parse(html, sPattern)
+		if aResult[0]:
+			videoUrl = 'https://verystream.com/gettoken/'+aResult[1][0]+'?mime=true'
+		return videoUrl
+	def getLegenda(self):
+		return self.legenda
+	def parse(self, sHtmlContent, sPattern, iMinFoundValue = 1):
+		sHtmlContent = self.replaceSpecialCharacters(str(sHtmlContent))
+		aMatches = re.compile(sPattern, re.IGNORECASE).findall(sHtmlContent)
+		if (len(aMatches) >= iMinFoundValue):
+			return True, aMatches
+		return False, aMatches
+	def replaceSpecialCharacters(self, sString):
+		return sString.replace('\\/','/').replace('&amp;','&').replace('\xc9','E').replace('&#8211;', '-').replace('&#038;', '&').replace('&rsquo;','\'').replace('\r','').replace('\n','').replace('\t','').replace('&#039;',"'")
 
 class Vidoza():
 	def __init__(self, url):
@@ -392,7 +422,7 @@ class OpenLoad():
 		self.net = Net()
 		self.id = str(self.getId())
 		self.messageOk = xbmcgui.Dialog().ok
-		self.site = 'https://openload.co'
+		self.site = 'https://oload.tv'
 		#self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:43.0) Gecko/20100101 Firefox/43.0', 'Accept-Charset': 'utf-8;q=0.7,*;q=0.7'}
 		self.headers = {
 			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:39.0) Gecko/20100101 Firefox/39.0',
@@ -595,8 +625,8 @@ class OpenLoad():
 			
 
 			if 'KDA_8nZ2av4/x.mp4' in api_call:
-				#log('Openload.co resolve failed')
-				raise ResolverError('Openload.co resolve failed')
+				#log('oload.tv resolve failed')
+				raise ResolverError('oload.tv resolve failed')
 			if url == api_call:
 				#log('pigeon url : ' + api_call)
 				api_call = ''
@@ -628,7 +658,7 @@ class OpenLoad():
 			raise ResolverError(js_result['status'], js_result['msg'])
 		return js_result
 	def __auth_ip(self, media_id):
-		js_data = self._api_get_url('https://api.openload.co/1/streaming/info')
+		js_data = self._api_get_url('https://api.oload.tv/1/streaming/info')
 		pair_url = js_data.get('result', {}).get('auth_url', '')
 		if pair_url:
 			pair_url = pair_url.replace('\/', '/')
@@ -641,7 +671,7 @@ class OpenLoad():
 	
 	def __check_auth(self, media_id):
 		try:
-			js_data = self._api_get_url('https://api.openload.co/1/streaming/get?file=%s' % media_id)
+			js_data = self._api_get_url('https://api.oload.tv/1/streaming/get?file=%s' % media_id)
 		except ResolverError as e:
 			status, msg = e
 			if status == 403:
@@ -659,7 +689,7 @@ class OpenLoad():
 			except:
 				return re.compile('https\:\/\/openload\.co\/embed\/(.+)').findall(self.url)[0]
 		except:
-			return re.compile('https\:\/\/openload.co\/f\/(.+?)\/').findall(self.url)[0]
+			return re.compile('https\:\/\/oload.tv\/f\/(.+?)\/').findall(self.url)[0]
 
 
 	def unescape(self, text):

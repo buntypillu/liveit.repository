@@ -7,15 +7,18 @@ try:
 except:
     from pysqlite2 import dbapi2 as database
 
-import xbmcvfs, os, sys, xbmc
+import xbmcvfs, os, sys, xbmc, xbmcaddon
 
-__PASTA_TRAKT__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/trakt/').decode('utf8'))
-__DB_FILE__ = os.path.join(xbmc.translatePath('special://userdata/addon_data/plugin.video.LiveTV/').decode('utf8'), 'cachebdlive.db')
+AddonID	= xbmcaddon.Addon().getAddonInfo("id")
+
+__PASTA_TRAKT__ = os.path.join(xbmc.translatePath("special://userdata/addon_data/"+AddonID+"/trakt/").decode('utf8'))
+__DB_FILE__ = os.path.join(xbmc.translatePath("special://userdata/addon_data/"+AddonID).decode('utf8'), 'cachebdlive.db')
 __PROGRESSO_FILE__ = os.path.join(__PASTA_TRAKT__, 'progresso.liveit')
 __WATCH_FILMES_FILE__ = os.path.join(__PASTA_TRAKT__, 'watch_filmes.liveit')
 __WATCH_SERIES_FILE__ = os.path.join(__PASTA_TRAKT__, 'watch_series.liveit')
 __FILMES_FILE__ = os.path.join(__PASTA_TRAKT__, 'filmes.liveit')
 __SERIES_FILE__ = os.path.join(__PASTA_TRAKT__, 'series.liveit')
+
 def isExists():
     if not xbmcvfs.exists(__DB_FILE__):
         createDB()

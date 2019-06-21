@@ -2,8 +2,12 @@ import os
 import xbmcgui
 import xbmc
 import time
-import urllib
+import urllib, xbmcaddon
 
+__ADDON_ID__ = xbmcaddon.Addon().getAddonInfo("id")
+Addon = xbmcaddon.Addon(__ADDON_ID__)
+icon = Addon.getAddonInfo('icon')
+AddonName = Addon.getAddonInfo("name")
 
 class Downloader:
     def __init__(self,):
@@ -16,7 +20,7 @@ class Downloader:
                             except: pass
 
             dp = xbmcgui.DialogProgress()
-            dp.create('Live!t-TV Downloader')
+            dp.create(AddonName+' Downloader')
             dp.update(0,name)
             xbmc.sleep(500)
             start_time = time.time()

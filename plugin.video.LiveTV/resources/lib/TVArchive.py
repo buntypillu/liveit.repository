@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import urlparse,json,zlib,hashlib,urllib2,time,re,os,sys,xbmc,xbmcgui,xbmcplugin,xbmcvfs,pprint, base64
+import urlparse,json,zlib,hashlib,urllib2,time,re,os,sys,xbmc,xbmcgui,xbmcaddon,xbmcplugin,xbmcvfs,pprint, base64
 import unicodedata
 import URLResolverMedia
 reload(sys)  
@@ -12,6 +12,11 @@ global arrlinks
 
 arrgrupos = []
 arrlinks = []
+
+__ADDON_ID__ = xbmcaddon.Addon().getAddonInfo("id")
+Addon = xbmcaddon.Addon(__ADDON_ID__)
+icon = Addon.getAddonInfo('icon')
+AddonName = Addon.getAddonInfo("name")
 
 class TVArchive:
 	def __init__(self):
@@ -113,7 +118,7 @@ class TVArchive:
 			self.arrlinks = arrlinks
 			return arrgrupos
 		else:
-			__ALERTA__('Live!t-TV', 'Não tem canais em gravação.')
+			__ALERTA__(AddonName, 'Não tem canais em gravação.')
 			return None
 	
 	def __ALERTA__(text1="",text2="",text3=""):
