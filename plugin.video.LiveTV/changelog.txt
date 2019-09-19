@@ -1,3 +1,0 @@
-v0.0.1 (30/03/2017)
-- Addon Pronto a funcionar.
-- Menu TV Archive implementado.
